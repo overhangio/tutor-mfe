@@ -1,0 +1,9 @@
+variables:
+    TUTOR_PLUGIN: mfe
+    TUTOR_IMAGES: mfe
+    TUTOR_PYPI_PACKAGE: tutor-mfe
+    OPENEDX_RELEASE: koa
+
+include:
+  - project: 'community/tutor-ci'
+    file: 'plugin-gitlab-ci.yml'
