@@ -1,0 +1,29 @@
+# MFE apps
+{% for app in iter_values_named(suffix="MFE_APP") %}
+{{ app["name"] }}:
+    image: {{ app["name"] }}
+    build:
+        context: ../plugins/mfe/build/mfe/
+        target: {{ app["name"] }}-dev
+    ports:
+        - "127.0.0.1:{{ app["port"] }}:{{ app["port"] }}"
+    {# Unfortunately we can't rely on "npm run start" because we need to manually disable host checking, which defaults to localhost/0.0.0.0.#}
+    {# command: ["npm", "run", "start"] #}
+    command: [
+        "webpack-dev-server", "--config=./node_modules/@edx/frontend-build/config/webpack.dev.config.js", "--progress",
+        "--disable-host-check", "--output-public-path=/{{ app["name"] }}/",
+        "--history-api-fallback={{ app["name"] }}/index.html"
+    ]
+    env_file:
+        - ../plugins/mfe/build/mfe/env/production
+        - ../plugins/mfe/build/mfe/env/development
+    {% if "env" in app %}
+    environment:
+    {% if "production" in app["env"] %}{% for key, value in app["env"]["production"].items() %}
+        - "{{ key }}={{ value }}"
+    {% endfor %}{% endif %}
+    {% if "development" in app["env"] %}{% for key, value in app["env"]["development"].items() %}
+        - "{{ key }}={{ value }}"
+    {% endfor %}{% endif %}
+    {% endif %}
+{% endfor %}

@@ -1,0 +1,16 @@
+{% if MFE_ACCOUNT_MFE_APP %}
+ACCOUNT_MICROFRONTEND_URL = "http://{{ MFE_HOST }}:{{ MFE_ACCOUNT_MFE_APP["port"] }}/{{ MFE_ACCOUNT_MFE_APP["name"] }}"
+{% endif %}
+{% if MFE_GRADEBOOK_MFE_APP %}
+WRITABLE_GRADEBOOK_URL = "http://{{ MFE_HOST }}:{{ MFE_GRADEBOOK_MFE_APP["port"] }}/{{ MFE_GRADEBOOK_MFE_APP["name"] }}"
+{% endif %}
+{% if MFE_PROFILE_MFE_APP %}
+PROFILE_MICROFRONTEND_URL = "{% if ENABLE_HTTPS %}https://{% else %}http://{% endif %}{{ MFE_HOST }}:{{ MFE_PROFILE_MFE_APP["port"] }}/{{ MFE_PROFILE_MFE_APP["name"] }}/u/"
+{% endif %}
+
+{% for app in iter_values_named(suffix="MFE_APP") %}
+# {{ app["name"] }} MFE
+CORS_ORIGIN_WHITELIST.append("{{ MFE_HOST }}:{{ app["port"] }}")
+LOGIN_REDIRECT_WHITELIST.append("{{ MFE_HOST }}:{{ app["port"] }}")
+CSRF_TRUSTED_ORIGINS.append("{{ MFE_HOST }}:{{ app["port"] }}")
+{% endfor %}

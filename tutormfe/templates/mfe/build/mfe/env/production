@@ -1,0 +1,25 @@
+{# https://edx.readthedocs.io/projects/edx-developer-docs/en/latest/developers_guide/micro_frontends_in_open_edx.html#configuration-with-environment-variables #}
+ACCESS_TOKEN_COOKIE_NAME='edx-jwt-cookie-header-payload'
+BASE_URL='{{ MFE_HOST }}'
+CSRF_TOKEN_API_PATH='/csrf/api/v1/token'
+CREDENTIALS_BASE_URL=''
+DISCOVERY_API_BASE_URL='{% if DISCOVERY_HOST is defined %}{% if ENABLE_HTTPS %}https{% else %}http{% endif %}://{{ DISCOVERY_HOST }}{% endif %}'
+ECOMMERCE_BASE_URL=''
+FAVICON_URL='{% if ENABLE_HTTPS %}https{% else %}http{% endif %}://{{ LMS_HOST }}/favicon.ico'
+LANGUAGE_PREFERENCE_COOKIE_NAME='language-preference'
+LMS_BASE_URL='{% if ENABLE_HTTPS %}https{% else %}http{% endif %}://{{ LMS_HOST }}'
+LOGIN_URL='{% if ENABLE_HTTPS %}https{% else %}http{% endif %}://{{ LMS_HOST }}/login'
+LOGO_URL='{% if ENABLE_HTTPS %}https{% else %}http{% endif %}://{{ LMS_HOST }}/static/images/logo.png'
+LOGO_TRADEMARK_URL='{% if ENABLE_HTTPS %}https{% else %}http{% endif %}://{{ LMS_HOST }}/static/images/logo.png'
+LOGO_WHITE_URL=''
+LOGOUT_URL='{% if ENABLE_HTTPS %}https{% else %}http{% endif %}://{{ LMS_HOST }}/logout'
+MARKETING_SITE_BASE_URL='{% if ENABLE_HTTPS %}https{% else %}http{% endif %}://{{ LMS_HOST }}'
+NODE_ENV=production
+PUBLISHER_BASE_URL=''
+REFRESH_ACCESS_TOKEN_ENDPOINT='{% if ENABLE_HTTPS %}https{% else %}http{% endif %}://{{ LMS_HOST }}/login_refresh'
+SEGMENT_KEY=''
+SITE_NAME='{{ PLATFORM_NAME }}'
+STUDIO_BASE_URL='{{ "https" if ENABLE_HTTPS else "http" }}://{{ CMS_HOST }}'
+USER_INFO_COOKIE_NAME='user-info'
+
+{{ patch("mfe-env-production") }}

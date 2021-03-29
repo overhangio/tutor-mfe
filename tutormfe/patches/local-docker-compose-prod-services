@@ -1,0 +1,6 @@
+# MFE
+mfe:
+    image: {{ MFE_DOCKER_IMAGE }}
+    build:
+        context: ../plugins/mfe/build/mfe/
+    restart: unless-stopped

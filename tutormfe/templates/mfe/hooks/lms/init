@@ -1,0 +1,13 @@
+{% if MFE_ACCOUNT_MFE_APP %}
+(./manage.py lms waffle_flag --list | grep account.redirect_to_microfrontend) || ./manage.py lms waffle_flag --create --everyone account.redirect_to_microfrontend
+{% else %}
+./manage.py lms waffle_delete --flags account.redirect_to_microfrontend
+{% endif %}
+
+{% if MFE_PROFILE_MFE_APP %}
+(./manage.py lms waffle_flag --list | grep learner_profile.redirect_to_microfrontend) || ./manage.py lms waffle_flag --create --everyone learner_profile.redirect_to_microfrontend
+site-configuration set ENABLE_PROFILE_MICROFRONTEND true
+{% else %}
+site-configuration unset ENABLE_PROFILE_MICROFRONTEND
+./manage.py lms waffle_delete --flags learner_profile.redirect_to_microfrontend
+{% endif %}

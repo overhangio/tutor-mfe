@@ -2,5 +2,5 @@
     handle / {
         respond 204
     }
-    {{ patch("mfe-caddyfile-site")|indent(4) }}
+    reverse_proxy mfe:8002
 }
