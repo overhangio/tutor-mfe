@@ -1,6 +1,3 @@
 {{ MFE_HOST }}{% if not ENABLE_HTTPS %}:80{% endif %} {
-    handle / {
-        respond 204
-    }
-    reverse_proxy mfe:8002
+    reverse_proxy nginx:80
 }
