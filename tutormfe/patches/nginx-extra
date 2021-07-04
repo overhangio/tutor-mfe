@@ -1,0 +1,19 @@
+# MFE service
+upstream mfe-backend {
+    server mfe:8002 fail_timeout=0;
+}
+server {
+    listen 80;
+    server_name {{ MFE_HOST }};
+
+    # Disables server version feedback on pages and in headers
+    server_tokens off;
+
+    client_max_body_size 10m;
+
+    location / {
+    proxy_set_header Host $http_host;
+    proxy_redirect off;
+    proxy_pass http://mfe-backend;
+    }
+}
