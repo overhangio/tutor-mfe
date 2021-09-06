@@ -100,6 +100,19 @@ The MFE plugin works a bit differently than other Tutor plugins. MFEs are static
 
 We consider that this situation is less than ideal. An improvement would be to self-host a Docker registry and an image-building pipeline on Kubernetes. If you are interested in such a solution, please let your voice be heard on the `Tutor community forums <https://discuss.overhang.io>`__.
 
+Uninstall
+---------
+
+To disable this plugin run::
+
+    tutor plugins disable mfe
+    tutor local quickstart
+
+You will also have to manually remove a few waffle flags::
+
+    tutor local run lms ./manage.py lms waffle_delete --flags account.redirect_to_microfrontend
+    tutor local run lms ./manage.py lms waffle_delete --flags learner_profile.redirect_to_microfrontend
+
 License
 -------
 
