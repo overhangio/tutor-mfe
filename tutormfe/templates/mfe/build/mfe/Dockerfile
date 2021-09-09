@@ -34,7 +34,7 @@ RUN sh -c "set -a && source /openedx/env/production && npm run build"
 {% endfor %}
 
 ####### final production image with all static assets
-FROM docker.io/caddy:2.3.0-alpine
+FROM docker.io/caddy:2.4.3-alpine
 
 RUN mkdir -p /openedx/dist
 
