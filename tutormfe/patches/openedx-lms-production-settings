@@ -4,6 +4,9 @@ ACCOUNT_MICROFRONTEND_URL = "{% if ENABLE_HTTPS %}https://{% else %}http://{% en
 {% if MFE_GRADEBOOK_MFE_APP %}
 WRITABLE_GRADEBOOK_URL = "{% if ENABLE_HTTPS %}https://{% else %}http://{% endif %}{{ MFE_HOST }}/{{ MFE_GRADEBOOK_MFE_APP["name"] }}"
 {% endif %}
+{% if MFE_LEARNING_MFE_APP %}
+LEARNING_MICROFRONTEND_URL = "{% if ENABLE_HTTPS %}https://{% else %}http://{% endif %}{{ MFE_HOST }}/{{ MFE_LEARNING_MFE_APP["name"] }}"
+{% endif %}
 {% if MFE_PROFILE_MFE_APP %}
 PROFILE_MICROFRONTEND_URL = "{% if ENABLE_HTTPS %}https://{% else %}http://{% endif %}{{ MFE_HOST }}/{{ MFE_PROFILE_MFE_APP["name"] }}/u/"
 {% endif %}

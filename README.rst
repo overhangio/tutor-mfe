@@ -7,6 +7,7 @@ In addition, this plugin comes with a few MFEs which are enabled by default:
 
 - `Account <https://github.com/edx/frontend-app-account/>`__
 - `Gradebook <https://github.com/edx/frontend-app-gradebook/>`__
+- `Gradebook <https://github.com/edx/frontend-app-learning/>`__
 - `Profile <https://github.com/edx/frontend-app-profile/>`__
 
 Instructions for using each of these MFEs are given below.
@@ -41,6 +42,14 @@ Gradebook
     :alt: Gradebook MFE screenshot
 
 This instructor-only MFE is for viewing individual and aggregated grade results for a course. To access this MFE, go to a course 🡒 🡒 Instructor tab 🡒 Student Admin 🡒 View gradebook. The URL should be: ``http(s)://{{ MFE_HOST }}/gradebook/{{ course ID }}``. When running locally, the gradebook of the demo course is available at: http://apps.local.overhang.io/gradebook/course-v1:edX+DemoX+Demo_Course
+
+Learning
+~~~~~~~~
+
+.. image:: https://raw.githubusercontent.com/overhangio/tutor-mfe/master/screenshots/learning.png
+    :alt: Gradebook MFE screenshot
+
+The Learning MFE replaces the former courseware, which is the core part of the LMS where students follow courses.
 
 Profile
 ~~~~~~~~~
