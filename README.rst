@@ -47,7 +47,7 @@ Learning
 ~~~~~~~~
 
 .. image:: https://raw.githubusercontent.com/overhangio/tutor-mfe/master/screenshots/learning.png
-    :alt: Gradebook MFE screenshot
+    :alt: Learning MFE screenshot
 
 The Learning MFE replaces the former courseware, which is the core part of the LMS where students follow courses.
 
