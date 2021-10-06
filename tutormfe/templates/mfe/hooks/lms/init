@@ -11,3 +11,9 @@ site-configuration set ENABLE_PROFILE_MICROFRONTEND true
 site-configuration unset ENABLE_PROFILE_MICROFRONTEND
 ./manage.py lms waffle_delete --flags learner_profile.redirect_to_microfrontend
 {% endif %}
+
+{% if MFE_LEARNING_MFE_APP %}
+(./manage.py lms waffle_flag --list | grep courseware.courseware_mfe) || ./manage.py lms waffle_flag --create --everyone courseware.courseware_mfe
+{% else %}
+./manage.py lms waffle_delete --flags courseware.courseware_mfe
+{% endif %}
