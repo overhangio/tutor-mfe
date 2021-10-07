@@ -6,8 +6,10 @@
 
 {% if MFE_PROFILE_MFE_APP %}
 (./manage.py lms waffle_flag --list | grep learner_profile.redirect_to_microfrontend) || ./manage.py lms waffle_flag --create --everyone learner_profile.redirect_to_microfrontend
-site-configuration set ENABLE_PROFILE_MICROFRONTEND true
+site-configuration set --domain={{ LMS_HOST }} ENABLE_PROFILE_MICROFRONTEND true
+site-configuration set --domain={{ LMS_HOST }}:8000 ENABLE_PROFILE_MICROFRONTEND true
 {% else %}
-site-configuration unset ENABLE_PROFILE_MICROFRONTEND
+site-configuration unset --domain={{ LMS_HOST }} ENABLE_PROFILE_MICROFRONTEND
+site-configuration unset --domain={{ LMS_HOST }}:8000 ENABLE_PROFILE_MICROFRONTEND
 ./manage.py lms waffle_delete --flags learner_profile.redirect_to_microfrontend
 {% endif %}

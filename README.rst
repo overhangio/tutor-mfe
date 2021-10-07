@@ -100,6 +100,25 @@ The MFE plugin works a bit differently than other Tutor plugins. MFEs are static
 
 We consider that this situation is less than ideal. An improvement would be to self-host a Docker registry and an image-building pipeline on Kubernetes. If you are interested in such a solution, please let your voice be heard on the `Tutor community forums <https://discuss.overhang.io>`__.
 
+MFE development
+---------------
+
+Tutor makes it possible to run any MFE in development mode. For instance, to run the "profile" MFE::
+
+    tutor dev runserver profile
+
+Then, access http://apps.local.overhang.io:1995/profile/u/YOURUSERNAME
+
+To run your own fork of an MFE, start by copying the MFE repo on the host::
+
+    tutor dev bindmount profile /openedx/app
+
+Then, run a development server that bind-mounts the repo::
+
+    tutor dev runserver --volume=/openedx/app profile
+
+The changes you make to ``$(tutor config printroot)/volumes/app/`` will be automatically picked up and hot-reloaded by your development server.
+
 Uninstall
 ---------
 
