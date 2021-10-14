@@ -1,11 +1,10 @@
-FROM docker.io/node:12-alpine AS base
+FROM docker.io/node:12-bullseye-slim AS base
 
-RUN apk add --no-cache \
+RUN apt-get update && apt-get install -y \
     git \
     # npm package system dependencies
     autoconf \
     automake \
-    build-base \
     libpng-dev \
     pngquant
 
@@ -30,7 +29,7 @@ COPY ./env/production /openedx/env/production
 {% if "env" in app and "production" in app["env"] %}{% for key, value in app["env"]["production"].items() %}
 ENV {{ key }}={{ value }}
 {% endfor %}{% endif %}
-RUN sh -c "set -a && source /openedx/env/production && npm run build"
+RUN sh -c "set -a && . /openedx/env/production && npm run build"
 {% endfor %}
 
 ####### final production image with all static assets
