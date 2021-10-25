@@ -13,7 +13,7 @@ PROFILE_MICROFRONTEND_URL = "{% if ENABLE_HTTPS %}https://{% else %}http://{% en
 
 {% for app in iter_values_named(suffix="MFE_APP") %}
 # {{ app["name"] }} MFE
-CORS_ORIGIN_WHITELIST.append("{{ MFE_HOST }}:{{ app["port"] }}")
+CORS_ORIGIN_WHITELIST.append("http://{{ MFE_HOST }}:{{ app["port"] }}")
 LOGIN_REDIRECT_WHITELIST.append("{{ MFE_HOST }}:{{ app["port"] }}")
 CSRF_TRUSTED_ORIGINS.append("{{ MFE_HOST }}:{{ app["port"] }}")
 {% endfor %}
