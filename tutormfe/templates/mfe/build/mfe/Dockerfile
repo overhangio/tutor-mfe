@@ -1,7 +1,9 @@
 FROM docker.io/node:12-bullseye-slim AS base
 
 RUN apt update \
-    && apt install -y git
+  && apt install -y git \
+    # required for cwebp-bin
+    gcc git libgl1 libxi6 make
 
 RUN mkdir -p /openedx/app /openedx/env
 WORKDIR /openedx/app
