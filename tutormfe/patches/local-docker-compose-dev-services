@@ -12,14 +12,12 @@
     env_file:
         - ../plugins/mfe/build/mfe/env/production
         - ../plugins/mfe/build/mfe/env/development
-    {% if "env" in app %}
     environment:
         - "PORT={{ app['port'] }}"
-    {% if "production" in app["env"] %}{% for key, value in app["env"]["production"].items() %}
+        {%- for key, value in app.get("env", {}).get("production", {}).items() %}
         - "{{ key }}={{ value }}"
-    {% endfor %}{% endif %}
-    {% if "development" in app["env"] %}{% for key, value in app["env"]["development"].items() %}
+        {% endfor %}
+        {% for key, value in app.get("env", {}).get("development", {}).items() %}
         - "{{ key }}={{ value }}"
-    {% endfor %}{% endif %}
-    {% endif %}
+        {% endfor %}
 {% endfor %}
