@@ -9,10 +9,27 @@ RUN mkdir -p /openedx/app /openedx/env
 WORKDIR /openedx/app
 ENV PATH ./node_modules/.bin:${PATH}
 
+######## i18n strings
+FROM base AS i18n
+COPY ./i18n /openedx/i18n
+RUN chmod a+x /openedx/i18n/*.js
+RUN echo "copying i18n data" \
+  {%- for app in iter_values_named(suffix="MFE_APP") %}
+  && mkdir -p /openedx/i18n/{{ app["name"] }} \
+  {%- endfor %}
+  echo "done."
+
 {% for app in iter_values_named(suffix="MFE_APP") %}
 ######## {{ app["name"] }} (src)
 FROM base AS {{ app["name"] }}-src
 RUN git clone {{ app["repository"] }} --branch {{ app.get("version", MFE_COMMON_VERSION) }} --depth 1 .
+RUN stat /openedx/app/src/i18n/messages 2> /dev/null || (echo "missing messages folder" && mkdir -p /openedx/app/src/i18n/messages)
+######## {{ app["name"] }} (i18n)
+FROM base AS {{ app["name"] }}-i18n
+COPY --from={{ app["name"] }}-src /openedx/app/src/i18n/messages /openedx/app/src/i18n/messages
+COPY --from=i18n /openedx/i18n/{{ app["name"] }} /openedx/i18n/{{ app["name"] }}
+COPY --from=i18n /openedx/i18n/i18n-merge.js /openedx/i18n/i18n-merge.js
+RUN /openedx/i18n/i18n-merge.js /openedx/app/src/i18n/messages /openedx/i18n/{{ app["name"] }} /openedx/app/src/i18n/messages
 ######## {{ app["name"] }} (dev)
 FROM base AS {{ app["name"] }}-dev
 COPY --from={{ app["name"] }}-src /openedx/app/package.json /openedx/app/package.json
@@ -22,6 +39,7 @@ ARG NPM_REGISTRY=https://registry.npmjs.org/
 RUN npm install --no-audit --no-fund --registry=$NPM_REGISTRY && rm -rf ~/.npm
 {{ patch("mfe-dockerfile-post-npm-install") }}
 COPY --from={{ app["name"] }}-src /openedx/app /openedx/app
+COPY --from={{ app["name"] }}-i18n /openedx/app/src/i18n/messages /openedx/app/src/i18n/messages
 ENV PUBLIC_PATH='/{{ app["name"] }}/'
 EXPOSE {{ app['port'] }}
 CMD ["npm", "run", "start"]
