@@ -20,6 +20,8 @@ ARG NPM_REGISTRY=https://registry.npmjs.org/
 RUN npm install --verbose --registry=$NPM_REGISTRY
 {{ patch("mfe-dockerfile-post-npm-install") }}
 ENV PUBLIC_PATH='/{{ app["name"] }}/'
+EXPOSE {{ app['port'] }}
+CMD ["npm", "run", "start"]
 ######## {{ app["name"] }} (production)
 FROM {{ app["name"] }}-dev AS {{ app["name"] }}
 COPY ./env/production /openedx/env/production
