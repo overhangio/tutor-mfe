@@ -16,7 +16,9 @@ RUN mkdir -p /openedx/env
 FROM base AS {{ app["name"] }}-dev
 RUN git clone {{ app["repository"] }} --branch {{ app.get("version", MFE_COMMON_VERSION) }} --depth 1 .
 ARG NPM_REGISTRY=https://registry.npmjs.org/
+{{ patch("mfe-dockerfile-pre-npm-install") }}
 RUN npm install --verbose --registry=$NPM_REGISTRY
+{{ patch("mfe-dockerfile-post-npm-install") }}
 ENV PUBLIC_PATH='/{{ app["name"] }}/'
 ######## {{ app["name"] }} (production)
 FROM {{ app["name"] }}-dev AS {{ app["name"] }}
