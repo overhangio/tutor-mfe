@@ -99,13 +99,13 @@ This plugin makes it possible to change existing and add new translation strings
     mkdir account
     touch account/fr.json
 
-3. Add your entries to this file in JSON format, where the key is the string ID and the value is the actual string. For instance:
+3. Add your entries to this file in JSON format, where the key is the string ID and the value is the actual string. For instance::
 
     {
       "account.settings.section.account.information": "Information du compte POUAC"
     }
 
-4. Rebuild the MFE image and restart the MFE with:
+4. Rebuild the MFE image and restart the MFE with::
 
     tutor images build mfe
     tutor local start -d
