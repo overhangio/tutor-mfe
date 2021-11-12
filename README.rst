@@ -121,6 +121,27 @@ This plugin makes it possible to change existing and add new translation strings
 
 Your custom translation strings should now appear in your app.
 
+Customise MFEs Logos
+~~~~~~~~~~~~~~~~~~~~~~~~~
+
+To change the MFEs logos from the default to your own logos, override the corresponding settings in the MFEs environment using patches `mfe-env-production` and `mfe-env-development`. For example, using the following plugin:
+::
+
+    name: mfe_branding_plugin
+    version: 0.1.0
+    patches:
+    mfe-env-development: |
+        LOGO_URL=<URL>/logo.svg
+        LOGO_TRADEMARK_URL=<URL>/logo-trademark.svg
+        LOGO_WHITE_URL=<URL>/logo-white.svg
+        FAVICON_URL=<URL>/favicon.ico
+    mfe-env-production: |
+        LOGO_URL=<URL>/logo.svg
+        LOGO_TRADEMARK_URL=<URL>/logo-trademark.svg
+        LOGO_WHITE_URL=<URL>/logo-white.svg
+        FAVICON_URL=<URL>/favicon.ico
+
+
 Running MFEs on Kubernetes
 --------------------------
 
