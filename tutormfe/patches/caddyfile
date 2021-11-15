@@ -1,3 +1,7 @@
-{{ MFE_HOST }}{% if not ENABLE_HTTPS %}:80{% endif %} {
-    reverse_proxy nginx:80
+{{ MFE_HOST }}{$default_site-port} {
+    respond / 204
+    request_body {
+        max_size 2MB
+    }
+    import proxy "mfe:8002"
 }
