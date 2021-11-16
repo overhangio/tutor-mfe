@@ -17,7 +17,7 @@
         {%- for key, value in app.get("env", {}).get("production", {}).items() %}
         - "{{ key }}={{ value }}"
         {% endfor %}
-        {% for key, value in app.get("env", {}).get("development", {}).items() %}
+        {%- for key, value in app.get("env", {}).get("development", {}).items() %}
         - "{{ key }}={{ value }}"
-        {% endfor %}
+        {%- endfor %}
 {% endfor %}

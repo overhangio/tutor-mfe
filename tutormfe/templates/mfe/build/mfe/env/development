@@ -1,8 +1,8 @@
 DISCOVERY_API_BASE_URL='{% if DISCOVERY_HOST is defined %}http://{{ DISCOVERY_HOST }}:8381{% endif %}'
 LMS_BASE_URL='http://{{ LMS_HOST }}:8000'
 LOGIN_URL='http://{{ LMS_HOST }}:8000/login'
-LOGO_URL='http://{{ LMS_HOST }}:8000/static/images/logo.png'
-LOGO_TRADEMARK_URL='http://{{ LMS_HOST }}:8000/static/images/logo.png'
+LOGO_URL='http://{{ LMS_HOST }}:8000/theming/asset/images/logo.png'
+LOGO_TRADEMARK_URL='http://{{ LMS_HOST }}:8000/theming/asset/images/logo.png'
 LOGOUT_URL='http://{{ LMS_HOST }}:8000/logout'
 MARKETING_SITE_BASE_URL='http://{{ LMS_HOST }}:8000'
 NODE_ENV=development
