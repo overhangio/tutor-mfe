@@ -35,8 +35,13 @@ FROM base AS {{ app["name"] }}-dev
 COPY --from={{ app["name"] }}-src /openedx/app/package.json /openedx/app/package.json
 COPY --from={{ app["name"] }}-src /openedx/app/package-lock.json /openedx/app/package-lock.json
 ARG NPM_REGISTRY=https://registry.npmjs.org/
+# Install updated frontend-build to disable new relic, where possible
+# https://github.com/edx/frontend-build/pull/215
+# This low-tech (i.e: ugly), manual patch should be removed in later versions
+RUN sed -i "s/@edx\/frontend-build\": \"8.0.4\"/@edx\/frontend-build\": \"8.2.0\"/g" package.json
 {{ patch("mfe-dockerfile-pre-npm-install") }}
-RUN npm install --no-audit --no-fund --registry=$NPM_REGISTRY && rm -rf ~/.npm
+RUN npm install --no-audit --no-fund --registry=$NPM_REGISTRY \
+  && rm -rf ~/.npm
 {{ patch("mfe-dockerfile-post-npm-install") }}
 COPY --from={{ app["name"] }}-src /openedx/app /openedx/app
 COPY --from={{ app["name"] }}-i18n /openedx/app/src/i18n/messages /openedx/app/src/i18n/messages
@@ -48,7 +53,7 @@ FROM {{ app["name"] }}-dev AS {{ app["name"] }}
 COPY ./env/production /openedx/env/production
 RUN touch /openedx/env/production.override \
   {%- for key, value in app.get("env", {}).get("production", {}).items() %}
-  && echo "{{ key }}={{ value }}" >> /openedx/env/production.override \
+  && echo "{{ key }}='{{ value }}'" >> /openedx/env/production.override \
   {%- endfor %}
   && echo "done setting production overrides"
 RUN bash -c "set -a && source /openedx/env/production && source /openedx/env/production.override && npm run build"
