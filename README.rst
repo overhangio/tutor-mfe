@@ -7,7 +7,7 @@ In addition, this plugin comes with a few MFEs which are enabled by default:
 
 - `Account <https://github.com/edx/frontend-app-account/>`__
 - `Gradebook <https://github.com/edx/frontend-app-gradebook/>`__
-- `Gradebook <https://github.com/edx/frontend-app-learning/>`__
+- `Learning <https://github.com/edx/frontend-app-learning/>`__
 - `Profile <https://github.com/edx/frontend-app-profile/>`__
 
 Instructions for using each of these MFEs are given below.
