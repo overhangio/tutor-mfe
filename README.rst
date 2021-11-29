@@ -179,13 +179,16 @@ Uninstall
 To disable this plugin run::
 
     tutor plugins disable mfe
-    tutor local quickstart
 
 You will also have to manually remove a few waffle flags::
 
     tutor local run lms ./manage.py lms waffle_delete --flags account.redirect_to_microfrontend
     tutor local run lms ./manage.py lms waffle_delete --flags learner_profile.redirect_to_microfrontend
     tutor local run lms site-configuration unset ENABLE_PROFILE_MICROFRONTEND
+
+Finally, restart the platform with::
+
+    tutor local quickstart
 
 License
 -------
