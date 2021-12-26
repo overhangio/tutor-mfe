@@ -46,6 +46,9 @@ hooks = {
     "build-image": {
         "mfe": "{{ MFE_DOCKER_IMAGE }}",
     },
+    "remote-image": {
+        "mfe": "{{ MFE_DOCKER_IMAGE }}",
+    },
     "init": ["lms"],
 }
 
