@@ -56,7 +56,7 @@ RUN bash -c "set -a && source /openedx/env/production && source /openedx/env/pro
 {% endfor %}
 
 ####### final production image with all static assets
-FROM docker.io/caddy:2.4.3-alpine as production
+FROM {{ MFE_CADDY_DOCKER_IMAGE }} as production
 
 RUN mkdir -p /openedx/dist
 
