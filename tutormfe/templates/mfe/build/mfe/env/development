@@ -7,5 +7,6 @@ LOGOUT_URL='http://{{ LMS_HOST }}:8000/logout'
 MARKETING_SITE_BASE_URL='http://{{ LMS_HOST }}:8000'
 NODE_ENV=development
 REFRESH_ACCESS_TOKEN_ENDPOINT='http://{{ LMS_HOST }}:8000/login_refresh'
+STUDIO_BASE_URL='http://{{ CMS_HOST }}:8001'
 
 {{ patch("mfe-env-development") }}
