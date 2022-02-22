@@ -121,8 +121,8 @@ This plugin makes it possible to change existing and add new translation strings
 
 Your custom translation strings should now appear in your app.
 
-Customise MFEs Logos
-~~~~~~~~~~~~~~~~~~~~~~~~~
+Customising MFEs
+~~~~~~~~~~~~~~~~
 
 To change the MFEs logos from the default to your own logos, override the corresponding settings in the MFEs environment using patches `mfe-env-production` and `mfe-env-development`. For example, using the following plugin:
 ::
@@ -141,6 +141,39 @@ To change the MFEs logos from the default to your own logos, override the corres
         LOGO_WHITE_URL=<URL>/logo-white.svg
         FAVICON_URL=<URL>/favicon.ico
 
+To install custom components for the MFEs, such as the `header <https://github.com/openedx/frontend-component-header>`_ and `footer <https://github.com/openedx/frontend-component-footer>`_, override the components by adding a patch to ``mfe-dockerfile-post-npm-install`` in your plugin:
+::
+
+    patches:
+        ...
+        mfe-dockerfile-post-npm-install: |
+            # npm package
+            RUN npm install '@edx/frontend-component-header@npm:@edx/frontend-component-header-edx@latest'
+            # git repository
+            RUN npm install '@edx/frontend-component-footer@git+https://github.com/edx/frontend-component-header-edx.git'
+
+The same applies to installing a custom `brand <https://github.com/openedx/brand-openedx>`_ package:
+::
+
+    patches:
+        ...
+        mfe-dockerfile-post-npm-install: |
+            RUN npm install '@edx/brand@git+https://github.com/edx/brand-edx.org.git'
+
+
+Installing from a private npm registry
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+In case you need to install components from a private NPM registry, you can append the ``--registry`` option to your install statement or add a ``npm config set`` command to the plugin.
+In some cases, for example when using `GitLab's NPM package registry <https://docs.gitlab.com/ee/user/packages/npm_registry/>`_, you might also need to provide a token for your registry, which can be done with an additional ``npm config set`` command as well:
+::
+
+    patches:
+        ...
+        mfe-dockerfile-post-npm-install: |
+            RUN npm config set @foo:registry https://gitlab.example.com/api/v4/projects/<your_project_id>/packages/npm/
+            RUN npm config set '//gitlab.example.com/api/v4/projects/<your_project_id>/packages/npm/:_authToken' '<your_token>'
+            RUN npm install '@edx/frontend-component-header@npm:@foo/<your_frontend_component_header_name>@latest'
 
 Running MFEs on Kubernetes
 --------------------------
