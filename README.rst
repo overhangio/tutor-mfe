@@ -130,12 +130,12 @@ To change the MFEs logos from the default to your own logos, override the corres
     name: mfe_branding_plugin
     version: 0.1.0
     patches:
-    mfe-env-development: |
+      mfe-env-development: |
         LOGO_URL=<URL>/logo.svg
         LOGO_TRADEMARK_URL=<URL>/logo-trademark.svg
         LOGO_WHITE_URL=<URL>/logo-white.svg
         FAVICON_URL=<URL>/favicon.ico
-    mfe-env-production: |
+      mfe-env-production: |
         LOGO_URL=<URL>/logo.svg
         LOGO_TRADEMARK_URL=<URL>/logo-trademark.svg
         LOGO_WHITE_URL=<URL>/logo-white.svg
