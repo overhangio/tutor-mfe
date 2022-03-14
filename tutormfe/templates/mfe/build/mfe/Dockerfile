@@ -3,7 +3,11 @@ FROM docker.io/node:12-bullseye-slim AS base
 RUN apt update \
   && apt install -y git \
     # required for cwebp-bin
-    gcc git libgl1 libxi6 make
+    gcc git libgl1 libxi6 make \
+    # additionally required for gifsicle, mozjpeg, and optipng (on arm)
+    autoconf libtool pkg-config zlib1g-dev \
+    # additionally required for node-sass (on arm)
+    python g++
 
 RUN mkdir -p /openedx/app /openedx/env
 WORKDIR /openedx/app
@@ -32,10 +36,15 @@ COPY --from=i18n /openedx/i18n/i18n-merge.js /openedx/i18n/i18n-merge.js
 RUN /openedx/i18n/i18n-merge.js /openedx/app/src/i18n/messages /openedx/i18n/{{ app["name"] }} /openedx/app/src/i18n/messages
 ######## {{ app["name"] }} (dev)
 FROM base AS {{ app["name"] }}-dev
+
 COPY --from={{ app["name"] }}-src /openedx/app/package.json /openedx/app/package.json
 COPY --from={{ app["name"] }}-src /openedx/app/package-lock.json /openedx/app/package-lock.json
 ARG NPM_REGISTRY=https://registry.npmjs.org/
 {{ patch("mfe-dockerfile-pre-npm-install") }}
+{# Required for building optipng on M1 #}
+ENV CPPFLAGS=-DPNG_ARM_NEON_OPT=0
+{# We define this environment variable to bypass an issue with the installation of pact https://github.com/pact-foundation/pact-js-core/issues/264 #}
+ENV PACT_SKIP_BINARY_INSTALL=true
 RUN npm install --no-audit --no-fund --registry=$NPM_REGISTRY \
   && rm -rf ~/.npm
 {{ patch("mfe-dockerfile-post-npm-install") }}
