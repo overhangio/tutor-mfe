@@ -1,11 +1,10 @@
 from glob import glob
 import os
+import pkg_resources
+
+from tutor import hooks
 
 from .__about__ import __version__
-
-HERE = os.path.abspath(os.path.dirname(__file__))
-
-templates = os.path.join(HERE, "templates")
 
 config = {
     "defaults": {
@@ -43,22 +42,69 @@ config = {
     },
 }
 
-hooks = {
-    "build-image": {
-        "mfe": "{{ MFE_DOCKER_IMAGE }}",
-    },
-    "remote-image": {
-        "mfe": "{{ MFE_DOCKER_IMAGE }}",
-    },
-    "init": ["lms"],
-}
+hooks.Filters.COMMANDS_INIT.add_item(
+    (
+        "lms",
+        ("mfe", "tasks", "lms", "init"),
+    )
+)
+hooks.Filters.IMAGES_BUILD.add_item(
+    (
+        "mfe",
+        ("plugins", "mfe", "build", "mfe"),
+        "{{ MFE_DOCKER_IMAGE }}",
+        (),
+    )
+)
 
 
-def patches():
-    all_patches = {}
-    for path in glob(os.path.join(HERE, "patches", "*")):
-        with open(path) as patch_file:
-            name = os.path.basename(path)
-            content = patch_file.read()
-            all_patches[name] = content
-    return all_patches
+@hooks.Filters.IMAGES_PULL.add()
+@hooks.Filters.IMAGES_PUSH.add()
+def _add_remote_mfe_image_iff_customized(images, user_config):
+    """
+    Register MFE image for pushing & pulling if and only if it has
+    been set to something other than the default.
+
+    This is work-around to an upstream issue with MFE config. Briefly:
+    User config is baked into MFE builds, so Tutor cannot host a generic
+    pre-built MFE image. Howevever, individual Tutor users may want/need to
+    build and host their own MFE image. So, as a compromise, we tell Tutor
+    to push/pull the MFE image if the user has customized it to anything
+    other than the default image URL.
+    """
+    image_tag = user_config["MFE_DOCKER_IMAGE"]
+    if not image_tag.startswith("docker.io/overhangio/openedx-mfe:"):
+        # Image has been customized. Add to list for pulling/pushing.
+        images.append(("mfe", image_tag))
+    return images
+
+####### Boilerplate code
+# Add the "templates" folder as a template root
+hooks.Filters.ENV_TEMPLATE_ROOTS.add_item(
+    pkg_resources.resource_filename("tutormfe", "templates")
+)
+# Render the "build" and "apps" folders
+hooks.Filters.ENV_TEMPLATE_TARGETS.add_items(
+    [
+        ("mfe/build", "plugins"),
+        ("mfe/apps", "plugins"),
+    ],
+)
+# Load patches from files
+for path in glob(
+    os.path.join(
+        pkg_resources.resource_filename("tutormfe", "patches"),
+        "*",
+    )
+):
+    with open(path, encoding="utf-8") as patch_file:
+        hooks.Filters.ENV_PATCHES.add_item((os.path.basename(path), patch_file.read()))
+
+# Add configuration entries
+hooks.Filters.CONFIG_DEFAULTS.add_items(
+    [(f"MFE_{key}", value) for key, value in config.get("defaults", {}).items()]
+)
+hooks.Filters.CONFIG_UNIQUE.add_items(
+    [(f"MFE_{key}", value) for key, value in config.get("unique", {}).items()]
+)
+hooks.Filters.CONFIG_OVERRIDES.add_items(list(config.get("overrides", {}).items()))
