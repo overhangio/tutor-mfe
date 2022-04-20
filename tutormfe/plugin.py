@@ -63,6 +63,25 @@ tutor_hooks.Filters.IMAGES_BUILD.add_item(
 )
 
 
+@tutor_hooks.Filters.COMPOSE_MOUNTS.add()
+def _mount_frontend_apps(volumes, name):
+    """
+    If the user mounts any repo named frontend-app-APPNAME, then make sure
+    it's available in the APPNAME service container. This is only applicable
+    in dev mode, because in production, all MFEs are built and hosted on the
+    singular 'mfe' service container.
+    """
+    prefix = "frontend-app-"
+    if name.startswith(prefix):
+        # Assumption:
+        # For each repo named frontend-app-APPNAME, there is an associated
+        # docker-compose service named APPNAME. If this assumption is broken,
+        # then Tutor will try to mount the repo in a service that doesn't exist.
+        app_name = name.split(prefix)[1]
+        volumes += [(app_name, "/openedx/app")]
+    return volumes
+
+
 @tutor_hooks.Filters.IMAGES_PULL.add()
 @tutor_hooks.Filters.IMAGES_PUSH.add()
 def _add_remote_mfe_image_iff_customized(images, user_config):
