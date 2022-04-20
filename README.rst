@@ -192,19 +192,37 @@ MFE development
 
 Tutor makes it possible to run any MFE in development mode. For instance, to run the "profile" MFE::
 
-    tutor dev runserver profile
+    tutor dev start profile
 
 Then, access http://apps.local.overhang.io:1995/profile/u/YOURUSERNAME
 
-To run your own fork of an MFE, start by copying the MFE repo on the host::
+You can also bind-mount your own fork of an MFE. For example::
 
-    tutor dev bindmount profile /openedx/app
+    cd /path/to/frontend-app-profile
+    npm install  # Ensure NPM requirements are installed into your fork.
+    tutor dev start --mount=. profile
 
-Then, run a development server that bind-mounts the repo::
+The changes you make to your fork will be automatically picked up and hot-reloaded by your development server.
 
-    tutor dev runserver --volume=/openedx/app profile
+This works for custom MFEs, as well. For example, if you added your own MFE named frontend-app-myapp, then you can bind-mount it like so::
 
-The changes you make to ``$(tutor config printroot)/volumes/app/`` will be automatically picked up and hot-reloaded by your development server.
+    cd /path/to/frontend-app-myapp
+    npm install
+    tutor dev start --mount=. myapp
+
+However, if you try to bind-mount an unknown MFE, you will see a Docker Compose error such as::
+
+  ERROR: The Compose file is invalid because:
+  Service myapp has neither an image nor a build context specified. At least one must be provided.
+
+Please note that bind-mounting a fork is only available for development (``tutor dev ...``), since production MFEs are compiled and served out of a single container. If you want to use a fork of an MFE in production, then you will need to set the repository URL in ``$(tutor config printroot)/config.yml``::
+
+    MFE_PROFILE_MFE_APP
+        name: profile
+        repository: "https://github.com/YOUR_FORK_ORGANIZATION/frontend-app-profile"
+        port: 1995
+
+and then rebuild the MFE container image with ``tutor images build mfe``.
 
 Uninstall
 ---------
