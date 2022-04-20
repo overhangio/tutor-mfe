@@ -7,6 +7,8 @@
         target: {{ app["name"] }}-dev
     ports:
         - "127.0.0.1:{{ app["port"] }}:{{ app["port"] }}"
+    stdin_open: true
+    tty: true
     volumes:
         - ../plugins/mfe/apps/mfe/webpack.dev.config.js:/openedx/app/webpack.dev.config.js:ro
     env_file:
