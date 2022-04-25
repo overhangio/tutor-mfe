@@ -2,7 +2,7 @@ from glob import glob
 import os
 import pkg_resources
 
-from tutor import hooks
+from tutor import hooks as tutor_hooks
 
 from .__about__ import __version__
 
@@ -42,13 +42,13 @@ config = {
     },
 }
 
-hooks.Filters.COMMANDS_INIT.add_item(
+tutor_hooks.Filters.COMMANDS_INIT.add_item(
     (
         "lms",
         ("mfe", "tasks", "lms", "init"),
     )
 )
-hooks.Filters.IMAGES_BUILD.add_item(
+tutor_hooks.Filters.IMAGES_BUILD.add_item(
     (
         "mfe",
         ("plugins", "mfe", "build", "mfe"),
@@ -58,8 +58,8 @@ hooks.Filters.IMAGES_BUILD.add_item(
 )
 
 
-@hooks.Filters.IMAGES_PULL.add()
-@hooks.Filters.IMAGES_PUSH.add()
+@tutor_hooks.Filters.IMAGES_PULL.add()
+@tutor_hooks.Filters.IMAGES_PUSH.add()
 def _add_remote_mfe_image_iff_customized(images, user_config):
     """
     Register MFE image for pushing & pulling if and only if it has
@@ -80,11 +80,11 @@ def _add_remote_mfe_image_iff_customized(images, user_config):
 
 ####### Boilerplate code
 # Add the "templates" folder as a template root
-hooks.Filters.ENV_TEMPLATE_ROOTS.add_item(
+tutor_hooks.Filters.ENV_TEMPLATE_ROOTS.add_item(
     pkg_resources.resource_filename("tutormfe", "templates")
 )
 # Render the "build" and "apps" folders
-hooks.Filters.ENV_TEMPLATE_TARGETS.add_items(
+tutor_hooks.Filters.ENV_TEMPLATE_TARGETS.add_items(
     [
         ("mfe/build", "plugins"),
         ("mfe/apps", "plugins"),
@@ -98,13 +98,13 @@ for path in glob(
     )
 ):
     with open(path, encoding="utf-8") as patch_file:
-        hooks.Filters.ENV_PATCHES.add_item((os.path.basename(path), patch_file.read()))
+        tutor_hooks.Filters.ENV_PATCHES.add_item((os.path.basename(path), patch_file.read()))
 
 # Add configuration entries
-hooks.Filters.CONFIG_DEFAULTS.add_items(
+tutor_hooks.Filters.CONFIG_DEFAULTS.add_items(
     [(f"MFE_{key}", value) for key, value in config.get("defaults", {}).items()]
 )
-hooks.Filters.CONFIG_UNIQUE.add_items(
+tutor_hooks.Filters.CONFIG_UNIQUE.add_items(
     [(f"MFE_{key}", value) for key, value in config.get("unique", {}).items()]
 )
-hooks.Filters.CONFIG_OVERRIDES.add_items(list(config.get("overrides", {}).items()))
+tutor_hooks.Filters.CONFIG_OVERRIDES.add_items(list(config.get("overrides", {}).items()))
