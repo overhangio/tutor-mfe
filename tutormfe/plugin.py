@@ -38,6 +38,11 @@ config = {
             "name": "profile",
             "repository": "https://github.com/edx/frontend-app-profile",
             "port": 1995,
+             "env": {
+                "production": {
+                    "ENABLE_LEARNER_RECORD_MFE": "true",
+                },
+            },
         },
     },
 }
