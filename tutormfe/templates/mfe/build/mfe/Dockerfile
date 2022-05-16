@@ -45,7 +45,7 @@ ARG NPM_REGISTRY=https://registry.npmjs.org/
 ENV CPPFLAGS=-DPNG_ARM_NEON_OPT=0
 {# We define this environment variable to bypass an issue with the installation of pact https://github.com/pact-foundation/pact-js-core/issues/264 #}
 ENV PACT_SKIP_BINARY_INSTALL=true
-RUN npm install --no-audit --no-fund --registry=$NPM_REGISTRY \
+RUN npm clean-install --no-audit --no-fund --registry=$NPM_REGISTRY \
   && rm -rf ~/.npm
 {{ patch("mfe-dockerfile-post-npm-install") }}
 COPY --from={{ app["name"] }}-src /openedx/app /openedx/app
