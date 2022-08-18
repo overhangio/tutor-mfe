@@ -53,6 +53,11 @@ COPY --from={{ app["name"] }}-i18n /openedx/app/src/i18n/messages /openedx/app/s
 ENV PUBLIC_PATH='/{{ app["name"] }}/'
 EXPOSE {{ app['port'] }}
 CMD ["npm", "run", "start"]
+
+{% endfor %}
+
+{% for app in iter_values_named(suffix="MFE_APP") %}
+
 ######## {{ app["name"] }} (production)
 FROM {{ app["name"] }}-dev AS {{ app["name"] }}
 COPY ./env/production /openedx/env/production
