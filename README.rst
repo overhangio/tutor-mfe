@@ -25,7 +25,7 @@ Usage
 To enable this plugin, run::
 
     tutor plugins enable mfe
-    tutor local quickstart
+    tutor local launch 
 
 When running the plugin in production, it is recommended that you set up a catch-all CNAME for subdomains at the DNS provider: see the `Configuring DNS Records <https://docs.tutor.overhang.io/install.html#configuring-dns-records>`__ section in the Tutor documentation for more details.  This way, the plugin will work out of the box with no additional configuration.  Which is to say, if your ``LMS_HOST`` is set to `myopenedx.com` the MFEs this plugin provides will be accessible under `apps.myopenedx.com` by default.
 
@@ -246,7 +246,7 @@ You will also have to manually remove a few waffle flags::
 
 Finally, restart the platform with::
 
-    tutor local quickstart
+    tutor local launch 
 
 Troubleshooting
 ---------------
