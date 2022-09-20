@@ -25,7 +25,7 @@ Usage
 ::
 
     tutor plugins enable mfe
-    tutor local quickstart
+    tutor local launch 
 
 Account
 ~~~~~~~
@@ -239,7 +239,7 @@ You will also have to manually remove a few waffle flags::
 
 Finally, restart the platform with::
 
-    tutor local quickstart
+    tutor local launch 
 
 License
 -------
