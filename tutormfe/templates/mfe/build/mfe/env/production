@@ -19,7 +19,7 @@ NODE_ENV=production
 PUBLISHER_BASE_URL=
 REFRESH_ACCESS_TOKEN_ENDPOINT={% if ENABLE_HTTPS %}https{% else %}http{% endif %}://{{ LMS_HOST }}/login_refresh
 SEGMENT_KEY=
-SITE_NAME={{ PLATFORM_NAME|replace("'", "'\\''")|replace(" ", "\ ") }}
+SITE_NAME="{{ PLATFORM_NAME }}"
 STUDIO_BASE_URL={{ "https" if ENABLE_HTTPS else "http" }}://{{ CMS_HOST }}
 USER_INFO_COOKIE_NAME=user-info
 
