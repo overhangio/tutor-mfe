@@ -111,7 +111,7 @@ This plugin makes it possible to change existing and add new translation strings
 3. Add your entries to this file in JSON format, where the key is the string ID and the value is the actual string. For instance::
 
     {
-      "account.settings.section.account.information": "Information du compte POUAC"
+      "account.settings.section.account.information": "Information du compte"
     }
 
 4. Rebuild the MFE image and restart the MFE with::
