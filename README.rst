@@ -9,6 +9,7 @@ In addition, this plugin comes with a few MFEs which are enabled by default:
 - `Gradebook <https://github.com/edx/frontend-app-gradebook/>`__
 - `Learning <https://github.com/edx/frontend-app-learning/>`__
 - `Profile <https://github.com/edx/frontend-app-profile/>`__
+- `Learner Records <https://github.com/edx/frontend-app-learner-record/>`__
 
 Instructions for using each of these MFEs are given below.
 
