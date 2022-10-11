@@ -44,6 +44,17 @@ config = {
                 },
             },
         },
+        "RECORDS_MFE_APP": {
+            "name": "records",
+            "repository": "https://github.com/openedx/frontend-app-learner-record",
+            "port": 1990,
+            "env": {
+                "production": {
+                    "SUPPORT_URL_LEARNER_RECORDS":"",
+                    "USE_LR_MFE": "",
+                },
+            },
+        },
     },
 }
 
