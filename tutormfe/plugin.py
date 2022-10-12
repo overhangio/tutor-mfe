@@ -3,6 +3,7 @@ import os
 import pkg_resources
 
 from tutor import hooks as tutor_hooks
+from tutor.hooks import priorities
 
 from .__about__ import __version__
 
@@ -15,34 +16,23 @@ config = {
         "CADDY_DOCKER_IMAGE": "{{ DOCKER_IMAGE_CADDY }}",
         "ACCOUNT_MFE_APP": {
             "name": "account",
-            "repository": "https://github.com/edx/frontend-app-account",
+            "repository": "https://github.com/openedx/frontend-app-account",
             "port": 1997,
-            "env": {
-                "production": {
-                    "COACHING_ENABLED": "",
-                    "ENABLE_DEMOGRAPHICS_COLLECTION": "",
-                },
-            },
         },
         "GRADEBOOK_MFE_APP": {
             "name": "gradebook",
-            "repository": "https://github.com/edx/frontend-app-gradebook",
+            "repository": "https://github.com/openedx/frontend-app-gradebook",
             "port": 1994,
         },
         "LEARNING_MFE_APP": {
             "name": "learning",
-            "repository": "https://github.com/edx/frontend-app-learning",
+            "repository": "https://github.com/openedx/frontend-app-learning",
             "port": 2000,
         },
         "PROFILE_MFE_APP": {
             "name": "profile",
-            "repository": "https://github.com/edx/frontend-app-profile",
+            "repository": "https://github.com/openedx/frontend-app-profile",
             "port": 1995,
-             "env": {
-                "production": {
-                    "ENABLE_LEARNER_RECORD_MFE": "true",
-                },
-            },
         },
     },
 }
@@ -61,6 +51,15 @@ tutor_hooks.Filters.IMAGES_BUILD.add_item(
         (),
     )
 )
+
+tutor_hooks.Filters.IMAGES_PULL.add_item((
+    "mfe",
+    "{{ MFE_DOCKER_IMAGE }}",
+))
+tutor_hooks.Filters.IMAGES_PUSH.add_item((
+    "mfe",
+    "{{ MFE_DOCKER_IMAGE }}",
+))
 
 
 @tutor_hooks.Filters.COMPOSE_MOUNTS.add()
@@ -82,27 +81,7 @@ def _mount_frontend_apps(volumes, name):
     return volumes
 
 
-@tutor_hooks.Filters.IMAGES_PULL.add()
-@tutor_hooks.Filters.IMAGES_PUSH.add()
-def _add_remote_mfe_image_iff_customized(images, user_config):
-    """
-    Register MFE image for pushing & pulling if and only if it has
-    been set to something other than the default.
-
-    This is work-around to an upstream issue with MFE config. Briefly:
-    User config is baked into MFE builds, so Tutor cannot host a generic
-    pre-built MFE image. Howevever, individual Tutor users may want/need to
-    build and host their own MFE image. So, as a compromise, we tell Tutor
-    to push/pull the MFE image if the user has customized it to anything
-    other than the default image URL.
-    """
-    image_tag = user_config["MFE_DOCKER_IMAGE"]
-    if not image_tag.startswith("docker.io/overhangio/openedx-mfe:"):
-        # Image has been customized. Add to list for pulling/pushing.
-        images.append(("mfe", image_tag))
-    return images
-
-####### Boilerplate code
+# Boilerplate code
 # Add the "templates" folder as a template root
 tutor_hooks.Filters.ENV_TEMPLATE_ROOTS.add_item(
     pkg_resources.resource_filename("tutormfe", "templates")
@@ -122,7 +101,13 @@ for path in glob(
     )
 ):
     with open(path, encoding="utf-8") as patch_file:
-        tutor_hooks.Filters.ENV_PATCHES.add_item((os.path.basename(path), patch_file.read()))
+        # Here we force tutor-mfe lms patches to be loaded first, thus ensuring when opreators override
+        # MFE_CONFIG and/or MFE_CONFIG_OVERRIDES, their patches will be loaded after this plugin's
+        patch_name = os.path.basename(path)
+        priority = priorities.HIGH if patch_name in \
+            ['openedx-lms-production-settings', 'openedx-lms-development-settings'] \
+            else priorities.DEFAULT
+        tutor_hooks.Filters.ENV_PATCHES.add_item((patch_name, patch_file.read()), priority=priority)
 
 # Add configuration entries
 tutor_hooks.Filters.CONFIG_DEFAULTS.add_items(

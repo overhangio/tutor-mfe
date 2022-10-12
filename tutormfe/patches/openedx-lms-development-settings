@@ -17,3 +17,28 @@ CORS_ORIGIN_WHITELIST.append("http://{{ MFE_HOST }}:{{ app["port"] }}")
 LOGIN_REDIRECT_WHITELIST.append("{{ MFE_HOST }}:{{ app["port"] }}")
 CSRF_TRUSTED_ORIGINS.append("{{ MFE_HOST }}:{{ app["port"] }}")
 {% endfor %}
+
+# Start of Dynamic config API settings
+
+ENABLE_MFE_CONFIG_API = True
+
+MFE_CONFIG = {
+    "BASE_URL": "{{ MFE_HOST }}",
+    "CREDENTIALS_BASE_URL": "/csrf/api/v1/token",
+    "DISCOVERY_API_BASE_URL": "{% if DISCOVERY_HOST is defined %}http://{{ DISCOVERY_HOST }}:8381{% endif %}",
+    "FAVICON_URL": "http://{{ LMS_HOST }}/favicon.ico",
+    "LANGUAGE_PREFERENCE_COOKIE_NAME": "openedx-language-preference",
+    "LMS_BASE_URL": "http://{{ LMS_HOST }}:8000",
+    "LOGIN_URL": "http://{{ LMS_HOST }}:8000/login",
+    "LOGO_URL": "http://{{ LMS_HOST }}:8000/theming/asset/images/logo.png",
+    "LOGO_TRADEMARK_URL": "http://{{ LMS_HOST }}:8000/theming/asset/images/logo.png",
+    "LOGOUT_URL": "http://{{ LMS_HOST }}:8000/logout",
+    "MARKETING_SITE_BASE_URL": "http://{{ LMS_HOST }}:8000",
+    "REFRESH_ACCESS_TOKEN_ENDPOINT": "http://{{ LMS_HOST }}:8000/login_refresh",
+    "SITE_NAME": "{{ PLATFORM_NAME }}",
+    "STUDIO_BASE_URL": "http://{{ CMS_HOST }}:8001",
+    "USER_INFO_COOKIE_NAME": "user-info",
+    "ACCESS_TOKEN_COOKIE_NAME": "edx-jwt-cookie-header-payload",
+}
+
+# Ends Dynamic config API settings

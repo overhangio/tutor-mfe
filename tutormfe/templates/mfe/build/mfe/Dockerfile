@@ -51,43 +51,26 @@ RUN npm clean-install --no-audit --no-fund --registry=$NPM_REGISTRY \
 {{ patch("mfe-dockerfile-post-npm-install") }}
 COPY --from={{ app["name"] }}-src /openedx/app /openedx/app
 COPY --from={{ app["name"] }}-i18n /openedx/app/src/i18n/messages /openedx/app/src/i18n/messages
-ENV PUBLIC_PATH='/{{ app["name"] }}/'
 EXPOSE {{ app['port'] }}
 
-COPY ./env/production /openedx/env/production
-{%- set overrides = app.get("env", {}).get("production", {}) %}
-{%- if overrides %}
-RUN echo "setting production overrides..." \
-  {%- for key, value in app.get("env", {}).get("production", {}).items() %}
-  && echo "{{ key }}='{{ value }}'" >> /openedx/env/production \
-  {%- endfor %}
-  && echo "done setting production overrides"
-{%- endif %}
+# configuration needed at build time 
+ENV APP_ID={{ app["name"] }}
+ENV PUBLIC_PATH='/{{ app["name"] }}/'
+ENV MFE_CONFIG_API_URL=/api/mfe_config/v1
+ARG ENABLE_NEW_RELIC=false
 
 ######## {{ app["name"] }} (dev)
 FROM {{ app["name"] }}-common AS {{ app["name"] }}-dev
-COPY ./env/development /openedx/env/development
-{%- set overrides = app.get("env", {}).get("development", {}) %}
-{%- if overrides %}
-RUN echo "setting development overrides..." \
-  {%- for key, value in overrides.items() %}
-  && echo "{{ key }}='{{ value }}'" >> /openedx/env/development \
-  {%- endfor %}
-  && echo "done setting development overrides"
-{%- endif %}
-CMD ["/bin/bash", "-c", "set -a && \
-  source /openedx/env/production && \
-  source /openedx/env/development && \
-  npm run start --- --config ./webpack.dev-tutor.config.js"]
+ENV NODE_ENV=development
+CMD ["/bin/bash", "-c", "npm run start --- --config ./webpack.dev-tutor.config.js"]
 {% endfor %}
 
 # Production images are last to accelerate dev image building
 {%- for app in iter_values_named(suffix="MFE_APP") %}
 ######## {{ app["name"] }} (production)
 FROM {{ app["name"] }}-common AS {{ app["name"] }}-prod
-RUN bash -c "set -a && \
-  source /openedx/env/production && \
-  npm run build"
+ENV NODE_ENV=production
+RUN npm run build
 {% endfor %}
 
 ####### final production image with all static assets
