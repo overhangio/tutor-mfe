@@ -3,5 +3,6 @@
     request_body {
         max_size 2MB
     }
+    encode gzip
     import proxy "mfe:8002"
 }
