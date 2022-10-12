@@ -3,5 +3,6 @@
     request_body {
         max_size 2MB
     }
+    reverse_proxy /api/mfe_config/v1* lms:8000
     import proxy "mfe:8002"
 }

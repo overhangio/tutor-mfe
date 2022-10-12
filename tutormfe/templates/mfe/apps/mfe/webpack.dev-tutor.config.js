@@ -14,6 +14,9 @@ module.exports = merge(baseDevConfig, {
     // We will have to make changes to thix config in later releases of webpack dev devServer
     // https://github.com/webpack/webpack-dev-server/blob/master/migration-v4.md
     allowedHosts: 'all',
+    proxy: {
+      '/api/mfe_config/v1' : 'http://{{ LMS_HOST }}:8000',
+    }
   },
 })
 
