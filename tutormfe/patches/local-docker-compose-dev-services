@@ -6,7 +6,7 @@
         context: ../plugins/mfe/build/mfe/
         target: {{ app["name"] }}-dev
     ports:
-        - "127.0.0.1:{{ app["port"] }}:{{ app["port"] }}"
+        - "{{ app["port"] }}:{{ app["port"] }}"
     stdin_open: true
     tty: true
     volumes:
