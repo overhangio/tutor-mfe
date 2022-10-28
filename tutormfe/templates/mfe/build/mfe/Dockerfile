@@ -54,7 +54,7 @@ COPY --from={{ app["name"] }}-src /openedx/app /openedx/app
 COPY --from={{ app["name"] }}-i18n /openedx/app/src/i18n/messages /openedx/app/src/i18n/messages
 ENV PUBLIC_PATH='/{{ app["name"] }}/'
 EXPOSE {{ app['port'] }}
-CMD ["npm", "run", "start"]
+CMD ["npm", "run", "start", "---", "--config", "./webpack.dev-tutor.config.js"]
 
 {% endfor %}
 
