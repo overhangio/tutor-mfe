@@ -41,7 +41,7 @@ RUN /openedx/i18n/i18n-merge.js /openedx/app/src/i18n/messages /openedx/i18n/{{ 
 FROM base AS {{ app["name"] }}-dev
 COPY --from={{ app["name"] }}-src /openedx/app/package.json /openedx/app/package.json
 COPY --from={{ app["name"] }}-src /openedx/app/package-lock.json /openedx/app/package-lock.json
-ARG NPM_REGISTRY=https://registry.npmjs.org/
+ARG NPM_REGISTRY={{ NPM_REGISTRY }}
 {{ patch("mfe-dockerfile-pre-npm-install") }}
 {# Required for building optipng on M1 #}
 ENV CPPFLAGS=-DPNG_ARM_NEON_OPT=0
