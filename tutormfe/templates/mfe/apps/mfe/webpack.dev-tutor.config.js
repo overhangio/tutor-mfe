@@ -1,6 +1,11 @@
 const { merge } = require('webpack-merge');
+const fs = require('fs');
 
-const baseDevConfig = require('@edx/frontend-build/config/webpack.dev.config.js');
+const baseDevConfig = (
+  fs.existsSync('./webpack.dev.config.js')
+    ? require('./webpack.dev.config.js')
+    : require('@edx/frontend-build/config/webpack.dev.config.js')
+);
 
 module.exports = merge(baseDevConfig, {
   // This configuration needs to be defined here, because CLI
