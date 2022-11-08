@@ -28,9 +28,12 @@ setup(
     project_urls={
         "Code": "https://github.com/overhangio/tutor-mfe",
         "Issue tracker": "https://github.com/overhangio/tutor-mfe/issues",
+        "Community": "https://discuss.openedx.org/tag/tutor",
     },
     license="AGPLv3",
     author="Overhang.IO",
+    maintainer="tCRIL",
+    maintainer_email="adolfo@tcril.org",
     description="mfe plugin for Tutor",
     long_description=load_readme(),
     long_description_content_type="text/x-rst",

@@ -22,10 +22,17 @@ Installation
 Usage
 -----
 
-::
+To enable this plugin, run::
 
     tutor plugins enable mfe
     tutor local launch 
+
+When running the plugin in production, it is recommended that you set up a catch-all CNAME for subdomains at the DNS provider: see the `Configuring DNS Records <https://docs.tutor.overhang.io/install.html#configuring-dns-records>`__ section in the Tutor documentation for more details.  This way, the plugin will work out of the box with no additional configuration.  Which is to say, if your ``LMS_HOST`` is set to `myopenedx.com` the MFEs this plugin provides will be accessible under `apps.myopenedx.com` by default.
+
+To check what the current value of `MFE_HOST` is actually set to, run the following::
+
+    tutor config printvalue MFE_HOST
+
 
 Account
 ~~~~~~~
@@ -240,6 +247,11 @@ You will also have to manually remove a few waffle flags::
 Finally, restart the platform with::
 
     tutor local launch 
+
+Troubleshooting
+---------------
+
+This Tutor plugin is maintained by Adolfo Brandes from `tCRIL <https://openedx.org>`__. Community support is available from the official `Open edX forum <https://discuss.openedx.org>`__. Do you need help with this plugin? See the `troubleshooting <https://docs.tutor.overhang.io/troubleshooting.html>`__ section from the Tutor documentation.
 
 License
 -------
