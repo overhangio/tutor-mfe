@@ -5,11 +5,3 @@
     }
     import proxy "mfe:8002"
 }
-
-amfen.youfinance.vn{$default_site_port} {
-    respond / 204
-    request_body {
-        max_size 2MB
-    }
-    import proxy "mfe:8002"
-}
