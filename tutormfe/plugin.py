@@ -52,6 +52,7 @@ config = {
                 "production": {
                     "DISABLE_ENTERPRISE_LOGIN": "true",
                 },
+            }
         },
     },
 }
