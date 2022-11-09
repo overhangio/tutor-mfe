@@ -51,6 +51,9 @@ config = {
             "env": {
                 "production": {
                     "DISABLE_ENTERPRISE_LOGIN": "true",
+                    "LOGO_URL": "https://dmt-statics.s3.ap-southeast-1.amazonaws.com/images/GoAmazing_Logo.png",
+                    "LOGO_WHITE_URL": "https://dmt-statics.s3.ap-southeast-1.amazonaws.com/images/GoAmazing_Logo.png",
+                    "ALLOW_PUBLIC_ACCOUNT_CREATION": false
                 },
             }
         },
