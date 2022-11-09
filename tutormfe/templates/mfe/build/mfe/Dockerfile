@@ -3,7 +3,7 @@ FROM docker.io/node:16.14-bullseye-slim AS base
 RUN apt update \
   && apt install -y git \
     # required for cwebp-bin
-    gcc git libgl1 libxi6 make \
+    gcc libgl1 libxi6 make \
     # additionally required for gifsicle, mozjpeg, and optipng (on arm)
     autoconf libtool pkg-config zlib1g-dev \
     # additionally required for node-sass (on arm)
@@ -52,8 +52,7 @@ RUN npm clean-install --no-audit --no-fund --registry=$NPM_REGISTRY \
 {{ patch("mfe-dockerfile-post-npm-install") }}
 COPY --from={{ app["name"] }}-src /openedx/app /openedx/app
 COPY --from={{ app["name"] }}-i18n /openedx/app/src/i18n/messages /openedx/app/src/i18n/messages
-######## edited from original source to add new authn mfe.
-ENV  PUBLIC_PATH='/{{ app["name"] }}/
+ENV PUBLIC_PATH='/{{ app["name"] }}/'
 EXPOSE {{ app['port'] }}
 CMD ["npm", "run", "start", "---", "--config", "./webpack.dev-tutor.config.js"]
 
