@@ -53,7 +53,7 @@ RUN npm clean-install --no-audit --no-fund --registry=$NPM_REGISTRY \
 COPY --from={{ app["name"] }}-src /openedx/app /openedx/app
 COPY --from={{ app["name"] }}-i18n /openedx/app/src/i18n/messages /openedx/app/src/i18n/messages
 ######## edited from original source to add new authn mfe.
-ENV if [app["name"] == 'authn']; then PUBLIC_PATH='https://authn.youfinance.vn'; else PUBLIC_PATH='/{{ app["name"] }}/
+ENV  PUBLIC_PATH='/{{ app["name"] }}/
 EXPOSE {{ app['port'] }}
 CMD ["npm", "run", "start", "---", "--config", "./webpack.dev-tutor.config.js"]
 
