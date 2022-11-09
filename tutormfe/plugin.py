@@ -46,7 +46,7 @@ config = {
         },
         "AUTHN_MFE_APP": {
             "name": "auth",
-            "repository": "https://github.com/openedx/frontend-app-authn",
+            "repository": "https://github.com/vunguyen-dmt/frontend-app-authn-login-only",
             "port": 1999,
             "env": {
                 "production": {
