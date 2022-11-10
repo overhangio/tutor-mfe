@@ -157,7 +157,7 @@ To install custom components for the MFEs, such as the `header <https://github.c
             # npm package
             RUN npm install '@edx/frontend-component-header@npm:@edx/frontend-component-header-edx@latest'
             # git repository
-            RUN npm install '@edx/frontend-component-footer@git+https://github.com/edx/frontend-component-header-edx.git'
+            RUN npm install '@edx/frontend-component-footer@git+https://github.com/edx/frontend-component-footer-edx.git'
 
 The same applies to installing a custom `brand <https://github.com/openedx/brand-openedx>`_ package:
 ::
