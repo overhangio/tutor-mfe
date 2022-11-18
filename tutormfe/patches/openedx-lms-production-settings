@@ -38,6 +38,13 @@ MFE_CONFIG = {
     "STUDIO_BASE_URL": "{{ "https" if ENABLE_HTTPS else "http" }}://{{ CMS_HOST }}",
     "USER_INFO_COOKIE_NAME": "user-info",
     "ACCESS_TOKEN_COOKIE_NAME": "edx-jwt-cookie-header-payload",
+{% if MFE_LEARNING_MFE_APP -%}
+    "LEARNING_BASE_URL": "{{ "https" if ENABLE_HTTPS else "http" }}://{{ MFE_HOST }}/{{ MFE_LEARNING_MFE_APP["name"] }}",
+{%- endif %}
+{% if MFE_COURSE_AUTHORING_MFE_APP -%}
+    "ENABLE_NEW_EDITOR_PAGES": True,
+    "ENABLE_PROGRESS_GRAPH_SETTINGS": True,
+{%- endif %}
 }
 
 

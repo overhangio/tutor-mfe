@@ -40,6 +40,13 @@ MFE_CONFIG = {
     "STUDIO_BASE_URL": "http://{{ CMS_HOST }}:8001",
     "USER_INFO_COOKIE_NAME": "user-info",
     "ACCESS_TOKEN_COOKIE_NAME": "edx-jwt-cookie-header-payload",
+{% if MFE_LEARNING_MFE_APP -%}
+    "LEARNING_BASE_URL": "http://{{ MFE_HOST }}:{{ MFE_LEARNING_MFE_APP["port"] }}",
+{%- endif %}
+{% if MFE_COURSE_AUTHORING_MFE_APP -%}
+    "ENABLE_NEW_EDITOR_PAGES": True,
+    "ENABLE_PROGRESS_GRAPH_SETTINGS": True,
+{%- endif %}
 }
 
 # Ends Dynamic config API settings
