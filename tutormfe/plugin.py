@@ -34,6 +34,11 @@ config = {
             "repository": "https://github.com/openedx/frontend-app-profile",
             "port": 1995,
         },
+        "COURSE_AUTHORING_MFE_APP": {
+            "name": "course-authoring",
+            "repository": "https://github.com/openedx/frontend-app-course-authoring",
+            "port": 2001,
+        },
     },
 }
 

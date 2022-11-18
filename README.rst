@@ -9,6 +9,7 @@ In addition, this plugin comes with a few MFEs which are enabled by default:
 - `Gradebook <https://github.com/edx/frontend-app-gradebook/>`__
 - `Learning <https://github.com/edx/frontend-app-learning/>`__
 - `Profile <https://github.com/edx/frontend-app-profile/>`__
+- `Course Authoring <https://github.com/opendx/frontend-app-course-authoring/>`__
 
 Instructions for using each of these MFEs are given below.
 
@@ -66,6 +67,14 @@ Profile
 
 Edit and display user-specific profile information. The profile page of every user is visible at ``http(s)://{{ MFE_HOST }}/profile/u/{{ username }}``. For instance, when running locally, the profile page of the "admin" user is: http://apps.local.overhang.io/profile/u/admin.
 
+Course Authoring
+~~~~~~~~~~~~~~~~
+
+.. image:: https://raw.githubusercontent.com/overhangio/tutor-mfe/master/screenshots/course-authoring.png
+    :alt: Course Authoring MFE screenshot
+
+This MFE is meant for course authors and maintainers. For a given course, it exposes a "Pages & Resources" menu in Studio where one can enable or disable a variety of features, including, for example, the Wiki and Discussions.  Optionally, it allows authors to replace the legacy HTML, Video, and Problem authoring tools with experimental React-based versions, as well as exposing a new proctoring interface that can be enabled if the `edx-exams <https://github.com/edx/edx-exams>`_ service is available.
+
 MFE management
 --------------
 
@@ -102,6 +111,7 @@ To disable an existing MFE, set its corresponding configuration setting to "null
     tutor config save --set MFE_ACCOUNT_MFE_APP=null
     tutor config save --set MFE_GRADEBOOK_MFE_APP=null
     tutor config save --set MFE_PROFILE_MFE_APP=null
+    tutor config save --set MFE_COURSE_AUTHORING_MFE_APP=null
 
 Adding custom translations to your MFEs
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -230,6 +240,10 @@ You will also have to manually remove a few waffle flags::
 
     tutor local run lms ./manage.py lms waffle_delete --flags account.redirect_to_microfrontend
     tutor local run lms ./manage.py lms waffle_delete --flags learner_profile.redirect_to_microfrontend
+    tutor local run lms ./manage.py lms waffle_delete --flags discussions.pages_and_resources_mfe
+    tutor local run lms ./manage.py lms waffle_delete --flags new_core_editors.use_new_text_editor
+    tutor local run lms ./manage.py lms waffle_delete --flags new_core_editors.use_new_video_editor
+    tutor local run lms ./manage.py lms waffle_delete --flags new_core_editors.use_new_problem_editor
     tutor local run lms site-configuration unset ENABLE_PROFILE_MICROFRONTEND
 
 Finally, restart the platform with::
