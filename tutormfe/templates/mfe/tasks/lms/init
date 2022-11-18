@@ -20,3 +20,15 @@ site-configuration unset --domain={{ LMS_HOST }}:8000 ENABLE_PROFILE_MICROFRONTE
 {% else %}
 ./manage.py lms waffle_delete --flags course_home.course_home_mfe_progress_tab
 {% endif %}
+
+{% if MFE_COURSE_AUTHORING_MFE_APP %}
+(./manage.py lms waffle_flag --list | grep discussions.pages_and_resources_mfe) || ./manage.py lms waffle_flag --create --everyone discussions.pages_and_resources_mfe
+(./manage.py lms waffle_flag --list | grep new_core_editors.use_new_text_editor) || ./manage.py lms waffle_flag --create --deactivate new_core_editors.use_new_text_editor
+(./manage.py lms waffle_flag --list | grep new_core_editors.use_new_video_editor) || ./manage.py lms waffle_flag --create --deactivate new_core_editors.use_new_video_editor
+(./manage.py lms waffle_flag --list | grep new_core_editors.use_new_problem_editor) || ./manage.py lms waffle_flag --create --deactivate new_core_editors.use_new_problem_editor
+{% else %}
+./manage.py lms waffle_delete --flags discussions.pages_and_resources_mfe
+./manage.py lms waffle_delete --flags new_core_editors.use_new_text_editor
+./manage.py lms waffle_delete --flags new_core_editors.use_new_video_editor
+./manage.py lms waffle_delete --flags new_core_editors.use_new_problem_editor
+{% endif %}
