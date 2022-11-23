@@ -11,6 +11,7 @@ In addition, this plugin comes with a few MFEs which are enabled by default:
 - `Discussions <https://github.com/openedx/frontend-app-discussions/>`__
 - `Gradebook <https://github.com/openedx/frontend-app-gradebook/>`__
 - `Learning <https://github.com/openedx/frontend-app-learning/>`__
+- `ORA Grading <https://github.com/openedx/frontend-app-ora-grading/>`__
 - `Profile <https://github.com/openedx/frontend-app-profile/>`__
 
 Instructions for using each of these MFEs are given below.
@@ -83,6 +84,14 @@ Learning
     :alt: Learning MFE screenshot
 
 The Learning MFE replaces the former courseware, which is the core part of the LMS where students follow courses.
+
+ORA Grading
+~~~~~~~~~~~
+
+.. image:: https://raw.githubusercontent.com/overhangio/tutor-mfe/master/screenshots/ora-grading.png
+    :alt: ORA Grading MFE screenshot
+
+When enabled, Open Response Assesments ("ORA") that have a staff grading step will link to this new MFE, either when clicking "Grade Available Responses" from the exercise itself, or via a link in the Instructor Dashboard.  It is meant to streamline the grading process with better previews of submitted content.
 
 Profile
 ~~~~~~~~~
@@ -282,6 +291,9 @@ You will also have to manually remove a few settings::
     tutor local run lms ./manage.py lms waffle_delete --flags discussions.enable_moderation_reason_codes
     tutor local run lms ./manage.py lms waffle_delete --flags discussions.enable_reported_content_email_notifications
     tutor local run lms ./manage.py lms waffle_delete --flags discussions.enable_learners_stats
+
+    # MFE ora-grading
+    tutor local run lms ./manage.py lms waffle_delete --flags openresponseassessment.enhanced_staff_grader
 
 Finally, restart the platform with::
 
