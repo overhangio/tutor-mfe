@@ -47,3 +47,9 @@ site-configuration unset --domain={{ LMS_HOST }}:8000 ENABLE_PROFILE_MICROFRONTE
 ./manage.py lms waffle_delete --flags discussions.enable_reported_content_email_notifications
 ./manage.py lms waffle_delete --flags discussions.enable_learners_stats
 {% endif %}
+
+{% if is_mfe_enabled("ora-grading") %}
+(./manage.py lms waffle_flag --list | grep openresponseassessment.enhanced_staff_grader) || ./manage.py lms waffle_flag --create --everyone openresponseassessment.enhanced_staff_grader
+{% else %}
+./manage.py lms waffle_delete --flags openresponseassessment.enhanced_staff_grader
+{% endif %}
