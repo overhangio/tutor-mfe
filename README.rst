@@ -11,6 +11,7 @@ In addition, this plugin comes with a few MFEs which are enabled by default:
 - `Discussions <https://github.com/openedx/frontend-app-discussions/>`__
 - `Gradebook <https://github.com/openedx/frontend-app-gradebook/>`__
 - `Learning <https://github.com/openedx/frontend-app-learning/>`__
+- `ORA Grading <https://github.com/openedx/frontend-app-ora-grading/>`__
 - `Profile <https://github.com/openedx/frontend-app-profile/>`__
 
 Instructions for using each of these MFEs are given below.
@@ -74,7 +75,31 @@ Gradebook
 .. image:: https://raw.githubusercontent.com/overhangio/tutor-mfe/master/screenshots/communications.png
     :alt: Communications MFE screenshot
 
-The Communications micro-frontend exposes an interface for course teams to communicate with learners.  It achieves this by allowing instructors to send out emails in bulk, either by scheduling them or on demand.
+This instructor-only MFE is for viewing individual and aggregated grade results for a course. To access this MFE, go to a course 🡒 🡒 Instructor tab 🡒 Student Admin 🡒 View gradebook. The URL should be: ``http(s)://{{ MFE_HOST }}/gradebook/{{ course ID }}``. When running locally, the gradebook of the demo course is available at: http://apps.local.overhang.io/gradebook/course-v1:edX+DemoX+Demo_Course
+
+Learning
+~~~~~~~~
+
+.. image:: https://raw.githubusercontent.com/overhangio/tutor-mfe/master/screenshots/learning.png
+    :alt: Learning MFE screenshot
+
+The Learning MFE replaces the former courseware, which is the core part of the LMS where students follow courses.
+
+ORA Grading
+~~~~~~~~~~~
+
+.. image:: https://raw.githubusercontent.com/overhangio/tutor-mfe/master/screenshots/ora-grading.png
+    :alt: ORA Grading MFE screenshot
+
+When enabled, Open Response Assesments ("ORA") that have a staff grading step will link to this new MFE, either when clicking "Grade Available Responses" from the exercise itself, or via a link in the Instructor Dashboard.  It is meant to streamline the grading process with better previews of submitted content.
+
+Profile
+~~~~~~~~~
+
+.. image:: https://raw.githubusercontent.com/overhangio/tutor-mfe/master/screenshots/profile.png
+    :alt: Profile MFE screenshot
+
+Edit and display user-specific profile information. The profile page of every user is visible at ``http(s)://{{ MFE_HOST }}/profile/u/{{ username }}``. For instance, when running locally, the profile page of the "admin" user is: http://apps.local.overhang.io/profile/u/admin.
 
 
 MFE management

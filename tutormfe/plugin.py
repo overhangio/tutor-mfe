@@ -66,7 +66,6 @@ CORE_MFE_APPS: dict[str, MFE_ATTRS_TYPE] = {
     },
     "ora-grading": {
         "repository": "https://github.com/openedx/frontend-app-ora-grading",
-        "refs": "https://api.github.com/repos/openedx/frontend-app-ora-grading/git/refs/" + gh_refs_path(),
         "port": 1993,
     },
     "profile": {
