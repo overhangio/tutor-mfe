@@ -32,3 +32,17 @@ site-configuration unset --domain={{ LMS_HOST }}:8000 ENABLE_PROFILE_MICROFRONTE
 ./manage.py lms waffle_delete --flags new_core_editors.use_new_video_editor
 ./manage.py lms waffle_delete --flags new_core_editors.use_new_problem_editor
 {% endif %}
+
+{% if MFE_DISCUSSIONS_MFE_APP %}
+(./manage.py lms waffle_flag --list | grep discussions.enable_discussions_mfe ) || ./manage.py lms waffle_flag --create --everyone discussions.enable_discussions_mfe
+(./manage.py lms waffle_flag --list | grep discussions.enable_learners_tab_in_discussions_mfe ) || ./manage.py lms waffle_flag --create --everyone discussions.enable_learners_tab_in_discussions_mfe
+(./manage.py lms waffle_flag --list | grep discussions.enable_moderation_reason_codes ) || ./manage.py lms waffle_flag --create --everyone discussions.enable_moderation_reason_codes
+(./manage.py lms waffle_flag --list | grep discussions.enable_reported_content_email_notifications ) || ./manage.py lms waffle_flag --create --everyone discussions.enable_reported_content_email_notifications
+(./manage.py lms waffle_flag --list | grep discussions.enable_learners_stats ) || ./manage.py lms waffle_flag --create --everyone discussions.enable_learners_stats
+{% else %}
+./manage.py lms waffle_delete --flags discussions.enable_discussions_mfe
+./manage.py lms waffle_delete --flags discussions.enable_learners_tab_in_discussions_mfe
+./manage.py lms waffle_delete --flags discussions.enable_moderation_reason_codes
+./manage.py lms waffle_delete --flags discussions.enable_reported_content_email_notifications
+./manage.py lms waffle_delete --flags discussions.enable_learners_stats
+{% endif %}
