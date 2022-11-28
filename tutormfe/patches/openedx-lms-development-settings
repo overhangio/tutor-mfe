@@ -11,6 +11,11 @@ LEARNING_MICROFRONTEND_URL = "http://{{ MFE_HOST }}:{{ MFE_LEARNING_MFE_APP["por
 PROFILE_MICROFRONTEND_URL = "{% if ENABLE_HTTPS %}https://{% else %}http://{% endif %}{{ MFE_HOST }}:{{ MFE_PROFILE_MFE_APP["port"] }}/{{ MFE_PROFILE_MFE_APP["name"] }}/u/"
 {% endif %}
 
+{% if MFE_DISCUSSIONS_MFE_APP %}
+DISCUSSIONS_MICROFRONTEND_URL = "http://{{ MFE_HOST }}:{{ MFE_DISCUSSIONS_MFE_APP["port"] }}/{{ MFE_DISCUSSIONS_MFE_APP["name"] }}"
+DISCUSSIONS_MFE_FEEDBACK_URL = None
+{% endif %}
+
 {% for app in iter_values_named(suffix="MFE_APP") %}
 # {{ app["name"] }} MFE
 CORS_ORIGIN_WHITELIST.append("http://{{ MFE_HOST }}:{{ app["port"] }}")
