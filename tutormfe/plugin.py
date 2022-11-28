@@ -39,6 +39,11 @@ config = {
             "repository": "https://github.com/openedx/frontend-app-course-authoring",
             "port": 2001,
         },
+        "DISCUSSIONS_MFE_APP": {
+            "name": "discussions",
+            "repository": "https://github.com/openedx/frontend-app-discussions",
+            "port": 2002,
+        },
     },
 }
 
