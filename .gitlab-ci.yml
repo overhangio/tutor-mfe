@@ -2,7 +2,7 @@ variables:
     TUTOR_PLUGIN: mfe
     TUTOR_IMAGES: mfe
     TUTOR_PYPI_PACKAGE: tutor-mfe
-    OPENEDX_RELEASE: nutmeg
+    OPENEDX_RELEASE: olive
     GITHUB_REPO: overhangio/tutor-mfe
 
 include:
