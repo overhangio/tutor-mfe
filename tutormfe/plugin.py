@@ -44,6 +44,11 @@ config = {
             "repository": "https://github.com/openedx/frontend-app-discussions",
             "port": 2002,
         },
+        "AUTHN_MFE_APP": {
+            "name": "authn",
+            "repository": "https://github.com/openedx/frontend-app-authn",
+            "port": 1999,
+        },
     },
 }
 
