@@ -20,3 +20,7 @@ site-configuration unset --domain={{ LMS_HOST }}:8000 ENABLE_PROFILE_MICROFRONTE
 {% else %}
 ./manage.py lms waffle_delete --flags course_home.course_home_mfe_progress_tab
 {% endif %}
+
+{% if MFE_AUTHN_MFE_APP %}
+# TODO: waffle flags?
+{% endif %}
