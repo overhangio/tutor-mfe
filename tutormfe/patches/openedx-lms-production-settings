@@ -15,6 +15,10 @@ DISCUSSIONS_MICROFRONTEND_URL = "{% if ENABLE_HTTPS %}https://{% else %}http://{
 DISCUSSIONS_MFE_FEEDBACK_URL = None
 {% endif %}
 
+{% if MFE_AUTHN_MFE_APP %}
+AUTHN_MICROFRONTEND_URL = "{% if ENABLE_HTTPS %}https://{% else %}http://{% endif %}{{ MFE_HOST }}/{{ MFE_AUTHN_MFE_APP["name"] }}"
+{% endif %}
+
 LOGIN_REDIRECT_WHITELIST.append("{{ MFE_HOST }}")
 CORS_ORIGIN_WHITELIST.append("{% if ENABLE_HTTPS %}https://{% else %}http://{% endif %}{{ MFE_HOST }}")
 CSRF_TRUSTED_ORIGINS.append("{{ MFE_HOST }}")
@@ -49,6 +53,9 @@ MFE_CONFIG = {
 {% if MFE_COURSE_AUTHORING_MFE_APP -%}
     "ENABLE_NEW_EDITOR_PAGES": True,
     "ENABLE_PROGRESS_GRAPH_SETTINGS": True,
+{%- endif %}
+{% if MFE_AUTHN_MFE_APP -%}
+    "DISABLE_ENTERPRISE_LOGIN": True,
 {%- endif %}
 }
 

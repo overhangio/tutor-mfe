@@ -5,11 +5,13 @@ This plugin makes it possible to easily add micro frontend (MFE) applications on
 
 In addition, this plugin comes with a few MFEs which are enabled by default:
 
-- `Account <https://github.com/edx/frontend-app-account/>`__
-- `Gradebook <https://github.com/edx/frontend-app-gradebook/>`__
-- `Learning <https://github.com/edx/frontend-app-learning/>`__
-- `Profile <https://github.com/edx/frontend-app-profile/>`__
+- `Account <https://github.com/openedx/frontend-app-account/>`__
+- `Gradebook <https://github.com/openedx/frontend-app-gradebook/>`__
+- `Learning <https://github.com/openedx/frontend-app-learning/>`__
+- `Profile <https://github.com/openedx/frontend-app-profile/>`__
 - `Course Authoring <https://github.com/opendx/frontend-app-course-authoring/>`__
+- `Discussions <https://github.com/opendx/frontend-app-discussions/>`__
+- `Authn <https://github.com/opendx/frontend-app-authn/>`__
 
 Instructions for using each of these MFEs are given below.
 
@@ -83,6 +85,14 @@ Discussions
 
 The Discussions MFE updates the previous discussions UI with a new look and better features.
 
+Authn
+~~~~~~~~~
+
+.. image:: https://raw.githubusercontent.com/overhangio/tutor-mfe/master/screenshots/authn.png
+    :alt: Authn MFE screenshot
+
+This is a micro-frontend application responsible for the login, registration and password reset functionality.
+
 MFE management
 --------------
 
@@ -121,6 +131,7 @@ To disable an existing MFE, set its corresponding configuration setting to "null
     tutor config save --set MFE_PROFILE_MFE_APP=null
     tutor config save --set MFE_COURSE_AUTHORING_MFE_APP=null
     tutor config save --set MFE_DISCUSSIONS_MFE_APP=null
+    tutor config save --set MFE_AUTHN_MFE_APP=null
 
 Adding custom translations to your MFEs
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
