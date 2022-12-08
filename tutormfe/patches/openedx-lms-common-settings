@@ -1,0 +1,5 @@
+# MFE: enable API and set a low cache timeout for the settings. otherwise, weird
+# configuration bugs occur. Also, the view is not costly at all, and it's also cached on
+# the frontend. (5 minutes, hardcoded)
+ENABLE_MFE_CONFIG_API = True
+MFE_CONFIG_API_CACHE_TIMEOUT = 1

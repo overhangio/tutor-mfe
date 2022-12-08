@@ -18,9 +18,6 @@ CSRF_TRUSTED_ORIGINS.append("{{ MFE_HOST }}")
 ALLOWED_HOSTS.append("{{ MFE_HOST }}")
 
 # Start of Dynamic config API settings
-
-ENABLE_MFE_CONFIG_API = True
-
 MFE_CONFIG = {
     "BASE_URL": "{{ MFE_HOST }}",
     {%- if MFE_PROFILE_MFE_APP %}
