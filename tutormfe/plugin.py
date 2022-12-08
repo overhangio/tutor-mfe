@@ -37,12 +37,18 @@ config = {
     },
 }
 
-tutor_hooks.Filters.COMMANDS_INIT.add_item(
-    (
+with open(
+    os.path.join(
+        pkg_resources.resource_filename("tutormfe", "templates"),
+        "mfe",
+        "tasks",
         "lms",
-        ("mfe", "tasks", "lms", "init"),
-    )
-)
+        "init",
+    ),
+    encoding="utf-8",
+) as task_file:
+    tutor_hooks.Filters.CLI_DO_INIT_TASKS.add_item(("lms", task_file.read()))
+
 tutor_hooks.Filters.IMAGES_BUILD.add_item(
     (
         "mfe",
@@ -52,14 +58,18 @@ tutor_hooks.Filters.IMAGES_BUILD.add_item(
     )
 )
 
-tutor_hooks.Filters.IMAGES_PULL.add_item((
-    "mfe",
-    "{{ MFE_DOCKER_IMAGE }}",
-))
-tutor_hooks.Filters.IMAGES_PUSH.add_item((
-    "mfe",
-    "{{ MFE_DOCKER_IMAGE }}",
-))
+tutor_hooks.Filters.IMAGES_PULL.add_item(
+    (
+        "mfe",
+        "{{ MFE_DOCKER_IMAGE }}",
+    )
+)
+tutor_hooks.Filters.IMAGES_PUSH.add_item(
+    (
+        "mfe",
+        "{{ MFE_DOCKER_IMAGE }}",
+    )
+)
 
 
 @tutor_hooks.Filters.COMPOSE_MOUNTS.add()
@@ -104,10 +114,15 @@ for path in glob(
         # Here we force tutor-mfe lms patches to be loaded first, thus ensuring when opreators override
         # MFE_CONFIG and/or MFE_CONFIG_OVERRIDES, their patches will be loaded after this plugin's
         patch_name = os.path.basename(path)
-        priority = priorities.HIGH if patch_name in \
-            ['openedx-lms-production-settings', 'openedx-lms-development-settings'] \
+        priority = (
+            priorities.HIGH
+            if patch_name
+            in ["openedx-lms-production-settings", "openedx-lms-development-settings"]
             else priorities.DEFAULT
-        tutor_hooks.Filters.ENV_PATCHES.add_item((patch_name, patch_file.read()), priority=priority)
+        )
+        tutor_hooks.Filters.ENV_PATCHES.add_item(
+            (patch_name, patch_file.read()), priority=priority
+        )
 
 # Add configuration entries
 tutor_hooks.Filters.CONFIG_DEFAULTS.add_items(
@@ -116,4 +131,6 @@ tutor_hooks.Filters.CONFIG_DEFAULTS.add_items(
 tutor_hooks.Filters.CONFIG_UNIQUE.add_items(
     [(f"MFE_{key}", value) for key, value in config.get("unique", {}).items()]
 )
-tutor_hooks.Filters.CONFIG_OVERRIDES.add_items(list(config.get("overrides", {}).items()))
+tutor_hooks.Filters.CONFIG_OVERRIDES.add_items(
+    list(config.get("overrides", {}).items())
+)
