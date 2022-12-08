@@ -24,6 +24,9 @@ ENABLE_MFE_CONFIG_API = True
 
 MFE_CONFIG = {
     "BASE_URL": "{{ MFE_HOST }}",
+    {%- if MFE_PROFILE_MFE_APP %}
+    "ACCOUNT_PROFILE_URL": "http://{{ MFE_HOST }}:{{ MFE_PROFILE_MFE_APP["port"] }}",
+    {%- endif %}
     "CREDENTIALS_BASE_URL": "/csrf/api/v1/token",
     "DISCOVERY_API_BASE_URL": "{% if DISCOVERY_HOST is defined %}http://{{ DISCOVERY_HOST }}:8381{% endif %}",
     "FAVICON_URL": "http://{{ LMS_HOST }}/favicon.ico",
