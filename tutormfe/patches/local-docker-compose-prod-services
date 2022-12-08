@@ -4,3 +4,5 @@ mfe:
     build:
         context: ../plugins/mfe/build/mfe/
     restart: unless-stopped
+    depends_on:
+        - lms
