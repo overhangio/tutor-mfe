@@ -182,18 +182,6 @@ In some cases, for example when using `GitLab's NPM package registry <https://do
             RUN npm config set '//gitlab.example.com/api/v4/projects/<your_project_id>/packages/npm/:_authToken' '<your_token>'
             RUN npm install '@edx/frontend-component-header@npm:@foo/<your_frontend_component_header_name>@latest'
 
-Running MFEs on Kubernetes
---------------------------
-
-The MFE plugin works a bit differently than other Tutor plugins. MFEs are static bundles of js/html/css code that must be re-generated after every change to their configuration. In practice, this means that the "mfe" Docker image should be re-built and re-deployed every time we run ``tutor config save``. This happens transparently when running Open edX locally (with ``tutor local``). But when running on Kubernetes, you need to re-build the "mfe" image manually and push it to a remote registry. In effect, you must run::
-
-    tutor config save --set MFE_DOCKER_IMAGE=docker.io/yourusername/openedx-mfe:latest
-    tutor images build mfe
-    tutor images push mfe
-    tutor k8s start
-
-We consider that this situation is less than ideal. An improvement would be to self-host a Docker registry and an image-building pipeline on Kubernetes. If you are interested in such a solution, please let your voice be heard on the `Tutor community forums <https://discuss.overhang.io>`__.
-
 MFE development
 ---------------
 
@@ -246,7 +234,7 @@ You will also have to manually remove a few waffle flags::
 
 Finally, restart the platform with::
 
-    tutor local launch 
+    tutor local launch
 
 Troubleshooting
 ---------------
