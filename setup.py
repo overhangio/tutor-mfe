@@ -40,7 +40,7 @@ setup(
     packages=find_packages(exclude=["tests*"]),
     include_package_data=True,
     python_requires=">=3.5",
-    install_requires=["tutor>=14.0.0,<15.0.0"],
+    install_requires=["tutor>=15.0.0,<16.0.0"],
     entry_points={"tutor.plugin.v1": ["mfe = tutormfe.plugin"]},
     classifiers=[
         "Development Status :: 3 - Alpha",
