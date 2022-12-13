@@ -3,6 +3,10 @@
     request_body {
         max_size 2MB
     }
-    reverse_proxy /api/mfe_config/v1* lms:8000
+    reverse_proxy /api/mfe_config/v1* lms:8000 {
+        # We need to specify the host header, otherwise it will be rejected with 400
+        # from the lms.
+        header_up Host {{ LMS_HOST }}
+    }
     import proxy "mfe:8002"
 }
