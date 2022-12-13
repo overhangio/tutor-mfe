@@ -23,7 +23,8 @@ LOGIN_REDIRECT_WHITELIST.append("{{ MFE_HOST }}")
 CORS_ORIGIN_WHITELIST.append("{% if ENABLE_HTTPS %}https://{% else %}http://{% endif %}{{ MFE_HOST }}")
 CSRF_TRUSTED_ORIGINS.append("{{ MFE_HOST }}")
 
-# Start of Dynamic config API settings
+# Dynamic config API settings
+# https://openedx.github.io/frontend-platform/module-Config.html
 MFE_CONFIG = {
     "BASE_URL": "{{ MFE_HOST }}",
     "CSRF_TOKEN_API_PATH": "/csrf/api/v1/token",
@@ -56,6 +57,3 @@ MFE_CONFIG = {
     "DISABLE_ENTERPRISE_LOGIN": True,
 {%- endif %}
 }
-
-
-# Ends Dynamic config API settings

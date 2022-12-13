@@ -14,10 +14,25 @@ config = {
         "HOST": "apps.{{ LMS_HOST }}",
         "COMMON_VERSION": "{{ OPENEDX_COMMON_VERSION }}",
         "CADDY_DOCKER_IMAGE": "{{ DOCKER_IMAGE_CADDY }}",
+        "AUTHN_MFE_APP": {
+            "name": "authn",
+            "repository": "https://github.com/openedx/frontend-app-authn",
+            "port": 1999,
+        },
         "ACCOUNT_MFE_APP": {
             "name": "account",
             "repository": "https://github.com/openedx/frontend-app-account",
             "port": 1997,
+        },
+        "COURSE_AUTHORING_MFE_APP": {
+            "name": "course-authoring",
+            "repository": "https://github.com/openedx/frontend-app-course-authoring",
+            "port": 2001,
+        },
+        "DISCUSSIONS_MFE_APP": {
+            "name": "discussions",
+            "repository": "https://github.com/openedx/frontend-app-discussions",
+            "port": 2002,
         },
         "GRADEBOOK_MFE_APP": {
             "name": "gradebook",
@@ -34,23 +49,17 @@ config = {
             "repository": "https://github.com/openedx/frontend-app-profile",
             "port": 1995,
         },
-        "COURSE_AUTHORING_MFE_APP": {
-            "name": "course-authoring",
-            "repository": "https://github.com/openedx/frontend-app-course-authoring",
-            "port": 2001,
-        },
-        "DISCUSSIONS_MFE_APP": {
-            "name": "discussions",
-            "repository": "https://github.com/openedx/frontend-app-discussions",
-            "port": 2002,
-        },
-        "AUTHN_MFE_APP": {
-            "name": "authn",
-            "repository": "https://github.com/openedx/frontend-app-authn",
-            "port": 1999,
-        },
     },
 }
+ALL_MFES = (
+    "account",
+    "course-authoring",
+    "discussions",
+    "authn",
+    "gradebook",
+    "learning",
+    "profile",
+)
 
 with open(
     os.path.join(
@@ -64,6 +73,7 @@ with open(
 ) as task_file:
     tutor_hooks.Filters.CLI_DO_INIT_TASKS.add_item(("lms", task_file.read()))
 
+# Build, pull and push mfe base image
 tutor_hooks.Filters.IMAGES_BUILD.add_item(
     (
         "mfe",
@@ -72,7 +82,6 @@ tutor_hooks.Filters.IMAGES_BUILD.add_item(
         (),
     )
 )
-
 tutor_hooks.Filters.IMAGES_PULL.add_item(
     (
         "mfe",
@@ -85,6 +94,21 @@ tutor_hooks.Filters.IMAGES_PUSH.add_item(
         "{{ MFE_DOCKER_IMAGE }}",
     )
 )
+
+# Build, pull and push {mfe}-dev images
+for mfe in ALL_MFES:
+    name = f"{mfe}-dev"
+    tag = "{{ DOCKER_REGISTRY }}overhangio/" + mfe + "-dev:{{ MFE_VERSION }}"
+    tutor_hooks.Filters.IMAGES_BUILD.add_item(
+        (
+            name,
+            ("plugins", "mfe", "build", "mfe"),
+            tag,
+            (f"--target={mfe}-dev",),
+        )
+    )
+    tutor_hooks.Filters.IMAGES_PULL.add_item((name, tag))
+    tutor_hooks.Filters.IMAGES_PUSH.add_item((name, tag))
 
 
 @tutor_hooks.Filters.COMPOSE_MOUNTS.add()
