@@ -53,9 +53,12 @@ COPY --from={{ app["name"] }}-src /openedx/app /openedx/app
 COPY --from={{ app["name"] }}-i18n /openedx/app/src/i18n/messages /openedx/app/src/i18n/messages
 EXPOSE {{ app['port'] }}
 
-# configuration needed at build time 
+# Configuration needed at build time
 ENV APP_ID={{ app["name"] }}
 ENV PUBLIC_PATH='/{{ app["name"] }}/'
+# We could in theory point the mfe_config API directly to the LMS. But for that we would
+# have to code the LMS url into the mfe image, and this configuration is user-dependent.
+# So we point to a relative url that will be a proxy for the LMS.
 ENV MFE_CONFIG_API_URL=/api/mfe_config/v1
 ARG ENABLE_NEW_RELIC=false
 
