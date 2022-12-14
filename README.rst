@@ -161,41 +161,60 @@ Your custom translation strings should now appear in your app.
 Customising MFEs
 ~~~~~~~~~~~~~~~~
 
-To change the MFEs logos from the default to your own logos, override the corresponding settings in the MFEs environment using patches `mfe-env-production` and `mfe-env-development`. For example, using the following plugin:
+To change the MFEs logos from the default to your own logos, override the corresponding settings in the MFEs environment using patches `openedx-lms-production-settings` and `openedx-lms-development-settings`. For example, using the following plugin:
 ::
 
-    name: mfe_branding_plugin
-    version: 0.1.0
-    patches:
-      mfe-env-development: |
-        LOGO_URL=<URL>/logo.svg
-        LOGO_TRADEMARK_URL=<URL>/logo-trademark.svg
-        LOGO_WHITE_URL=<URL>/logo-white.svg
-        FAVICON_URL=<URL>/favicon.ico
-      mfe-env-production: |
-        LOGO_URL=<URL>/logo.svg
-        LOGO_TRADEMARK_URL=<URL>/logo-trademark.svg
-        LOGO_WHITE_URL=<URL>/logo-white.svg
-        FAVICON_URL=<URL>/favicon.ico
+    from tutor import hooks
+
+    hooks.Filters.ENV_PATCHES.add_item(
+        (
+            "openedx-lms-development-settings",
+            """
+    MFE_CONFIG["LOGO_URL"] = "<URL>/logo.svg"
+    MFE_CONFIG["LOGO_TRADEMARK_URL"] = "<URL>/logo-trademark.svg"
+    MFE_CONFIG["LOGO_WHITE_URL"] = "<URL>/logo-white.svg"
+    MFE_CONFIG["FAVICON_URL"] = "<URL>/favicon.ico"
+    """
+        ),
+        (
+            "openedx-lms-production-settings",
+            """
+    MFE_CONFIG["LOGO_URL"] = "<URL>/logo.svg"
+    MFE_CONFIG["LOGO_TRADEMARK_URL"] = "<URL>/logo-trademark.svg"
+    MFE_CONFIG["LOGO_WHITE_URL"] = "<URL>/logo-white.svg"
+    MFE_CONFIG["FAVICON_URL"] = "<URL>/favicon.ico"
+    """
+        ),
+    )
 
 To install custom components for the MFEs, such as the `header <https://github.com/openedx/frontend-component-header>`_ and `footer <https://github.com/openedx/frontend-component-footer>`_, override the components by adding a patch to ``mfe-dockerfile-post-npm-install`` in your plugin:
 ::
 
-    patches:
-        ...
-        mfe-dockerfile-post-npm-install: |
-            # npm package
-            RUN npm install '@edx/frontend-component-header@npm:@edx/frontend-component-header-edx@latest'
-            # git repository
-            RUN npm install '@edx/frontend-component-footer@git+https://github.com/edx/frontend-component-footer-edx.git'
+    from tutor import hooks
+
+    hooks.Filters.ENV_PATCHES.add_item(
+        (
+            "mfe-dockerfile-post-npm-install",
+            """
+    # npm package
+    RUN npm install '@edx/frontend-component-header@npm:@edx/frontend-component-header-edx@latest'
+    # git repository
+    RUN npm install '@edx/frontend-component-footer@git+https://github.com/edx/frontend-component-footer-edx.git'
+    """
+        )
+    )
 
 The same applies to installing a custom `brand <https://github.com/openedx/brand-openedx>`_ package:
 ::
 
-    patches:
-        ...
-        mfe-dockerfile-post-npm-install: |
-            RUN npm install '@edx/brand@git+https://github.com/edx/brand-edx.org.git'
+    hooks.Filters.ENV_PATCHES.add_item(
+        (
+            "mfe-dockerfile-post-npm-install",
+            """
+    RUN npm install '@edx/brand@git+https://github.com/edx/brand-edx.org.git'
+    """
+        )
+    )
 
 
 Installing from a private npm registry
@@ -205,12 +224,18 @@ In case you need to install components from a private NPM registry, you can appe
 In some cases, for example when using `GitLab's NPM package registry <https://docs.gitlab.com/ee/user/packages/npm_registry/>`_, you might also need to provide a token for your registry, which can be done with an additional ``npm config set`` command as well:
 ::
 
-    patches:
-        ...
-        mfe-dockerfile-post-npm-install: |
-            RUN npm config set @foo:registry https://gitlab.example.com/api/v4/projects/<your_project_id>/packages/npm/
-            RUN npm config set '//gitlab.example.com/api/v4/projects/<your_project_id>/packages/npm/:_authToken' '<your_token>'
-            RUN npm install '@edx/frontend-component-header@npm:@foo/<your_frontend_component_header_name>@latest'
+    from tutor import hooks
+
+    hooks.Filters.ENV_PATCHES.add_item(
+        (
+            "mfe-dockerfile-post-npm-install",
+            """
+    RUN npm config set @foo:registry https://gitlab.example.com/api/v4/projects/<your_project_id>/packages/npm/
+    RUN npm config set '//gitlab.example.com/api/v4/projects/<your_project_id>/packages/npm/:_authToken' '<your_token>'
+    RUN npm install '@edx/frontend-component-header@npm:@foo/<your_frontend_component_header_name>@latest'
+    """
+        )
+    )
 
 MFE development
 ---------------
