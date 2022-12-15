@@ -38,6 +38,7 @@ MFE_CONFIG = {
     "LMS_BASE_URL": "{% if ENABLE_HTTPS %}https{% else %}http{% endif %}://{{ LMS_HOST }}",
     "LOGIN_URL": "{% if ENABLE_HTTPS %}https{% else %}http{% endif %}://{{ LMS_HOST }}/login",
     "LOGO_URL": "{% if ENABLE_HTTPS %}https{% else %}http{% endif %}://{{ LMS_HOST }}/theming/asset/images/logo.png",
+    "LOGO_WHITE_URL": "{% if ENABLE_HTTPS %}https{% else %}http{% endif %}://{{ LMS_HOST }}/theming/asset/images/logo.png",
     "LOGO_TRADEMARK_URL": "{% if ENABLE_HTTPS %}https{% else %}http{% endif %}://{{ LMS_HOST }}/theming/asset/images/logo.png",
     "LOGOUT_URL": "{% if ENABLE_HTTPS %}https{% else %}http{% endif %}://{{ LMS_HOST }}/logout",
     "MARKETING_SITE_BASE_URL": "{% if ENABLE_HTTPS %}https{% else %}http{% endif %}://{{ LMS_HOST }}",
