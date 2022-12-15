@@ -2,5 +2,7 @@
 mfe:
     image: {{ MFE_DOCKER_IMAGE }}
     restart: unless-stopped
+    volumes:
+        - ../plugins/mfe/apps/mfe/Caddyfile:/etc/caddy/Caddyfile:ro
     depends_on:
         - lms
