@@ -1,7 +1,7 @@
 # MFE apps
 {% for app in iter_values_named(suffix="MFE_APP") %}
 {{ app["name"] }}:
-    image: {{ app["name"]|mfe_dev_docker_image }}
+    image: "{{ DOCKER_REGISTRY }}overhangio/openedx-{{ app["name"] }}-dev:{{ MFE_VERSION }}"
     ports:
         - "{{ app["port"] }}:{{ app["port"] }}"
     stdin_open: true
