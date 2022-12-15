@@ -96,17 +96,9 @@ tutor_hooks.Filters.IMAGES_PUSH.add_item(
 )
 
 # Build, pull and push {mfe}-dev images
-def mfe_dev_docker_image(mfe: str) -> str:
-    return "{{ DOCKER_REGISTRY }}overhangio/openedx-" + mfe + "-dev:{{ MFE_VERSION }}"
-
-
-tutor_hooks.Filters.ENV_TEMPLATE_FILTERS.add_item(
-    ("mfe_dev_docker_image", mfe_dev_docker_image)
-)
-
 for mfe in ALL_MFES:
     name = f"{mfe}-dev"
-    tag = mfe_dev_docker_image(mfe)
+    tag = "{{ DOCKER_REGISTRY }}overhangio/openedx-" + mfe + "-dev:{{ MFE_VERSION }}"
     tutor_hooks.Filters.IMAGES_BUILD.add_item(
         (
             name,
