@@ -20,3 +20,10 @@ spec:
           imagePullPolicy: Always
           ports:
             - containerPort: 8002
+          volumeMounts:
+            - mountPath: /etc/caddy/
+              name: config
+      volumes:
+        - name: config
+          configMap:
+            name: mfe-caddy-config
