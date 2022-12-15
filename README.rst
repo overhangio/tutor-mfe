@@ -99,7 +99,7 @@ MFE management
 Adding new MFEs
 ~~~~~~~~~~~~~~~
 
-Other Tutor plugin developers can take advantage of this plugin to deploy their own MFEs. To declare a new MFE, a new configuration setting should be created with the "_MFE_APP" suffix. This configuration setting should include the name, repository, development port and production/development settings for the MFE. For example::
+Other Tutor plugin developers can take advantage of this plugin to deploy their own MFEs. To declare a new MFE, a new configuration setting should be created with the "_MFE_APP" suffix. This configuration setting should include the name, git repository (and optionally: git branch) and development port. For example::
 
     config = {
         "defaults": {
@@ -107,19 +107,12 @@ Other Tutor plugin developers can take advantage of this plugin to deploy their 
                 "name": "mymfe",
                 "repository": "https://github.com/myorg/mymfe",
                 "port": 2001,
-                "env": {
-                    "production": {
-                        "MY_CUSTOM_MFE_SETTING": "prod value"
-                    },
-                    "development": {
-                        "MY_CUSTOM_MFE_SETTING": "dev value"
-                    }
-                }
+                "version": "me/my-custom-branch", # optional
             }
         }
     }
 
-The MFE assets will then be bundled in the "mfe" Docker image and served at ``http(s)://{{ MFE_HOST }}/{{ MYMFE_MFE_APP["name"] }}``. Developers are free to add extra template patches to their plugins, as usual: for instance LMS setting patches to make sure that the LMS correctly connects to the MFEs.
+The MFE assets will then be bundled in the "mfe" Docker image whenever it is rebuilt with `tutor images build mfe`. Assets will be served at ``http(s)://{{ MFE_HOST }}/{{ MYMFE_MFE_APP["name"] }}``. Developers are free to add extra template patches to their plugins, as usual: for instance LMS setting patches to make sure that the LMS correctly connects to the MFEs.
 
 Disabling individual MFEs
 ~~~~~~~~~~~~~~~~~~~~~~~~~
