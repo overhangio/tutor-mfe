@@ -41,6 +41,7 @@ MFE_CONFIG = {
     "LMS_BASE_URL": "http://{{ LMS_HOST }}:8000",
     "LOGIN_URL": "http://{{ LMS_HOST }}:8000/login",
     "LOGO_URL": "http://{{ LMS_HOST }}:8000/theming/asset/images/logo.png",
+    "LOGO_WHITE_URL": "http://{{ LMS_HOST }}:8000/theming/asset/images/logo.png",
     "LOGO_TRADEMARK_URL": "http://{{ LMS_HOST }}:8000/theming/asset/images/logo.png",
     "LOGOUT_URL": "http://{{ LMS_HOST }}:8000/logout",
     "MARKETING_SITE_BASE_URL": "http://{{ LMS_HOST }}:8000",
