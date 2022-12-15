@@ -1,4 +1,17 @@
 :8002 {
+    log {
+        output stdout
+        format filter {
+            wrap json
+            fields {
+                common_log delete
+                request>headers delete
+                resp_headers delete
+                tls delete
+            }
+        }
+    }
+
     {% for app in iter_values_named(suffix="MFE_APP") %}
     @mfe_{{ app["name"] }} {
         path /{{ app["name"] }} /{{ app["name"] }}/*
