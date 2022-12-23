@@ -9,7 +9,7 @@ In addition, this plugin comes with a few MFEs which are enabled by default:
 - `Gradebook <https://github.com/openedx/frontend-app-gradebook/>`__
 - `Learning <https://github.com/openedx/frontend-app-learning/>`__
 - `Profile <https://github.com/openedx/frontend-app-profile/>`__
-- `Course Authoring <https://github.com/opendx/frontend-app-course-authoring/>`__
+- `Course Authoring <https://github.com/openedx/frontend-app-course-authoring/>`__
 - `Discussions <https://github.com/opendx/frontend-app-discussions/>`__
 - `Authn <https://github.com/opendx/frontend-app-authn/>`__
 
