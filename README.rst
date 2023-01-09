@@ -10,8 +10,8 @@ In addition, this plugin comes with a few MFEs which are enabled by default:
 - `Learning <https://github.com/openedx/frontend-app-learning/>`__
 - `Profile <https://github.com/openedx/frontend-app-profile/>`__
 - `Course Authoring <https://github.com/openedx/frontend-app-course-authoring/>`__
-- `Discussions <https://github.com/opendx/frontend-app-discussions/>`__
-- `Authn <https://github.com/opendx/frontend-app-authn/>`__
+- `Discussions <https://github.com/openedx/frontend-app-discussions/>`__
+- `Authn <https://github.com/openedx/frontend-app-authn/>`__
 
 Instructions for using each of these MFEs are given below.
 
