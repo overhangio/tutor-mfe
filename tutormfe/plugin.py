@@ -49,19 +49,6 @@ config = {
             "repository": "https://github.com/openedx/frontend-app-profile",
             "port": 1995,
         },
-        "AUTHN_MFE_APP": {
-            "name": "auth",
-            "repository": "https://github.com/vunguyen-dmt/frontend-app-authn-login-only",
-            "port": 1999,
-            "env": {
-                "production": {
-                    "DISABLE_ENTERPRISE_LOGIN": "true",
-                    "LOGO_URL": "https://dmt-statics.s3.ap-southeast-1.amazonaws.com/images/GoAmazing_Logo.png",
-                    "LOGO_WHITE_URL": "https://dmt-statics.s3.ap-southeast-1.amazonaws.com/images/GoAmazing_Logo.png",
-                    "ALLOW_PUBLIC_ACCOUNT_CREATION": False
-                },
-            }
-        },
     },
 }
 ALL_MFES = (
