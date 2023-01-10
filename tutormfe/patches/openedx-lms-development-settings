@@ -12,6 +12,7 @@ PROFILE_MICROFRONTEND_URL = "{% if ENABLE_HTTPS %}https://{% else %}http://{% en
 {% endif %}
 {% if MFE_AUTHN_MFE_APP %}
 AUTHN_MICROFRONTEND_URL = "http://{{ MFE_HOST }}:{{ MFE_AUTHN_MFE_APP["port"] }}/{{ MFE_AUTHN_MFE_APP["name"] }}"
+AUTHN_MICROFRONTEND_DOMAIN  = "{{ MFE_HOST }}/{{ MFE_AUTHN_MFE_APP["name"] }}"
 {% endif %}
 
 {% if MFE_DISCUSSIONS_MFE_APP %}
