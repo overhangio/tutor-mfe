@@ -1,5 +1,6 @@
 {% if MFE_ACCOUNT_MFE_APP %}
 (./manage.py lms waffle_flag --list | grep account.redirect_to_microfrontend) || ./manage.py lms waffle_flag --create --everyone account.redirect_to_microfrontend
+./manage.py lms populate_retirement_states
 {% else %}
 ./manage.py lms waffle_delete --flags account.redirect_to_microfrontend
 {% endif %}
@@ -18,4 +19,30 @@ site-configuration unset --domain={{ LMS_HOST }}:8000 ENABLE_PROFILE_MICROFRONTE
 (./manage.py lms waffle_flag --list | grep course_home.course_home_mfe_progress_tab) || ./manage.py lms waffle_flag --create --everyone course_home.course_home_mfe_progress_tab
 {% else %}
 ./manage.py lms waffle_delete --flags course_home.course_home_mfe_progress_tab
+{% endif %}
+
+{% if MFE_COURSE_AUTHORING_MFE_APP %}
+(./manage.py lms waffle_flag --list | grep discussions.pages_and_resources_mfe) || ./manage.py lms waffle_flag --create --everyone discussions.pages_and_resources_mfe
+(./manage.py lms waffle_flag --list | grep new_core_editors.use_new_text_editor) || ./manage.py lms waffle_flag --create --deactivate new_core_editors.use_new_text_editor
+(./manage.py lms waffle_flag --list | grep new_core_editors.use_new_video_editor) || ./manage.py lms waffle_flag --create --deactivate new_core_editors.use_new_video_editor
+(./manage.py lms waffle_flag --list | grep new_core_editors.use_new_problem_editor) || ./manage.py lms waffle_flag --create --deactivate new_core_editors.use_new_problem_editor
+{% else %}
+./manage.py lms waffle_delete --flags discussions.pages_and_resources_mfe
+./manage.py lms waffle_delete --flags new_core_editors.use_new_text_editor
+./manage.py lms waffle_delete --flags new_core_editors.use_new_video_editor
+./manage.py lms waffle_delete --flags new_core_editors.use_new_problem_editor
+{% endif %}
+
+{% if MFE_DISCUSSIONS_MFE_APP %}
+(./manage.py lms waffle_flag --list | grep discussions.enable_discussions_mfe ) || ./manage.py lms waffle_flag --create --everyone discussions.enable_discussions_mfe
+(./manage.py lms waffle_flag --list | grep discussions.enable_learners_tab_in_discussions_mfe ) || ./manage.py lms waffle_flag --create --everyone discussions.enable_learners_tab_in_discussions_mfe
+(./manage.py lms waffle_flag --list | grep discussions.enable_moderation_reason_codes ) || ./manage.py lms waffle_flag --create --everyone discussions.enable_moderation_reason_codes
+(./manage.py lms waffle_flag --list | grep discussions.enable_reported_content_email_notifications ) || ./manage.py lms waffle_flag --create --everyone discussions.enable_reported_content_email_notifications
+(./manage.py lms waffle_flag --list | grep discussions.enable_learners_stats ) || ./manage.py lms waffle_flag --create --everyone discussions.enable_learners_stats
+{% else %}
+./manage.py lms waffle_delete --flags discussions.enable_discussions_mfe
+./manage.py lms waffle_delete --flags discussions.enable_learners_tab_in_discussions_mfe
+./manage.py lms waffle_delete --flags discussions.enable_moderation_reason_codes
+./manage.py lms waffle_delete --flags discussions.enable_reported_content_email_notifications
+./manage.py lms waffle_delete --flags discussions.enable_learners_stats
 {% endif %}

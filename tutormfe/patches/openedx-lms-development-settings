@@ -10,6 +10,14 @@ LEARNING_MICROFRONTEND_URL = "http://{{ MFE_HOST }}:{{ MFE_LEARNING_MFE_APP["por
 {% if MFE_PROFILE_MFE_APP %}
 PROFILE_MICROFRONTEND_URL = "{% if ENABLE_HTTPS %}https://{% else %}http://{% endif %}{{ MFE_HOST }}:{{ MFE_PROFILE_MFE_APP["port"] }}/{{ MFE_PROFILE_MFE_APP["name"] }}/u/"
 {% endif %}
+{% if MFE_AUTHN_MFE_APP %}
+AUTHN_MICROFRONTEND_URL = "http://{{ MFE_HOST }}:{{ MFE_AUTHN_MFE_APP["port"] }}/{{ MFE_AUTHN_MFE_APP["name"] }}"
+{% endif %}
+
+{% if MFE_DISCUSSIONS_MFE_APP %}
+DISCUSSIONS_MICROFRONTEND_URL = "http://{{ MFE_HOST }}:{{ MFE_DISCUSSIONS_MFE_APP["port"] }}/{{ MFE_DISCUSSIONS_MFE_APP["name"] }}"
+DISCUSSIONS_MFE_FEEDBACK_URL = None
+{% endif %}
 
 {% for app in iter_values_named(suffix="MFE_APP") %}
 # {{ app["name"] }} MFE
@@ -17,3 +25,39 @@ CORS_ORIGIN_WHITELIST.append("http://{{ MFE_HOST }}:{{ app["port"] }}")
 LOGIN_REDIRECT_WHITELIST.append("{{ MFE_HOST }}:{{ app["port"] }}")
 CSRF_TRUSTED_ORIGINS.append("{{ MFE_HOST }}:{{ app["port"] }}")
 {% endfor %}
+
+# Dynamic config API settings
+# https://openedx.github.io/frontend-platform/module-Config.html
+MFE_CONFIG = {
+    "BASE_URL": "{{ MFE_HOST }}",
+    "CSRF_TOKEN_API_PATH": "/csrf/api/v1/token",
+{%- if MFE_PROFILE_MFE_APP %}
+    "ACCOUNT_PROFILE_URL": "http://{{ MFE_HOST }}:{{ MFE_PROFILE_MFE_APP["port"] }}",
+{%- endif %}
+    "CREDENTIALS_BASE_URL": "",
+    "DISCOVERY_API_BASE_URL": "{% if DISCOVERY_HOST is defined %}http://{{ DISCOVERY_HOST }}:8381{% endif %}",
+    "FAVICON_URL": "http://{{ LMS_HOST }}/favicon.ico",
+    "LANGUAGE_PREFERENCE_COOKIE_NAME": "openedx-language-preference",
+    "LMS_BASE_URL": "http://{{ LMS_HOST }}:8000",
+    "LOGIN_URL": "http://{{ LMS_HOST }}:8000/login",
+    "LOGO_URL": "http://{{ LMS_HOST }}:8000/theming/asset/images/logo.png",
+    "LOGO_WHITE_URL": "http://{{ LMS_HOST }}:8000/theming/asset/images/logo.png",
+    "LOGO_TRADEMARK_URL": "http://{{ LMS_HOST }}:8000/theming/asset/images/logo.png",
+    "LOGOUT_URL": "http://{{ LMS_HOST }}:8000/logout",
+    "MARKETING_SITE_BASE_URL": "http://{{ LMS_HOST }}:8000",
+    "REFRESH_ACCESS_TOKEN_ENDPOINT": "http://{{ LMS_HOST }}:8000/login_refresh",
+    "SITE_NAME": "{{ PLATFORM_NAME }}",
+    "STUDIO_BASE_URL": "http://{{ CMS_HOST }}:8001",
+    "USER_INFO_COOKIE_NAME": "user-info",
+    "ACCESS_TOKEN_COOKIE_NAME": "edx-jwt-cookie-header-payload",
+{%- if MFE_LEARNING_MFE_APP %}
+    "LEARNING_BASE_URL": "http://{{ MFE_HOST }}:{{ MFE_LEARNING_MFE_APP["port"] }}",
+{%- endif %}
+{%- if MFE_COURSE_AUTHORING_MFE_APP %}
+    "ENABLE_NEW_EDITOR_PAGES": True,
+    "ENABLE_PROGRESS_GRAPH_SETTINGS": True,
+{%- endif %}
+{%- if MFE_AUTHN_MFE_APP %}
+    "DISABLE_ENTERPRISE_LOGIN": True,
+{%- endif %}
+}

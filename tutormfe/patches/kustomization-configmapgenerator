@@ -1,0 +1,6 @@
+- name: mfe-caddy-config
+  files:
+    - plugins/mfe/apps/mfe/Caddyfile
+  options:
+    labels:
+        app.kubernetes.io/name: mfe

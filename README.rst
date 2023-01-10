@@ -5,10 +5,13 @@ This plugin makes it possible to easily add micro frontend (MFE) applications on
 
 In addition, this plugin comes with a few MFEs which are enabled by default:
 
-- `Account <https://github.com/edx/frontend-app-account/>`__
-- `Gradebook <https://github.com/edx/frontend-app-gradebook/>`__
-- `Learning <https://github.com/edx/frontend-app-learning/>`__
-- `Profile <https://github.com/edx/frontend-app-profile/>`__
+- `Account <https://github.com/openedx/frontend-app-account/>`__
+- `Gradebook <https://github.com/openedx/frontend-app-gradebook/>`__
+- `Learning <https://github.com/openedx/frontend-app-learning/>`__
+- `Profile <https://github.com/openedx/frontend-app-profile/>`__
+- `Course Authoring <https://github.com/openedx/frontend-app-course-authoring/>`__
+- `Discussions <https://github.com/openedx/frontend-app-discussions/>`__
+- `Authn <https://github.com/openedx/frontend-app-authn/>`__
 
 Instructions for using each of these MFEs are given below.
 
@@ -22,10 +25,17 @@ Installation
 Usage
 -----
 
-::
+To enable this plugin, run::
 
     tutor plugins enable mfe
-    tutor local quickstart
+    tutor local launch
+
+When running the plugin in production, it is recommended that you set up a catch-all CNAME for subdomains at the DNS provider: see the `Configuring DNS Records <https://docs.tutor.overhang.io/install.html#configuring-dns-records>`__ section in the Tutor documentation for more details.  This way, the plugin will work out of the box with no additional configuration.  Which is to say, if your ``LMS_HOST`` is set to `myopenedx.com` the MFEs this plugin provides will be accessible under `apps.myopenedx.com` by default.
+
+To check what the current value of `MFE_HOST` is actually set to, run the following::
+
+    tutor config printvalue MFE_HOST
+
 
 Account
 ~~~~~~~
@@ -59,13 +69,37 @@ Profile
 
 Edit and display user-specific profile information. The profile page of every user is visible at ``http(s)://{{ MFE_HOST }}/profile/u/{{ username }}``. For instance, when running locally, the profile page of the "admin" user is: http://apps.local.overhang.io/profile/u/admin.
 
+Course Authoring
+~~~~~~~~~~~~~~~~
+
+.. image:: https://raw.githubusercontent.com/overhangio/tutor-mfe/master/screenshots/course-authoring.png
+    :alt: Course Authoring MFE screenshot
+
+This MFE is meant for course authors and maintainers. For a given course, it exposes a "Pages & Resources" menu in Studio where one can enable or disable a variety of features, including, for example, the Wiki and Discussions.  Optionally, it allows authors to replace the legacy HTML, Video, and Problem authoring tools with experimental React-based versions, as well as exposing a new proctoring interface that can be enabled if the `edx-exams <https://github.com/edx/edx-exams>`_ service is available.
+
+Discussions
+~~~~~~~~~~~
+
+.. image:: https://raw.githubusercontent.com/overhangio/tutor-mfe/master/screenshots/discussions.png
+    :alt: Discussions MFE screenshot
+
+The Discussions MFE updates the previous discussions UI with a new look and better features.
+
+Authn
+~~~~~~~~~
+
+.. image:: https://raw.githubusercontent.com/overhangio/tutor-mfe/master/screenshots/authn.png
+    :alt: Authn MFE screenshot
+
+This is a micro-frontend application responsible for the login, registration and password reset functionality.
+
 MFE management
 --------------
 
 Adding new MFEs
 ~~~~~~~~~~~~~~~
 
-Other Tutor plugin developers can take advantage of this plugin to deploy their own MFEs. To declare a new MFE, a new configuration setting should be created with the "_MFE_APP" suffix. This configuration setting should include the name, repository, development port and production/development settings for the MFE. For example::
+Other Tutor plugin developers can take advantage of this plugin to deploy their own MFEs. To declare a new MFE, a new configuration setting should be created with the "_MFE_APP" suffix. This configuration setting should include the name, git repository (and optionally: git branch) and development port. For example::
 
     config = {
         "defaults": {
@@ -73,19 +107,12 @@ Other Tutor plugin developers can take advantage of this plugin to deploy their 
                 "name": "mymfe",
                 "repository": "https://github.com/myorg/mymfe",
                 "port": 2001,
-                "env": {
-                    "production": {
-                        "MY_CUSTOM_MFE_SETTING": "prod value"
-                    },
-                    "development": {
-                        "MY_CUSTOM_MFE_SETTING": "dev value"
-                    }
-                }
+                "version": "me/my-custom-branch", # optional
             }
         }
     }
 
-The MFE assets will then be bundled in the "mfe" Docker image and served at ``http(s)://{{ MFE_HOST }}/{{ MYMFE_MFE_APP["name"] }}``. Developers are free to add extra template patches to their plugins, as usual: for instance LMS setting patches to make sure that the LMS correctly connects to the MFEs.
+The MFE assets will then be bundled in the "mfe" Docker image whenever it is rebuilt with `tutor images build mfe`. Assets will be served at ``http(s)://{{ MFE_HOST }}/{{ MYMFE_MFE_APP["name"] }}``. Developers are free to add extra template patches to their plugins, as usual: for instance LMS setting patches to make sure that the LMS correctly connects to the MFEs.
 
 Disabling individual MFEs
 ~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -95,6 +122,9 @@ To disable an existing MFE, set its corresponding configuration setting to "null
     tutor config save --set MFE_ACCOUNT_MFE_APP=null
     tutor config save --set MFE_GRADEBOOK_MFE_APP=null
     tutor config save --set MFE_PROFILE_MFE_APP=null
+    tutor config save --set MFE_COURSE_AUTHORING_MFE_APP=null
+    tutor config save --set MFE_DISCUSSIONS_MFE_APP=null
+    tutor config save --set MFE_AUTHN_MFE_APP=null
 
 Adding custom translations to your MFEs
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -124,41 +154,60 @@ Your custom translation strings should now appear in your app.
 Customising MFEs
 ~~~~~~~~~~~~~~~~
 
-To change the MFEs logos from the default to your own logos, override the corresponding settings in the MFEs environment using patches `mfe-env-production` and `mfe-env-development`. For example, using the following plugin:
+To change the MFEs logos from the default to your own logos, override the corresponding settings in the MFEs environment using patches `openedx-lms-production-settings` and `openedx-lms-development-settings`. For example, using the following plugin:
 ::
 
-    name: mfe_branding_plugin
-    version: 0.1.0
-    patches:
-      mfe-env-development: |
-        LOGO_URL=<URL>/logo.svg
-        LOGO_TRADEMARK_URL=<URL>/logo-trademark.svg
-        LOGO_WHITE_URL=<URL>/logo-white.svg
-        FAVICON_URL=<URL>/favicon.ico
-      mfe-env-production: |
-        LOGO_URL=<URL>/logo.svg
-        LOGO_TRADEMARK_URL=<URL>/logo-trademark.svg
-        LOGO_WHITE_URL=<URL>/logo-white.svg
-        FAVICON_URL=<URL>/favicon.ico
+    from tutor import hooks
+
+    hooks.Filters.ENV_PATCHES.add_item(
+        (
+            "openedx-lms-development-settings",
+            """
+    MFE_CONFIG["LOGO_URL"] = "<URL>/logo.svg"
+    MFE_CONFIG["LOGO_TRADEMARK_URL"] = "<URL>/logo-trademark.svg"
+    MFE_CONFIG["LOGO_WHITE_URL"] = "<URL>/logo-white.svg"
+    MFE_CONFIG["FAVICON_URL"] = "<URL>/favicon.ico"
+    """
+        ),
+        (
+            "openedx-lms-production-settings",
+            """
+    MFE_CONFIG["LOGO_URL"] = "<URL>/logo.svg"
+    MFE_CONFIG["LOGO_TRADEMARK_URL"] = "<URL>/logo-trademark.svg"
+    MFE_CONFIG["LOGO_WHITE_URL"] = "<URL>/logo-white.svg"
+    MFE_CONFIG["FAVICON_URL"] = "<URL>/favicon.ico"
+    """
+        ),
+    )
 
 To install custom components for the MFEs, such as the `header <https://github.com/openedx/frontend-component-header>`_ and `footer <https://github.com/openedx/frontend-component-footer>`_, override the components by adding a patch to ``mfe-dockerfile-post-npm-install`` in your plugin:
 ::
 
-    patches:
-        ...
-        mfe-dockerfile-post-npm-install: |
-            # npm package
-            RUN npm install '@edx/frontend-component-header@npm:@edx/frontend-component-header-edx@latest'
-            # git repository
-            RUN npm install '@edx/frontend-component-footer@git+https://github.com/edx/frontend-component-header-edx.git'
+    from tutor import hooks
+
+    hooks.Filters.ENV_PATCHES.add_item(
+        (
+            "mfe-dockerfile-post-npm-install",
+            """
+    # npm package
+    RUN npm install '@edx/frontend-component-header@npm:@edx/frontend-component-header-edx@latest'
+    # git repository
+    RUN npm install '@edx/frontend-component-footer@git+https://github.com/edx/frontend-component-footer-edx.git'
+    """
+        )
+    )
 
 The same applies to installing a custom `brand <https://github.com/openedx/brand-openedx>`_ package:
 ::
 
-    patches:
-        ...
-        mfe-dockerfile-post-npm-install: |
-            RUN npm install '@edx/brand@git+https://github.com/edx/brand-edx.org.git'
+    hooks.Filters.ENV_PATCHES.add_item(
+        (
+            "mfe-dockerfile-post-npm-install",
+            """
+    RUN npm install '@edx/brand@git+https://github.com/edx/brand-edx.org.git'
+    """
+        )
+    )
 
 
 Installing from a private npm registry
@@ -168,24 +217,18 @@ In case you need to install components from a private NPM registry, you can appe
 In some cases, for example when using `GitLab's NPM package registry <https://docs.gitlab.com/ee/user/packages/npm_registry/>`_, you might also need to provide a token for your registry, which can be done with an additional ``npm config set`` command as well:
 ::
 
-    patches:
-        ...
-        mfe-dockerfile-post-npm-install: |
-            RUN npm config set @foo:registry https://gitlab.example.com/api/v4/projects/<your_project_id>/packages/npm/
-            RUN npm config set '//gitlab.example.com/api/v4/projects/<your_project_id>/packages/npm/:_authToken' '<your_token>'
-            RUN npm install '@edx/frontend-component-header@npm:@foo/<your_frontend_component_header_name>@latest'
+    from tutor import hooks
 
-Running MFEs on Kubernetes
---------------------------
-
-The MFE plugin works a bit differently than other Tutor plugins. MFEs are static bundles of js/html/css code that must be re-generated after every change to their configuration. In practice, this means that the "mfe" Docker image should be re-built and re-deployed every time we run ``tutor config save``. This happens transparently when running Open edX locally (with ``tutor local``). But when running on Kubernetes, you need to re-build the "mfe" image manually and push it to a remote registry. In effect, you must run::
-
-    tutor config save --set MFE_DOCKER_IMAGE=docker.io/yourusername/openedx-mfe:latest
-    tutor images build mfe
-    tutor images push mfe
-    tutor k8s start
-
-We consider that this situation is less than ideal. An improvement would be to self-host a Docker registry and an image-building pipeline on Kubernetes. If you are interested in such a solution, please let your voice be heard on the `Tutor community forums <https://discuss.overhang.io>`__.
+    hooks.Filters.ENV_PATCHES.add_item(
+        (
+            "mfe-dockerfile-post-npm-install",
+            """
+    RUN npm config set @foo:registry https://gitlab.example.com/api/v4/projects/<your_project_id>/packages/npm/
+    RUN npm config set '//gitlab.example.com/api/v4/projects/<your_project_id>/packages/npm/:_authToken' '<your_token>'
+    RUN npm install '@edx/frontend-component-header@npm:@foo/<your_frontend_component_header_name>@latest'
+    """
+        )
+    )
 
 MFE development
 ---------------
@@ -231,15 +274,34 @@ To disable this plugin run::
 
     tutor plugins disable mfe
 
-You will also have to manually remove a few waffle flags::
+You will also have to manually remove a few settings::
 
+    # MFE account
     tutor local run lms ./manage.py lms waffle_delete --flags account.redirect_to_microfrontend
+
+    # MFE profile
     tutor local run lms ./manage.py lms waffle_delete --flags learner_profile.redirect_to_microfrontend
+    tutor local run lms ./manage.py lms waffle_delete --flags discussions.pages_and_resources_mfe
+    tutor local run lms ./manage.py lms waffle_delete --flags new_core_editors.use_new_text_editor
+    tutor local run lms ./manage.py lms waffle_delete --flags new_core_editors.use_new_video_editor
+    tutor local run lms ./manage.py lms waffle_delete --flags new_core_editors.use_new_problem_editor
     tutor local run lms site-configuration unset ENABLE_PROFILE_MICROFRONTEND
+
+    # MFE discussions
+    tutor local run lms ./manage.py lms waffle_delete --flags discussions.enable_discussions_mfe
+    tutor local run lms ./manage.py lms waffle_delete --flags discussions.enable_learners_tab_in_discussions_mfe
+    tutor local run lms ./manage.py lms waffle_delete --flags discussions.enable_moderation_reason_codes
+    tutor local run lms ./manage.py lms waffle_delete --flags discussions.enable_reported_content_email_notifications
+    tutor local run lms ./manage.py lms waffle_delete --flags discussions.enable_learners_stats
 
 Finally, restart the platform with::
 
-    tutor local quickstart
+    tutor local launch
+
+Troubleshooting
+---------------
+
+This Tutor plugin is maintained by Adolfo Brandes from `tCRIL <https://openedx.org>`__. Community support is available from the official `Open edX forum <https://discuss.openedx.org>`__. Do you need help with this plugin? See the `troubleshooting <https://docs.tutor.overhang.io/troubleshooting.html>`__ section from the Tutor documentation.
 
 License
 -------

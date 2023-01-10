@@ -1,6 +1,8 @@
 # MFE
 mfe:
     image: {{ MFE_DOCKER_IMAGE }}
-    build:
-        context: ../plugins/mfe/build/mfe/
     restart: unless-stopped
+    volumes:
+        - ../plugins/mfe/apps/mfe/Caddyfile:/etc/caddy/Caddyfile:ro
+    depends_on:
+        - lms

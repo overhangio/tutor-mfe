@@ -1,25 +1,14 @@
 # MFE apps
 {% for app in iter_values_named(suffix="MFE_APP") %}
 {{ app["name"] }}:
-    image: {{ app["name"] }}
-    build:
-        context: ../plugins/mfe/build/mfe/
-        target: {{ app["name"] }}-dev
+    image: "{{ DOCKER_REGISTRY }}overhangio/openedx-{{ app["name"] }}-dev:{{ MFE_VERSION }}"
     ports:
         - "{{ app["port"] }}:{{ app["port"] }}"
     stdin_open: true
     tty: true
     volumes:
         - ../plugins/mfe/apps/mfe/webpack.dev-tutor.config.js:/openedx/app/webpack.dev-tutor.config.js:ro
-    env_file:
-        - ../plugins/mfe/build/mfe/env/production
-        - ../plugins/mfe/build/mfe/env/development
-    environment:
-        - "PORT={{ app['port'] }}"
-        {%- for key, value in app.get("env", {}).get("production", {}).items() %}
-        - "{{ key }}={{ value }}"
-        {% endfor %}
-        {%- for key, value in app.get("env", {}).get("development", {}).items() %}
-        - "{{ key }}={{ value }}"
-        {%- endfor %}
+    restart: unless-stopped
+    depends_on:
+        - lms
 {% endfor %}
