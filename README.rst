@@ -112,7 +112,7 @@ Other Tutor plugin developers can take advantage of this plugin to deploy their 
         }
     }
 
-The MFE assets will then be bundled in the "mfe" Docker image whenever it is rebuilt with `tutor images build mfe`. Assets will be served at ``http(s)://{{ MFE_HOST }}/{{ MYMFE_MFE_APP["name"] }}``. Developers are free to add extra template patches to their plugins, as usual: for instance LMS setting patches to make sure that the LMS correctly connects to the MFEs.
+The MFE assets will then be bundled in the "mfe" Docker image whenever it is rebuilt with ``tutor images build mfe``. Assets will be served at ``http(s)://{{ MFE_HOST }}/{{ MYMFE_MFE_APP["name"] }}``. Developers are free to add extra template patches to their plugins, as usual: for instance LMS setting patches to make sure that the LMS correctly connects to the MFEs.
 
 Disabling individual MFEs
 ~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -159,25 +159,27 @@ To change the MFEs logos from the default to your own logos, override the corres
 
     from tutor import hooks
 
-    hooks.Filters.ENV_PATCHES.add_item(
-        (
-            "openedx-lms-development-settings",
-            """
-    MFE_CONFIG["LOGO_URL"] = "<URL>/logo.svg"
-    MFE_CONFIG["LOGO_TRADEMARK_URL"] = "<URL>/logo-trademark.svg"
-    MFE_CONFIG["LOGO_WHITE_URL"] = "<URL>/logo-white.svg"
-    MFE_CONFIG["FAVICON_URL"] = "<URL>/favicon.ico"
-    """
-        ),
-        (
-            "openedx-lms-production-settings",
-            """
-    MFE_CONFIG["LOGO_URL"] = "<URL>/logo.svg"
-    MFE_CONFIG["LOGO_TRADEMARK_URL"] = "<URL>/logo-trademark.svg"
-    MFE_CONFIG["LOGO_WHITE_URL"] = "<URL>/logo-white.svg"
-    MFE_CONFIG["FAVICON_URL"] = "<URL>/favicon.ico"
-    """
-        ),
+    hooks.Filters.ENV_PATCHES.add_items(
+        [
+            (
+                "openedx-lms-development-settings",
+                """
+        MFE_CONFIG["LOGO_URL"] = "<URL>/logo.svg"
+        MFE_CONFIG["LOGO_TRADEMARK_URL"] = "<URL>/logo-trademark.svg"
+        MFE_CONFIG["LOGO_WHITE_URL"] = "<URL>/logo-white.svg"
+        MFE_CONFIG["FAVICON_URL"] = "<URL>/favicon.ico"
+        """
+            ),
+            (
+                "openedx-lms-production-settings",
+                """
+        MFE_CONFIG["LOGO_URL"] = "<URL>/logo.svg"
+        MFE_CONFIG["LOGO_TRADEMARK_URL"] = "<URL>/logo-trademark.svg"
+        MFE_CONFIG["LOGO_WHITE_URL"] = "<URL>/logo-white.svg"
+        MFE_CONFIG["FAVICON_URL"] = "<URL>/favicon.ico"
+        """
+            ),
+        ]
     )
 
 To install custom components for the MFEs, such as the `header <https://github.com/openedx/frontend-component-header>`_ and `footer <https://github.com/openedx/frontend-component-footer>`_, override the components by adding a patch to ``mfe-dockerfile-post-npm-install`` in your plugin:
