@@ -308,4 +308,4 @@ This Tutor plugin is maintained by Adolfo Brandes from `tCRIL <https://openedx.o
 License
 -------
 
-This software is licensed under the terms of the AGPLv3.
+This software is licensed under the terms of the `GNU Affero General Public License (AGPL) <https://github.com/overhangio/tutor-mfe/blob/master/LICENSE.txt>`_.
