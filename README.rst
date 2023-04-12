@@ -7,12 +7,10 @@ In addition, this plugin comes with a few MFEs which are enabled by default:
 
 - `Authn <https://github.com/openedx/frontend-app-authn/>`__
 - `Account <https://github.com/openedx/frontend-app-account/>`__
-- `Communications <https://github.com/openedx/frontend-app-communications/>`__
 - `Course Authoring <https://github.com/openedx/frontend-app-course-authoring/>`__
 - `Discussions <https://github.com/openedx/frontend-app-discussions/>`__
 - `Gradebook <https://github.com/openedx/frontend-app-gradebook/>`__
 - `Learning <https://github.com/openedx/frontend-app-learning/>`__
-- `ORA Grading <https://github.com/openedx/frontend-app-ora-grading/>`__
 - `Profile <https://github.com/openedx/frontend-app-profile/>`__
 
 Instructions for using each of these MFEs are given below.
@@ -54,14 +52,6 @@ Account
 
 An MFE to manage account-specific information for every LMS user. Each user's account page is available at ``http(s)://{{ MFE_HOST }}/account``. For instance, when running locally: https://apps.local.overhang.io/account.
 
-Communications
-~~~~~~~~~~~~~~
-
-.. image:: https://raw.githubusercontent.com/overhangio/tutor-mfe/master/screenshots/communications.png
-    :alt: Communications MFE screenshot
-
-The Communications micro-frontend exposes an interface for course teams to communicate with learners.  It achieves this by allowing instructors to send out emails in bulk, either by scheduling them or on demand.
-
 Course Authoring
 ~~~~~~~~~~~~~~~~
 
@@ -81,34 +71,10 @@ The Discussions MFE updates the previous discussions UI with a new look and bett
 Gradebook
 ~~~~~~~~~
 
-.. image:: https://raw.githubusercontent.com/overhangio/tutor-mfe/master/screenshots/gradebook.png
-    :alt: Gradebook MFE screenshot
+.. image:: https://raw.githubusercontent.com/overhangio/tutor-mfe/master/screenshots/communications.png
+    :alt: Communications MFE screenshot
 
-This instructor-only MFE is for viewing individual and aggregated grade results for a course. To access this MFE, go to a course → Instructor tab → Student Admin → View gradebook. The URL should be: ``http(s)://{{ MFE_HOST }}/gradebook/{{ course ID }}``. When running locally, the gradebook of the demo course is available at: http://apps.local.overhang.io/gradebook/course-v1:edX+DemoX+Demo_Course
-
-Learning
-~~~~~~~~
-
-.. image:: https://raw.githubusercontent.com/overhangio/tutor-mfe/master/screenshots/learning.png
-    :alt: Learning MFE screenshot
-
-The Learning MFE replaces the former courseware, which is the core part of the LMS where students follow courses.
-
-ORA Grading
-~~~~~~~~~~~
-
-.. image:: https://raw.githubusercontent.com/overhangio/tutor-mfe/master/screenshots/ora-grading.png
-    :alt: ORA Grading MFE screenshot
-
-When enabled, Open Response Assessments ("ORA") that have a staff grading step will link to this new MFE, either when clicking "Grade Available Responses" from the exercise itself, or via a link in the Instructor Dashboard.  It is meant to streamline the grading process with better previews of submitted content.
-
-Profile
-~~~~~~~~~
-
-.. image:: https://raw.githubusercontent.com/overhangio/tutor-mfe/master/screenshots/profile.png
-    :alt: Profile MFE screenshot
-
-Edit and display user-specific profile information. The profile page of every user is visible at ``http(s)://{{ MFE_HOST }}/profile/u/{{ username }}``. For instance, when running locally, the profile page of the "admin" user is: http://apps.local.overhang.io/profile/u/admin.
+The Communications micro-frontend exposes an interface for course teams to communicate with learners.  It achieves this by allowing instructors to send out emails in bulk, either by scheduling them or on demand.
 
 
 MFE management
@@ -119,9 +85,9 @@ Adding new MFEs
 
 .. warning:: As of Tutor v16 (Palm release) it is no longer possible to add new MFEs by creating ``*_MFE_APP`` settings. Instead, users must implement the approach described here.
 
-Other MFE developers can take advantage of this plugin to deploy their own MFEs. To declare a new MFE, create a Tutor plugin and add your MFE configuration to the ``tutormfe.hooks.MFE_APPS`` filter. This configuration should include the name, git repository (and optionally: git branch) and development port. For example::
+Other MFE developers can take advantage of this plugin to deploy their own MFEs. To declare a new MFE, create a Tutor plugin and add your MFE configuration to the ``tutormfe.plugin.MFE_APPS`` filter. This configuration should include the name, git repository (and optionally: git branch) and development port. For example::
 
-    from tutormfe.hooks import MFE_APPS
+    from tutormfe.plugin import MFE_APPS
 
     @MFE_APPS.add()
     def _add_my_mfe(mfes):
@@ -129,16 +95,10 @@ Other MFE developers can take advantage of this plugin to deploy their own MFEs.
             "repository": "https://github.com/myorg/mymfe",
             "port": 2001,
             "version": "me/my-custom-branch", # optional, will default to the Open edX current tag.
-            "refs": https://api.github.com/repos/myorg/mymfe/git/refs/heads", # optional
         }
         return mfes
 
-The MFE assets will then be bundled in the "mfe" Docker image whenever it is rebuilt with ``tutor images build mfe``. Providing a ``refs`` URL will ensure the build cache for that MFE is invalidated whenever a change is detected upstream at the git version in question.  You can use the `GitHub references API`_ or the `GitLab branches API`_ for this.
-
-.. _GitHub references API: https://docs.github.com/en/rest/git/refs?apiVersion=2022-11-28#get-a-reference
-.. _GitLab branches API: https://docs.gitlab.com/ee/api/branches.html#get-single-repository-branch
-
-Assets will be served at ``http(s)://{{ MFE_HOST }}/mymfe``. Developers are free to add extra template patches to their plugins, as usual: for instance LMS setting patches to make sure that the LMS correctly connects to the MFEs.
+The MFE assets will then be bundled in the "mfe" Docker image whenever it is rebuilt with ``tutor images build mfe``. Assets will be served at ``http(s)://{{ MFE_HOST }}/mymfe``. Developers are free to add extra template patches to their plugins, as usual: for instance LMS setting patches to make sure that the LMS correctly connects to the MFEs.
 
 Disabling individual MFEs
 ~~~~~~~~~~~~~~~~~~~~~~~~~
