@@ -1,9 +1,14 @@
+from __future__ import annotations
+
 from glob import glob
 import os
+import typing as t
+
 import pkg_resources
 
 from tutor import hooks as tutor_hooks
 from tutor.hooks import priorities
+from tutor.core.hooks import Filter
 
 from .__about__ import __version__
 
@@ -14,70 +19,76 @@ config = {
         "HOST": "apps.{{ LMS_HOST }}",
         "COMMON_VERSION": "{{ OPENEDX_COMMON_VERSION }}",
         "CADDY_DOCKER_IMAGE": "{{ DOCKER_IMAGE_CADDY }}",
-        "AUTHN_MFE_APP": {
-            "name": "authn",
-            "repository": "https://github.com/openedx/frontend-app-authn",
-            "port": 1999,
-        },
-        "ACCOUNT_MFE_APP": {
-            "name": "account",
-            "repository": "https://github.com/openedx/frontend-app-account",
-            "port": 1997,
-        },
-        "COURSE_AUTHORING_MFE_APP": {
-            "name": "course-authoring",
-            "repository": "https://github.com/openedx/frontend-app-course-authoring",
-            "port": 2001,
-        },
-        "DISCUSSIONS_MFE_APP": {
-            "name": "discussions",
-            "repository": "https://github.com/openedx/frontend-app-discussions",
-            "port": 2002,
-        },
-        "GRADEBOOK_MFE_APP": {
-            "name": "gradebook",
-            "repository": "https://github.com/openedx/frontend-app-gradebook",
-            "port": 1994,
-        },
-        "LEARNING_MFE_APP": {
-            "name": "learning",
-            "repository": "https://github.com/openedx/frontend-app-learning",
-            "port": 2000,
-        },
-        "PROFILE_MFE_APP": {
-            "name": "profile",
-            "repository": "https://github.com/openedx/frontend-app-profile",
-            "port": 1995,
-        },
     },
 }
-ALL_MFES = (
-    "account",
-    "course-authoring",
-    "discussions",
-    "authn",
-    "gradebook",
-    "learning",
-    "profile",
+
+
+MFE_ATTRS_TYPE = t.Dict[t.Literal["repository", "port"], t.Union["str", int]]
+MFE_APPS: Filter[dict[str, MFE_ATTRS_TYPE], []] = Filter()
+CORE_MFE_APPS: dict[str, MFE_ATTRS_TYPE] = {
+    "authn": {
+        "repository": "https://github.com/openedx/frontend-app-authn",
+        "port": 1999,
+    },
+    "account": {
+        "repository": "https://github.com/openedx/frontend-app-account",
+        "port": 1997,
+    },
+    "course-authoring": {
+        "repository": "https://github.com/openedx/frontend-app-course-authoring",
+        "port": 2001,
+    },
+    "discussions": {
+        "repository": "https://github.com/openedx/frontend-app-discussions",
+        "port": 2002,
+    },
+    "gradebook": {
+        "repository": "https://github.com/openedx/frontend-app-gradebook",
+        "port": 1994,
+    },
+    "learning": {
+        "repository": "https://github.com/openedx/frontend-app-learning",
+        "port": 2000,
+    },
+    "profile": {
+        "repository": "https://github.com/openedx/frontend-app-profile",
+        "port": 1995,
+    },
+}
+
+
+# The core MFEs are added with a high priority, such that other users can override or
+# remove them.
+@MFE_APPS.add(priority=tutor_hooks.priorities.HIGH)
+def _add_core_mfe_apps(apps: dict[str, MFE_ATTRS_TYPE]) -> dict[str, MFE_ATTRS_TYPE]:
+    apps.update(CORE_MFE_APPS)
+    return apps
+
+
+def iter_mfes() -> t.Iterable[tuple[str, MFE_ATTRS_TYPE]]:
+    """
+    Yield:
+
+        (name, dict)
+    """
+    yield from MFE_APPS.apply({}).items()
+
+
+def is_mfe_enabled(mfe_name: str) -> bool:
+    return mfe_name in MFE_APPS.apply({})
+
+
+# Make the mfe functions available within templates
+tutor_hooks.Filters.ENV_TEMPLATE_VARIABLES.add_items(
+    [("iter_mfes", iter_mfes), ("is_mfe_enabled", is_mfe_enabled)]
 )
 
-with open(
-    os.path.join(
-        pkg_resources.resource_filename("tutormfe", "templates"),
-        "mfe",
-        "tasks",
-        "lms",
-        "init",
-    ),
-    encoding="utf-8",
-) as task_file:
-    tutor_hooks.Filters.CLI_DO_INIT_TASKS.add_item(("lms", task_file.read()))
 
 # Build, pull and push mfe base image
 tutor_hooks.Filters.IMAGES_BUILD.add_item(
     (
         "mfe",
-        ("plugins", "mfe", "build", "mfe"),
+        os.path.join("plugins", "mfe", "build", "mfe"),
         "{{ MFE_DOCKER_IMAGE }}",
         (),
     )
@@ -95,39 +106,93 @@ tutor_hooks.Filters.IMAGES_PUSH.add_item(
     )
 )
 
+
 # Build, pull and push {mfe}-dev images
-for mfe in ALL_MFES:
-    name = f"{mfe}-dev"
-    tag = "{{ DOCKER_REGISTRY }}overhangio/openedx-" + mfe + "-dev:{{ MFE_VERSION }}"
+for mfe_name, mfe_attrs in iter_mfes():
+    name = f"{mfe_name}-dev"
+    tag = "{{ DOCKER_REGISTRY }}overhangio/openedx-" + name + ":{{ MFE_VERSION }}"
     tutor_hooks.Filters.IMAGES_BUILD.add_item(
         (
             name,
-            ("plugins", "mfe", "build", "mfe"),
+            os.path.join("plugins", "mfe", "build", "mfe"),
             tag,
-            (f"--target={mfe}-dev",),
+            (f"--target={mfe_name}-dev",),
         )
     )
     tutor_hooks.Filters.IMAGES_PULL.add_item((name, tag))
     tutor_hooks.Filters.IMAGES_PUSH.add_item((name, tag))
 
 
+# init script
+with open(
+    os.path.join(
+        pkg_resources.resource_filename("tutormfe", "templates"),
+        "mfe",
+        "tasks",
+        "lms",
+        "init",
+    ),
+    encoding="utf-8",
+) as task_file:
+    tutor_hooks.Filters.CLI_DO_INIT_TASKS.add_item(("lms", task_file.read()))
+
+REPO_PREFIX = "frontend-app-"
+
+
 @tutor_hooks.Filters.COMPOSE_MOUNTS.add()
-def _mount_frontend_apps(volumes, name):
+def _mount_frontend_apps(volumes, path_basename):
     """
     If the user mounts any repo named frontend-app-APPNAME, then make sure
     it's available in the APPNAME service container. This is only applicable
     in dev mode, because in production, all MFEs are built and hosted on the
     singular 'mfe' service container.
     """
-    prefix = "frontend-app-"
-    if name.startswith(prefix):
+    if path_basename.startswith(REPO_PREFIX):
         # Assumption:
         # For each repo named frontend-app-APPNAME, there is an associated
         # docker-compose service named APPNAME. If this assumption is broken,
         # then Tutor will try to mount the repo in a service that doesn't exist.
-        app_name = name.split(prefix)[1]
+        app_name = path_basename[len(REPO_PREFIX) :]
         volumes += [(app_name, "/openedx/app")]
     return volumes
+
+
+@tutor_hooks.Filters.IMAGES_BUILD_MOUNTS.add()
+def _mount_frontend_apps_on_build(
+    mounts: list[tuple[str, str]], host_path: str
+) -> list[tuple[str, str]]:
+    path_basename = os.path.basename(host_path)
+    if path_basename.startswith(REPO_PREFIX):
+        # Bind-mount repo at build-time, both for prod and dev images
+        app_name = path_basename[len(REPO_PREFIX) :]
+        mounts.append(("mfe", f"{app_name}-src"))
+        mounts.append((f"{app_name}-dev", f"{app_name}-src"))
+    return mounts
+
+
+@tutor_hooks.Filters.APP_PUBLIC_HOSTS.add()
+def _print_mfe_public_hosts(
+    hostnames: list[str], context_name: t.Literal["local", "dev"]
+) -> list[str]:
+    if context_name == "local":
+        hostnames.append("{{ MFE_HOST }}")
+    else:
+        for mfe_name, mfe_attrs in iter_mfes():
+            hostnames.append("{{ MFE_HOST }}" + f":{mfe_attrs['port']}/{mfe_name}")
+    return hostnames
+
+
+@tutor_hooks.Filters.IMAGES_BUILD_REQUIRED.add()
+def _build_3rd_party_dev_mfes_on_launch(
+    image_names: list[str], context_name: t.Literal["local", "dev"]
+) -> list[str]:
+    if context_name == "dev":
+        for mfe_name, _mfe_attrs in iter_mfes():
+            if mfe_name not in CORE_MFE_APPS:
+                # We don't require to build core MFEs because images are available from
+                # the public registry.
+                image_names.append(f"{mfe_name}-dev")
+    return image_names
 
 
 # Boilerplate code
