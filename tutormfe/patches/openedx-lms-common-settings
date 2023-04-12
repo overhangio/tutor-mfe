@@ -3,7 +3,12 @@
 # the frontend. (5 minutes, hardcoded)
 ENABLE_MFE_CONFIG_API = True
 MFE_CONFIG_API_CACHE_TIMEOUT = 1
-{% if MFE_AUTHN_MFE_APP %}
-FEATURES['ENABLE_AUTHN_MICROFRONTEND'] = True
-{% endif %}
 
+# MFE-specific settings
+{% for app_name, app in iter_mfes() %}
+{% if app_name == "authn" %}
+FEATURES['ENABLE_AUTHN_MICROFRONTEND'] = True
+{% elif app_name == "communications" %}
+FEATURES['ENABLE_NEW_BULK_EMAIL_EXPERIENCE'] = True
+{% endif %}
+{% endfor %}
