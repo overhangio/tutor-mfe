@@ -1,6 +1,9 @@
-{% if MFE_COURSE_AUTHORING_MFE_APP %}
-COURSE_AUTHORING_MICROFRONTEND_URL = "{% if ENABLE_HTTPS %}https://{% else %}http://{% endif %}{{ MFE_HOST }}/{{ MFE_COURSE_AUTHORING_MFE_APP["name"] }}"
+# MFE-specific settings
+{% for app_name, app in iter_mfes() %}
+{% if app_name == "course-authoring" %}
+COURSE_AUTHORING_MICROFRONTEND_URL = "{% if ENABLE_HTTPS %}https://{% else %}http://{% endif %}{{ MFE_HOST }}/course-authoring"
 {% endif %}
+{% endfor %}
 
 LOGIN_REDIRECT_WHITELIST.append("{{ MFE_HOST }}")
 CORS_ORIGIN_WHITELIST.append("{% if ENABLE_HTTPS %}https://{% else %}http://{% endif %}{{ MFE_HOST }}")

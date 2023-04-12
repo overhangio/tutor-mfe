@@ -5,13 +5,13 @@ This plugin makes it possible to easily add micro frontend (MFE) applications on
 
 In addition, this plugin comes with a few MFEs which are enabled by default:
 
+- `Authn <https://github.com/openedx/frontend-app-authn/>`__
 - `Account <https://github.com/openedx/frontend-app-account/>`__
+- `Course Authoring <https://github.com/openedx/frontend-app-course-authoring/>`__
+- `Discussions <https://github.com/openedx/frontend-app-discussions/>`__
 - `Gradebook <https://github.com/openedx/frontend-app-gradebook/>`__
 - `Learning <https://github.com/openedx/frontend-app-learning/>`__
 - `Profile <https://github.com/openedx/frontend-app-profile/>`__
-- `Course Authoring <https://github.com/openedx/frontend-app-course-authoring/>`__
-- `Discussions <https://github.com/openedx/frontend-app-discussions/>`__
-- `Authn <https://github.com/openedx/frontend-app-authn/>`__
 
 Instructions for using each of these MFEs are given below.
 
@@ -32,10 +32,17 @@ To enable this plugin, run::
 
 When running the plugin in production, it is recommended that you set up a catch-all CNAME for subdomains at the DNS provider: see the `Configuring DNS Records <https://docs.tutor.overhang.io/install.html#configuring-dns-records>`__ section in the Tutor documentation for more details.  This way, the plugin will work out of the box with no additional configuration.  Which is to say, if your ``LMS_HOST`` is set to `myopenedx.com` the MFEs this plugin provides will be accessible under `apps.myopenedx.com` by default.
 
-To check what the current value of `MFE_HOST` is actually set to, run the following::
+To check what the current value of `MFE_HOST` is actually set to, run::
 
     tutor config printvalue MFE_HOST
 
+Authn
+~~~~~~~~~
+
+.. image:: https://raw.githubusercontent.com/overhangio/tutor-mfe/master/screenshots/authn.png
+    :alt: Authn MFE screenshot
+
+This is a micro-frontend application responsible for the login, registration and password reset functionality.
 
 Account
 ~~~~~~~
@@ -44,6 +51,22 @@ Account
     :alt: Account MFE screenshot
 
 An MFE to manage account-specific information for every LMS user. Each user's account page is available at ``http(s)://{{ MFE_HOST }}/account``. For instance, when running locally: https://apps.local.overhang.io/account.
+
+Course Authoring
+~~~~~~~~~~~~~~~~
+
+.. image:: https://raw.githubusercontent.com/overhangio/tutor-mfe/master/screenshots/course-authoring.png
+    :alt: Course Authoring MFE screenshot
+
+This MFE is meant for course authors and maintainers. For a given course, it exposes a "Pages & Resources" menu in Studio where one can enable or disable a variety of features, including, for example, the Wiki and Discussions.  Optionally, it allows authors to replace the legacy HTML, Video, and Problem authoring tools with experimental React-based versions, as well as exposing a new proctoring interface that can be enabled if the `edx-exams <https://github.com/edx/edx-exams>`_ service is available.
+
+Discussions
+~~~~~~~~~~~
+
+.. image:: https://raw.githubusercontent.com/overhangio/tutor-mfe/master/screenshots/discussions.png
+    :alt: Discussions MFE screenshot
+
+The Discussions MFE updates the previous discussions UI with a new look and better features.
 
 Gradebook
 ~~~~~~~~~
@@ -69,29 +92,6 @@ Profile
 
 Edit and display user-specific profile information. The profile page of every user is visible at ``http(s)://{{ MFE_HOST }}/profile/u/{{ username }}``. For instance, when running locally, the profile page of the "admin" user is: http://apps.local.overhang.io/profile/u/admin.
 
-Course Authoring
-~~~~~~~~~~~~~~~~
-
-.. image:: https://raw.githubusercontent.com/overhangio/tutor-mfe/master/screenshots/course-authoring.png
-    :alt: Course Authoring MFE screenshot
-
-This MFE is meant for course authors and maintainers. For a given course, it exposes a "Pages & Resources" menu in Studio where one can enable or disable a variety of features, including, for example, the Wiki and Discussions.  Optionally, it allows authors to replace the legacy HTML, Video, and Problem authoring tools with experimental React-based versions, as well as exposing a new proctoring interface that can be enabled if the `edx-exams <https://github.com/edx/edx-exams>`_ service is available.
-
-Discussions
-~~~~~~~~~~~
-
-.. image:: https://raw.githubusercontent.com/overhangio/tutor-mfe/master/screenshots/discussions.png
-    :alt: Discussions MFE screenshot
-
-The Discussions MFE updates the previous discussions UI with a new look and better features.
-
-Authn
-~~~~~~~~~
-
-.. image:: https://raw.githubusercontent.com/overhangio/tutor-mfe/master/screenshots/authn.png
-    :alt: Authn MFE screenshot
-
-This is a micro-frontend application responsible for the login, registration and password reset functionality.
 
 MFE management
 --------------
@@ -99,32 +99,34 @@ MFE management
 Adding new MFEs
 ~~~~~~~~~~~~~~~
 
-Other Tutor plugin developers can take advantage of this plugin to deploy their own MFEs. To declare a new MFE, a new configuration setting should be created with the "_MFE_APP" suffix. This configuration setting should include the name, git repository (and optionally: git branch) and development port. For example::
+.. warning:: As of Tutor v16 (Palm release) it is no longer possible to add new MFEs by creating ``*_MFE_APP`` settings. Instead, users must implement the approach described here.
 
-    config = {
-        "defaults": {
-            "MYMFE_MFE_APP": {
-                "name": "mymfe",
-                "repository": "https://github.com/myorg/mymfe",
-                "port": 2001,
-                "version": "me/my-custom-branch", # optional
-            }
+Other MFE developers can take advantage of this plugin to deploy their own MFEs. To declare a new MFE, create a Tutor plugin and add your MFE configuration to the ``tutormfe.plugin.MFE_APPS`` filter. This configuration should include the name, git repository (and optionally: git branch) and development port. For example::
+
+    from tutormfe.plugin import MFE_APPS
+
+    @MFE_APPS.add()
+    def _add_my_mfe(mfes):
+        mfes["mymfe"] = {
+            "repository": "https://github.com/myorg/mymfe",
+            "port": 2001,
+            "version": "me/my-custom-branch", # optional, will default to the Open edX current tag.
         }
-    }
+        return mfes
 
-The MFE assets will then be bundled in the "mfe" Docker image whenever it is rebuilt with ``tutor images build mfe``. Assets will be served at ``http(s)://{{ MFE_HOST }}/{{ MYMFE_MFE_APP["name"] }}``. Developers are free to add extra template patches to their plugins, as usual: for instance LMS setting patches to make sure that the LMS correctly connects to the MFEs.
+The MFE assets will then be bundled in the "mfe" Docker image whenever it is rebuilt with ``tutor images build mfe``. Assets will be served at ``http(s)://{{ MFE_HOST }}/mymfe``. Developers are free to add extra template patches to their plugins, as usual: for instance LMS setting patches to make sure that the LMS correctly connects to the MFEs.
 
 Disabling individual MFEs
 ~~~~~~~~~~~~~~~~~~~~~~~~~
 
-To disable an existing MFE, set its corresponding configuration setting to "null". For instance, to disable the MFEs that ship with this plugin::
+To disable an existing MFE, remove the corresponding entry from the ``MFE_APPS`` filter. For instance, to disable some of the MFEs that ship with this plugin::
 
-    tutor config save --set MFE_ACCOUNT_MFE_APP=null
-    tutor config save --set MFE_GRADEBOOK_MFE_APP=null
-    tutor config save --set MFE_PROFILE_MFE_APP=null
-    tutor config save --set MFE_COURSE_AUTHORING_MFE_APP=null
-    tutor config save --set MFE_DISCUSSIONS_MFE_APP=null
-    tutor config save --set MFE_AUTHN_MFE_APP=null
+
+    @MFE_APPS.add()
+    def _remove_some_my_mfe(mfes):
+        mfes.pop("account")
+        mfes.pop("profile")
+        ...
 
 Adding custom translations to your MFEs
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -245,31 +247,16 @@ Then, access http://apps.local.overhang.io:1995/profile/u/YOURUSERNAME
 
 You can also bind-mount your own fork of an MFE. For example::
 
-    cd /path/to/frontend-app-profile
-    npm install  # Ensure NPM requirements are installed into your fork.
-    tutor dev start --mount=. profile
+    tutor config save --append MOUNTS=/path/to/frontend-app-profile
+    tutor dev launch
 
-The changes you make to your fork will be automatically picked up and hot-reloaded by your development server.
+With this change, the "profile-dev" image will be automatically re-built during ``launch``. Your host repository will then be bind-mounted at runtime in the "profile" container. This means that changes you make to the host repository will be automatically picked up and hot-reloaded by your development server.
 
 This works for custom MFEs, as well. For example, if you added your own MFE named frontend-app-myapp, then you can bind-mount it like so::
 
-    cd /path/to/frontend-app-myapp
-    npm install
-    tutor dev start --mount=. myapp
+    tutor config save --append MOUNTS=/path/to/frontend-app-myapp
 
-However, if you try to bind-mount an unknown MFE, you will see a Docker Compose error such as::
-
-  ERROR: The Compose file is invalid because:
-  Service myapp has neither an image nor a build context specified. At least one must be provided.
-
-Please note that bind-mounting a fork is only available for development (``tutor dev ...``), since production MFEs are compiled and served out of a single container. If you want to use a fork of an MFE in production, then you will need to set the repository URL in ``$(tutor config printroot)/config.yml``::
-
-    MFE_PROFILE_MFE_APP
-        name: profile
-        repository: "https://github.com/YOUR_FORK_ORGANIZATION/frontend-app-profile"
-        port: 1995
-
-and then rebuild the MFE container image with ``tutor images build mfe``.
+Similarly, in production, the "mfe" Docker image will be rebuilt automatically during ``tutor local launch``.
 
 Uninstall
 ---------

@@ -3,7 +3,10 @@
 # the frontend. (5 minutes, hardcoded)
 ENABLE_MFE_CONFIG_API = True
 MFE_CONFIG_API_CACHE_TIMEOUT = 1
-{% if MFE_AUTHN_MFE_APP %}
+
+# MFE-specific settings
+{% for app_name, app in iter_mfes() %}
+{% if app_name == "authn" %}
 FEATURES['ENABLE_AUTHN_MICROFRONTEND'] = True
 {% endif %}
-
+{% endfor %}

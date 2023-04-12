@@ -1,40 +1,8 @@
-{% if MFE_ACCOUNT_MFE_APP %}
-ACCOUNT_MICROFRONTEND_URL = "{% if ENABLE_HTTPS %}https://{% else %}http://{% endif %}{{ MFE_HOST }}/{{ MFE_ACCOUNT_MFE_APP["name"] }}"
-{% endif %}
-{% if MFE_GRADEBOOK_MFE_APP %}
-WRITABLE_GRADEBOOK_URL = "{% if ENABLE_HTTPS %}https://{% else %}http://{% endif %}{{ MFE_HOST }}/{{ MFE_GRADEBOOK_MFE_APP["name"] }}"
-{% endif %}
-{% if MFE_LEARNING_MFE_APP %}
-LEARNING_MICROFRONTEND_URL = "{% if ENABLE_HTTPS %}https://{% else %}http://{% endif %}{{ MFE_HOST }}/{{ MFE_LEARNING_MFE_APP["name"] }}"
-{% endif %}
-{% if MFE_PROFILE_MFE_APP %}
-PROFILE_MICROFRONTEND_URL = "{% if ENABLE_HTTPS %}https://{% else %}http://{% endif %}{{ MFE_HOST }}/{{ MFE_PROFILE_MFE_APP["name"] }}/u/"
-{% endif %}
-{% if MFE_DISCUSSIONS_MFE_APP %}
-DISCUSSIONS_MICROFRONTEND_URL = "{% if ENABLE_HTTPS %}https://{% else %}http://{% endif %}{{ MFE_HOST }}/{{ MFE_DISCUSSIONS_MFE_APP["name"] }}"
-DISCUSSIONS_MFE_FEEDBACK_URL = None
-{% endif %}
-
-{% if MFE_AUTHN_MFE_APP %}
-AUTHN_MICROFRONTEND_URL = "{% if ENABLE_HTTPS %}https://{% else %}http://{% endif %}{{ MFE_HOST }}/{{ MFE_AUTHN_MFE_APP["name"] }}"
-AUTHN_MICROFRONTEND_DOMAIN  = "{{ MFE_HOST }}/{{ MFE_AUTHN_MFE_APP["name"] }}"
-{% endif %}
-
-LOGIN_REDIRECT_WHITELIST.append("{{ MFE_HOST }}")
-CORS_ORIGIN_WHITELIST.append("{% if ENABLE_HTTPS %}https://{% else %}http://{% endif %}{{ MFE_HOST }}")
-CSRF_TRUSTED_ORIGINS.append("{{ MFE_HOST }}")
-
 # Dynamic config API settings
 # https://openedx.github.io/frontend-platform/module-Config.html
 MFE_CONFIG = {
     "BASE_URL": "{{ MFE_HOST }}",
     "CSRF_TOKEN_API_PATH": "/csrf/api/v1/token",
-{%- if MFE_ACCOUNT_MFE_APP %}
-    "ACCOUNT_SETTINGS_URL": ACCOUNT_MICROFRONTEND_URL,
-{%- endif %}
-{%- if MFE_PROFILE_MFE_APP %}
-    "ACCOUNT_PROFILE_URL": "{% if ENABLE_HTTPS %}https://{% else %}http://{% endif %}{{ MFE_HOST }}/{{ MFE_PROFILE_MFE_APP["name"] }}",
-{%- endif %}
     "CREDENTIALS_BASE_URL": "",
     "DISCOVERY_API_BASE_URL": "{% if DISCOVERY_HOST is defined %}{% if ENABLE_HTTPS %}https{% else %}http{% endif %}://{{ DISCOVERY_HOST }}{% endif %}",
     "FAVICON_URL": "{% if ENABLE_HTTPS %}https{% else %}http{% endif %}://{{ LMS_HOST }}/favicon.ico",
@@ -51,17 +19,37 @@ MFE_CONFIG = {
     "STUDIO_BASE_URL": "{{ "https" if ENABLE_HTTPS else "http" }}://{{ CMS_HOST }}",
     "USER_INFO_COOKIE_NAME": "user-info",
     "ACCESS_TOKEN_COOKIE_NAME": "edx-jwt-cookie-header-payload",
-{%- if MFE_LEARNING_MFE_APP %}
-    "LEARNING_BASE_URL": "{{ "https" if ENABLE_HTTPS else "http" }}://{{ MFE_HOST }}/{{ MFE_LEARNING_MFE_APP["name"] }}",
-{%- endif %}
-{%- if MFE_COURSE_AUTHORING_MFE_APP %}
-    "ENABLE_NEW_EDITOR_PAGES": True,
-    "ENABLE_PROGRESS_GRAPH_SETTINGS": True,
-{%- endif %}
-{%- if MFE_AUTHN_MFE_APP %}
-    "DISABLE_ENTERPRISE_LOGIN": True,
-{%- endif %}
 }
+
+# MFE-specific settings
+{% for app_name, app in iter_mfes() %}
+{% if app_name == "authn" %}
+AUTHN_MICROFRONTEND_URL = "{% if ENABLE_HTTPS %}https://{% else %}http://{% endif %}{{ MFE_HOST }}/authn"
+AUTHN_MICROFRONTEND_DOMAIN  = "{{ MFE_HOST }}/authn"
+MFE_CONFIG["DISABLE_ENTERPRISE_LOGIN"] = True
+{% elif app_name == "account" %}
+ACCOUNT_MICROFRONTEND_URL = "{% if ENABLE_HTTPS %}https://{% else %}http://{% endif %}{{ MFE_HOST }}/account"
+MFE_CONFIG["ACCOUNT_SETTINGS_URL"] = ACCOUNT_MICROFRONTEND_URL
+{% elif app_name == "course-authoring" %}
+MFE_CONFIG["ENABLE_NEW_EDITOR_PAGES"] = True
+MFE_CONFIG["ENABLE_PROGRESS_GRAPH_SETTINGS"] = True
+{% elif app_name == "discussions" %}
+DISCUSSIONS_MICROFRONTEND_URL = "{% if ENABLE_HTTPS %}https://{% else %}http://{% endif %}{{ MFE_HOST }}/discussions"
+DISCUSSIONS_MFE_FEEDBACK_URL = None
+{% elif app_name == "gradebook" %}
+WRITABLE_GRADEBOOK_URL = "{% if ENABLE_HTTPS %}https://{% else %}http://{% endif %}{{ MFE_HOST }}/gradebook"
+{% elif app_name == "learning" %}
+LEARNING_MICROFRONTEND_URL = "{% if ENABLE_HTTPS %}https://{% else %}http://{% endif %}{{ MFE_HOST }}/learning"
+MFE_CONFIG["LEARNING_BASE_URL"] = "{{ "https" if ENABLE_HTTPS else "http" }}://{{ MFE_HOST }}/learning"
+{% elif app_name == "profile" %}
+PROFILE_MICROFRONTEND_URL = "{% if ENABLE_HTTPS %}https://{% else %}http://{% endif %}{{ MFE_HOST }}/profile/u/"
+MFE_CONFIG["ACCOUNT_PROFILE_URL"] = "{% if ENABLE_HTTPS %}https://{% else %}http://{% endif %}{{ MFE_HOST }}/profile"
+{% endif %}
+{% endfor %}
+
+LOGIN_REDIRECT_WHITELIST.append("{{ MFE_HOST }}")
+CORS_ORIGIN_WHITELIST.append("{% if ENABLE_HTTPS %}https://{% else %}http://{% endif %}{{ MFE_HOST }}")
+CSRF_TRUSTED_ORIGINS.append("{{ MFE_HOST }}")
 
 {{ patch("mfe-lms-common-settings") }}
 {{ patch("mfe-lms-production-settings") }}
