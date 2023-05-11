@@ -4,10 +4,12 @@ RUN apt update \
   && apt install -y git \
     # required for cwebp-bin
     gcc libgl1 libxi6 make \
-    # additionally required for gifsicle, mozjpeg, and optipng (on arm)
+    # required for gifsicle, mozjpeg, and optipng (on arm)
     autoconf libtool pkg-config zlib1g-dev \
-    # additionally required for node-sass (on arm)
-    python g++
+    # required for node-sass (on arm)
+    python g++ \
+    # required for image-webpack-loader (on arm)
+    libpng-dev
 
 RUN mkdir -p /openedx/app /openedx/env
 WORKDIR /openedx/app
