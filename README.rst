@@ -154,7 +154,7 @@ Your custom translation strings should now appear in your app.
 Customising MFEs
 ~~~~~~~~~~~~~~~~
 
-To change the MFEs logos from the default to your own logos, override the corresponding settings in the MFEs environment using patches `openedx-lms-production-settings` and `openedx-lms-development-settings`. For example, using the following plugin:
+To change the MFEs logos from the default to your own logos, override the corresponding settings in the MFEs environment using patches `mfe-lms-production-settings` and `mfe-lms-development-settings`. For example, using the following plugin:
 ::
 
     from tutor import hooks
@@ -162,7 +162,7 @@ To change the MFEs logos from the default to your own logos, override the corres
     hooks.Filters.ENV_PATCHES.add_items(
         [
             (
-                "openedx-lms-development-settings",
+                "mfe-lms-development-settings",
                 """
         MFE_CONFIG["LOGO_URL"] = "<URL>/logo.svg"
         MFE_CONFIG["LOGO_TRADEMARK_URL"] = "<URL>/logo-trademark.svg"
@@ -171,7 +171,7 @@ To change the MFEs logos from the default to your own logos, override the corres
         """
             ),
             (
-                "openedx-lms-production-settings",
+                "mfe-lms-production-settings",
                 """
         MFE_CONFIG["LOGO_URL"] = "<URL>/logo.svg"
         MFE_CONFIG["LOGO_TRADEMARK_URL"] = "<URL>/logo-trademark.svg"
@@ -181,6 +181,8 @@ To change the MFEs logos from the default to your own logos, override the corres
             ),
         ]
     )
+
+If patches are the same in development and production, they can be replaced by a single `mfe-lms-common-settings` patch.
 
 To install custom components for the MFEs, such as the `header <https://github.com/openedx/frontend-component-header>`_ and `footer <https://github.com/openedx/frontend-component-footer>`_, override the components by adding a patch to ``mfe-dockerfile-post-npm-install`` in your plugin:
 ::
