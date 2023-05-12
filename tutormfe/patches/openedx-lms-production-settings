@@ -59,3 +59,6 @@ MFE_CONFIG = {
     "DISABLE_ENTERPRISE_LOGIN": True,
 {%- endif %}
 }
+
+{{ patch("mfe-lms-common-settings") }}
+{{ patch("mfe-lms-production-settings") }}
