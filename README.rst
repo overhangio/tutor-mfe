@@ -20,7 +20,7 @@ Installation
 
 ::
 
-    pip install tutor-mfe
+    tutor plugins install mfe
 
 Usage
 -----
