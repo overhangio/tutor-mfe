@@ -7,6 +7,7 @@ In addition, this plugin comes with a few MFEs which are enabled by default:
 
 - `Authn <https://github.com/openedx/frontend-app-authn/>`__
 - `Account <https://github.com/openedx/frontend-app-account/>`__
+- `Communications <https://github.com/openedx/frontend-app-communications/>`__
 - `Course Authoring <https://github.com/openedx/frontend-app-course-authoring/>`__
 - `Discussions <https://github.com/openedx/frontend-app-discussions/>`__
 - `Gradebook <https://github.com/openedx/frontend-app-gradebook/>`__
@@ -52,6 +53,14 @@ Account
     :alt: Account MFE screenshot
 
 An MFE to manage account-specific information for every LMS user. Each user's account page is available at ``http(s)://{{ MFE_HOST }}/account``. For instance, when running locally: https://apps.local.overhang.io/account.
+
+Communications
+~~~~~~~~~~~~~~
+
+.. image:: https://raw.githubusercontent.com/overhangio/tutor-mfe/master/screenshots/communications.png
+    :alt: Communications MFE screenshot
+
+The Communications micro-frontend exposes an interface for course teams to communicate with learners.  It achieves this by allowing instructors to send out emails in bulk, either by scheduling them or on demand.
 
 Course Authoring
 ~~~~~~~~~~~~~~~~
