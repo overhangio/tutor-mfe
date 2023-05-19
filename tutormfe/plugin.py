@@ -34,6 +34,10 @@ CORE_MFE_APPS: dict[str, MFE_ATTRS_TYPE] = {
         "repository": "https://github.com/openedx/frontend-app-account",
         "port": 1997,
     },
+    "communications": {
+        "repository": "https://github.com/openedx/frontend-app-communications",
+        "port": 1984,
+    },
     "course-authoring": {
         "repository": "https://github.com/openedx/frontend-app-course-authoring",
         "port": 2001,
