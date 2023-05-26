@@ -1,4 +1,5 @@
 __version__ = "15.0.7"
+__package_version__ = __version__
 
 
 # Handle version suffix for nightly, just like tutor core.

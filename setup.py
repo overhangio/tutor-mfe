@@ -23,7 +23,7 @@ ABOUT = load_about()
 
 setup(
     name="tutor-mfe",
-    version=ABOUT["__version__"],
+    version=ABOUT["__package_version__"],
     url="https://github.com/overhangio/tutor-mfe",
     project_urls={
         "Code": "https://github.com/overhangio/tutor-mfe",
