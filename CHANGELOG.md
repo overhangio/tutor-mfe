@@ -19,3 +19,9 @@ instructions, because git commits are used to generate release notes:
 
 <!-- scriv-insert-here -->
 
+<a id='changelog-15.0.7'></a>
+## v15.0.7 (2023-05-26)
+
+- [Bugfix] Fix un-clickable "account" menu item. (by @ghassanmas and @regisb)
+- [Improvement] Add a scriv-compliant changelog. (by @regisb)
+
