@@ -1,5 +1,5 @@
 # https://hub.docker.com/_/node/tags
-FROM docker.io/node:16.20-bullseye-slim AS base
+FROM docker.io/node:18.16.0-bullseye-slim AS base
 
 RUN apt update \
   && apt install -y git \
