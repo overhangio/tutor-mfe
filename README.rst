@@ -119,9 +119,9 @@ Adding new MFEs
 
 .. warning:: As of Tutor v16 (Palm release) it is no longer possible to add new MFEs by creating ``*_MFE_APP`` settings. Instead, users must implement the approach described here.
 
-Other MFE developers can take advantage of this plugin to deploy their own MFEs. To declare a new MFE, create a Tutor plugin and add your MFE configuration to the ``tutormfe.plugin.MFE_APPS`` filter. This configuration should include the name, git repository (and optionally: git branch) and development port. For example::
+Other MFE developers can take advantage of this plugin to deploy their own MFEs. To declare a new MFE, create a Tutor plugin and add your MFE configuration to the ``tutormfe.hooks.MFE_APPS`` filter. This configuration should include the name, git repository (and optionally: git branch) and development port. For example::
 
-    from tutormfe.plugin import MFE_APPS
+    from tutormfe.hooks import MFE_APPS
 
     @MFE_APPS.add()
     def _add_my_mfe(mfes):

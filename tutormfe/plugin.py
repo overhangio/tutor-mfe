@@ -8,9 +8,9 @@ import pkg_resources
 
 from tutor import hooks as tutor_hooks
 from tutor.hooks import priorities
-from tutor.core.hooks import Filter
 
 from .__about__ import __version__
+from .hooks import MFE_ATTRS_TYPE, MFE_APPS
 
 config = {
     "defaults": {
@@ -23,8 +23,6 @@ config = {
 }
 
 
-MFE_ATTRS_TYPE = t.Dict[t.Literal["repository", "port"], t.Union["str", int]]
-MFE_APPS: Filter[dict[str, MFE_ATTRS_TYPE], []] = Filter()
 CORE_MFE_APPS: dict[str, MFE_ATTRS_TYPE] = {
     "authn": {
         "repository": "https://github.com/openedx/frontend-app-authn",
