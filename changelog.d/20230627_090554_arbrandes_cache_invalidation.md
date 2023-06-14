@@ -1,0 +1,1 @@
+- [Improvement] Invalidate build cache for individual MFEs if there were upstream changes. (by @arbrandes)
