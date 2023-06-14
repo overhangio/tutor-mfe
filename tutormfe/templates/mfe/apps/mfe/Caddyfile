@@ -12,13 +12,13 @@
         }
     }
 
-    {% for app in iter_values_named(suffix="MFE_APP") %}
-    @mfe_{{ app["name"] }} {
-        path /{{ app["name"] }} /{{ app["name"] }}/*
+    {% for app_name, app in iter_mfes() %}
+    @mfe_{{ app_name }} {
+        path /{{ app_name }} /{{ app_name }}/*
     }
-    handle @mfe_{{ app["name"] }} {
-        uri strip_prefix /{{ app["name"] }}
-        root * /openedx/dist/{{ app["name"] }}
+    handle @mfe_{{ app_name }} {
+        uri strip_prefix /{{ app_name }}
+        root * /openedx/dist/{{ app_name }}
         try_files /{path} /index.html
         file_server
     }
