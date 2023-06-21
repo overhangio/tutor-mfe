@@ -233,6 +233,25 @@ The same applies to installing a custom `brand <https://github.com/openedx/brand
         )
     )
 
+In both cases above, the ``npm`` commands affect every MFE being built.  If you want have different commands apply to different MFEs, you can add one or more patches to ``mfe-dockerfile-post-npm-install-*`` instead.  For instance, you could install one particular version of the header to the Learning MFE by patching ``mfe-dockerfile-post-npm-install-learning``, and another one to the ORA Grading MFE by patching ``mfe-dockerfile-post-npm-install-ora-grading``::
+
+    hooks.Filters.ENV_PATCHES.add_items(
+        [
+            (
+                "mfe-dockerfile-post-npm-install-learning",
+                """
+        RUN npm install '@edx/frontend-component-header@git+https://github.com/your-repo/frontend-component-header.git#your-branch'
+        """
+            ),
+            (
+                "mfe-dockerfile-post-npm-install-ora-grading",
+                """
+        RUN npm install '@edx/frontend-component-header@git+https://github.com/your-repo/frontend-component-header.git#your-other-branch'
+        """
+            ),
+        ]
+    )
+
 
 Installing from a private npm registry
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
