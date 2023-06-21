@@ -1,0 +1,1 @@
+- [Improvement] Allow patching the Dockerfile per MFE. (by @arbrandes)
