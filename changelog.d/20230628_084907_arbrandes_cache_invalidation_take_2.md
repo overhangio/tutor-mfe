@@ -1,0 +1,1 @@
+- [Improvement] Select GitHub refs API endpoint based on version suffix. (by @arbrandes)
