@@ -17,7 +17,6 @@ spec:
       containers:
         - name: mfe
           image: {{ MFE_DOCKER_IMAGE }}
-          imagePullPolicy: Always
           ports:
             - containerPort: 8002
           volumeMounts:
