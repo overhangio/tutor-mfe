@@ -19,6 +19,16 @@ instructions, because git commits are used to generate release notes:
 
 <!-- scriv-insert-here -->
 
+<a id='changelog-16.1.0'></a>
+## v16.1.0 (2023-08-03)
+
+- [Improvement] Allow patching the Dockerfile per MFE. (by @arbrandes)
+- [Improvement] Invalidate build cache for individual MFEs if there were upstream changes. (by @arbrandes)
+- [Improvement] Don't override `imagePullPolicy` in Kubernetes. This was only necessary in older releases. (by @regisb)
+- [Improvement] Select GitHub refs API endpoint based on version suffix. (by @arbrandes)
+- 💥[Improvement] Fix very high CPU and memory usage in development. We resolve this issue by running just a single container for all MFES, just like in production. To allow developers to test their changes in Tutor, we run `npm run start` only for those MFEs that have a manual bind-mount that was created with `tutor mounts add .../frontend-app-mymfe`. (by @regisb)
+- [Bugfix] In development, fix link to profile in header. (by @regisb)
+
 <a id='changelog-16.0.0'></a>
 ## v16.0.0 (2023-06-14)
 
