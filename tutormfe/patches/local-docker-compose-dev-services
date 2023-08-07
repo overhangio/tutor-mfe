@@ -1,6 +1,15 @@
-# MFE apps
-{% for app_name, app in iter_mfes() %}
-{{ app_name }}:
+mfe:
+    ports:
+        {%- for app_name, app in iter_mfes() %}
+        {%- if not iter_mounts(MOUNTS, app_name)|list %}
+        - {{ app["port"] }}:8002 # {{ app_name }}
+        {%- endif %}
+        {%- endfor %}
+
+{%- for app_name, app in iter_mfes() %}
+{%- set mounts = iter_mounts(MOUNTS, app_name)|list %}
+{%- if mounts %}
+{{ app_name }}: # Work on this MFE for development
     image: "{{ DOCKER_REGISTRY }}overhangio/openedx-{{ app_name }}-dev:{{ MFE_VERSION }}"
     ports:
         - "{{ app["port"] }}:{{ app["port"] }}"
@@ -8,10 +17,11 @@
     tty: true
     volumes:
         - ../plugins/mfe/apps/mfe/webpack.dev-tutor.config.js:/openedx/app/webpack.dev-tutor.config.js:ro
-        {%- for mount in iter_mounts(MOUNTS, app_name) %}
+        {%- for mount in mounts %}
         - {{ mount }}
         {%- endfor %}
     restart: unless-stopped
     depends_on:
         - lms
-{% endfor %}
+{%- endif %}
+{%- endfor %}

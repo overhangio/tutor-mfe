@@ -1,0 +1,1 @@
+- [Improvement] Fix very high CPU and memory usage in development. We resolve this issue by running just a single container for all MFES, just like in production. To al;low developers to test their changes in Tutor, we run `npm run start` only for those MFEs that have a manual bind-mount that was created with `tutor mounts add .../frontend-app-mymfe`. (by @regisb)

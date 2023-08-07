@@ -1,0 +1,1 @@
+- [Bugfix] In development, fix link to profile in header. (by @regisb)
