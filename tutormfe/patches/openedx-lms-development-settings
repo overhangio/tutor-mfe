@@ -44,7 +44,7 @@ MFE_CONFIG["LEARNING_BASE_URL"] = "http://{{ MFE_HOST }}:{{ app["port"] }}"
 {% elif app_name == "ora-grading" %}
 ORA_GRADING_MICROFRONTEND_URL = "http://{{ MFE_HOST }}:{{ app["port"] }}/ora-grading"
 {% elif app_name == "profile" %}
-PROFILE_MICROFRONTEND_URL = "http:/{{ MFE_HOST }}:{{ app["port"] }}/profile/u/"
+PROFILE_MICROFRONTEND_URL = "http://{{ MFE_HOST }}:{{ app["port"] }}/profile/u/"
 MFE_CONFIG["ACCOUNT_PROFILE_URL"] = "http://{{ MFE_HOST }}:{{ app["port"] }}/profile"
 {% elif app_name == "communications" %}
 COMMUNICATIONS_MICROFRONTEND_URL = "http://{{ MFE_HOST }}:{{ app["port"] }}/communications"
