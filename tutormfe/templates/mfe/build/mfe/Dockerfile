@@ -78,6 +78,8 @@ ENV PUBLIC_PATH='/{{ app_name }}/'
 # So we point to a relative url that will be a proxy for the LMS.
 ENV MFE_CONFIG_API_URL=/api/mfe_config/v1
 ARG ENABLE_NEW_RELIC=false
+{{ patch("mfe-dockerfile-pre-npm-build") }}
+{{ patch("mfe-dockerfile-pre-npm-build-{}".format(app_name)) }}
 
 ######## {{ app_name }} (dev)
 FROM {{ app_name }}-common AS {{ app_name }}-dev
@@ -90,8 +92,6 @@ CMD ["/bin/bash", "-c", "npm run start --- --config ./webpack.dev-tutor.config.j
 ######## {{ app_name }} (production)
 FROM {{ app_name }}-common AS {{ app_name }}-prod
 ENV NODE_ENV=production
-{{ patch("mfe-dockerfile-pre-npm-build") }}
-{{ patch("mfe-dockerfile-pre-npm-build-{}".format(app_name)) }}
 RUN npm run build
 {% endfor %}
 
