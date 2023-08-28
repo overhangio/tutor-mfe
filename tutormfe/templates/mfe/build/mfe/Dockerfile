@@ -90,6 +90,8 @@ CMD ["/bin/bash", "-c", "npm run start --- --config ./webpack.dev-tutor.config.j
 ######## {{ app_name }} (production)
 FROM {{ app_name }}-common AS {{ app_name }}-prod
 ENV NODE_ENV=production
+{{ patch("mfe-dockerfile-pre-npm-build") }}
+{{ patch("mfe-dockerfile-pre-npm-build-{}".format(app_name)) }}
 RUN npm run build
 {% endfor %}
 
