@@ -19,6 +19,12 @@ instructions, because git commits are used to generate release notes:
 
 <!-- scriv-insert-here -->
 
+<a id='changelog-16.1.1'></a>
+## v16.1.1 (2023-08-28)
+
+- [Bugfix] Add `INFO_EMAIL` and `PASSWORD_RESET_SUPPORT_LINK` missing variables defaults of `CONTACT_EMAIL` and `mailto:{{ CONTACT_EMAIL }}` respectfully. These two variables help build the "Forgot Password" screen. (by @misilot)
+- [Bugfix] Corrected typo error in `PROFILE_MICROFRONTEND_URL` of development env settings. (by @kiran1415)
+
 <a id='changelog-16.1.0'></a>
 ## v16.1.0 (2023-08-03)
 
