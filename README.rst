@@ -150,7 +150,7 @@ To disable an existing MFE, remove the corresponding entry from the ``MFE_APPS``
     def _remove_some_my_mfe(mfes):
         mfes.pop("account")
         mfes.pop("profile")
-        ...
+        return mfes
 
 Adding custom translations to your MFEs
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -300,6 +300,25 @@ This works for custom MFEs, as well. For example, if you added your own MFE name
     tutor config save --append MOUNTS=/path/to/frontend-app-myapp
 
 Similarly, in production, the "mfe" Docker image will be rebuilt automatically during ``tutor local launch``.
+
+Note: the name of the bind-mount folder needs to match the name of the repository exactly word-for-word. If you've forked an MFE repository with a custom name, be sure to change the name back to ensure the bind-mount works properly.
+
+Using shared components for local development
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Developers may want to use local repositories of common components such as `frontend-component-footer <https://github.com/openedx/frontend-component-footer>`_ and `frontend-component-header <https://github.com/openedx/frontend-component-header>`_. In the following example, let's assume one has cloned the example MFE and the shared components into a directory called ``workspace``. In the root of the example MFE, create a file called ``module.config.js`` and use the following to ensure your example MFE picks up the locally hosted components during build time:
+::
+
+    const path = require('path');
+    module.exports = {
+      localModules: [
+        { moduleName: '@edx/frontend-component-header/dist', dir: '../frontend-component-header', dist: 'src' },
+        { moduleName: '@edx/frontend-component-header', dir: '../frontend-component-header', dist: 'src' },
+        { moduleName: '@edx/frontend-component-footer/dist', dir: '../frontend-component-footer', dist: 'src' },
+        { moduleName: '@edx/frontend-component-footer', dir: '../frontend-component-footer', dist: 'src' },
+      ],
+    };
+
 
 Uninstall
 ---------
