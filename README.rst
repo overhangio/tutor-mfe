@@ -258,6 +258,34 @@ In both cases above, the ``npm`` commands affect every MFE being built.  If you 
         ]
     )
 
+In case you need to run additional instructions just before the build step you can use the ``mfe-dockerfile-pre-npm-build`` or ``mfe-dockerfile-pre-npm-build-*`` patches. For example, you may want to override existing env variables or define new ones.
+::
+
+    from tutor import hooks
+
+    hooks.Filters.ENV_PATCHES.add_items(
+        [
+            (
+                "mfe-dockerfile-pre-npm-build",
+                """
+    ENV ENABLE_NEW_RELIC=true
+    ENV NEW_RELIC_ACCOUNT_ID="111111"
+    ENV NEW_RELIC_AGENT_ID="2222222222"
+    ENV NEW_RELIC_TRUST_KEY="333333"
+    ENV NEW_RELIC_LICENSE_KEY="4444444444"
+    ENV NEW_RELIC_APP_ID="5555555555"
+    """
+            ),
+            # Only for the learning MFE
+            (
+                "mfe-dockerfile-pre-npm-build-learning",
+                """ENV CUSTOM_VAR="custom-value"
+                """
+            ),
+        ]
+    )
+
+
 
 Installing from a private npm registry
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
