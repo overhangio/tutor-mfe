@@ -12,6 +12,8 @@
         }
     }
 
+    {{ patch("mfe-caddyfile") | indent(4) }}
+
     reverse_proxy /api/mfe_config/v1* lms:8000 {
         # We need to specify the host header, otherwise it will be rejected with 400
         # from the lms.
