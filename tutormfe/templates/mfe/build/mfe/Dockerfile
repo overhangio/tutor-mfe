@@ -17,7 +17,7 @@ RUN apt update \
 
 RUN mkdir -p /openedx/app /openedx/env
 WORKDIR /openedx/app
-ENV PATH ./node_modules/.bin:${PATH}
+ENV PATH /openedx/app/node_modules/.bin:${PATH}
 
 ######## i18n strings
 FROM base AS i18n
@@ -68,6 +68,13 @@ RUN {% if is_buildkit_enabled() %}--mount=type=cache,target=/root/.npm,sharing=s
 {{ patch("mfe-dockerfile-post-npm-install-{}".format(app_name)) }}
 COPY --from={{ app_name }}-src / /openedx/app
 COPY --from={{ app_name }}-i18n /openedx/app/src/i18n/messages /openedx/app/src/i18n/messages
+
+# Whenever a new MFE supports Atlas, it should be added to this list.
+# When all MFEs support Atlas, this if-statement should be removed.
+{% if app_name in ["communications"] %}
+RUN make OPENEDX_ATLAS_PULL=true pull_translations
+{% endif %}
+
 EXPOSE {{ app['port'] }}
 
 # Configuration needed at build time
