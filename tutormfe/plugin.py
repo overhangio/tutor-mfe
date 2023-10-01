@@ -6,9 +6,10 @@ import typing as t
 
 import pkg_resources
 
+from tutor import fmt
 from tutor import hooks as tutor_hooks
 from tutor.hooks import priorities
-
+from tutor.types import Config, get_typed
 from .__about__ import __version__, __version_suffix__
 from .hooks import MFE_ATTRS_TYPE, MFE_APPS
 
@@ -258,3 +259,20 @@ tutor_hooks.Filters.CONFIG_UNIQUE.add_items(
 tutor_hooks.Filters.CONFIG_OVERRIDES.add_items(
     list(config.get("overrides", {}).items())
 )
+
+
+# Actions
+@tutor_hooks.Actions.CONFIG_LOADED.add()
+def _check_mfe_host(config: Config) -> None:
+    """
+    This will check if the MFE_HOST is a subdomain of LMS_HOST.
+    if not, prints a warning to notify the user.
+    """
+
+    lms_host = get_typed(config, "LMS_HOST", str, "")
+    mfe_host = get_typed(config, "MFE_HOST", str, "")
+    if not mfe_host.endswith("." + lms_host):
+        fmt.echo_alert(
+            f'Warning: MFE_HOST="{mfe_host}" is not a subdomain of LMS_HOST="{lms_host}". '
+            "This configuration is not typically recommended and may lead to unexpected behavior."
+        )
