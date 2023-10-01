@@ -1,5 +1,6 @@
 # https://hub.docker.com/_/node/tags
-FROM docker.io/node:18.16.0-bullseye-slim AS base
+ARG DOCKER_REGISTRY={{ DOCKER_REGISTRY }}
+FROM ${DOCKER_REGISTRY}/node:18.16.0-bullseye-slim AS base
 
 RUN apt update \
   && apt install -y git \
