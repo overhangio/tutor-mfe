@@ -1,0 +1,1 @@
+[Feature] The new CONFIG_LOADED action checks if MFE_HOST is a subdomain of LMS_HOST. If not, display a warning message to the user. (by @CodeWithEmad)
