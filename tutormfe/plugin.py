@@ -161,7 +161,9 @@ REPO_PREFIX = "frontend-app-"
 
 
 @tutor_hooks.Filters.COMPOSE_MOUNTS.add()
-def _mount_frontend_apps(volumes, path_basename):
+def _mount_frontend_apps(
+    volumes: list[tuple[str, str]], path_basename: str
+) -> list[tuple[str, str]]:
     """
     If the user mounts any repo named frontend-app-APPNAME, then make sure
     it's available in the APPNAME service container. This is only applicable
