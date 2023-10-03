@@ -72,7 +72,7 @@ EXPOSE {{ app['port'] }}
 
 # Configuration needed at build time
 ENV APP_ID={{ app_name }}
-ENV PUBLIC_PATH='/{{ app_name }}/'
+ENV PUBLIC_PATH='/{{ app_name }}'
 # We could in theory point the mfe_config API directly to the LMS. But for that we would
 # have to code the LMS url into the mfe image, and this configuration is user-dependent.
 # So we point to a relative url that will be a proxy for the LMS.
