@@ -4,6 +4,7 @@ the tutor-mfe hooks would be created in the context of some other plugin that im
 them.
 """
 from __future__ import annotations
+
 import typing as t
 
 from tutor.core.hooks import Filter

@@ -1,17 +1,17 @@
 from __future__ import annotations
 
-from glob import glob
 import os
 import typing as t
+from glob import glob
 
 import pkg_resources
-
 from tutor import fmt
 from tutor import hooks as tutor_hooks
 from tutor.hooks import priorities
 from tutor.types import Config, get_typed
+
 from .__about__ import __version__, __version_suffix__
-from .hooks import MFE_ATTRS_TYPE, MFE_APPS
+from .hooks import MFE_APPS, MFE_ATTRS_TYPE
 
 config = {
     "defaults": {
