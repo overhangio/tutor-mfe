@@ -150,7 +150,7 @@ To disable an existing MFE, remove the corresponding entry from the ``MFE_APPS``
     def _remove_some_my_mfe(mfes):
         mfes.pop("account")
         mfes.pop("profile")
-        ...
+        return mfes
 
 Adding custom translations to your MFEs
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -328,6 +328,8 @@ This works for custom MFEs, as well. For example, if you added your own MFE name
     tutor config save --append MOUNTS=/path/to/frontend-app-myapp
 
 Similarly, in production, the "mfe" Docker image will be rebuilt automatically during ``tutor local launch``.
+
+Note: the name of the bind-mount folder needs to match the name of the repository word-for-word. If you've forked an MFE repository with a custom name, be sure to change the name back to ensure the bind-mount works properly.
 
 Uninstall
 ---------
