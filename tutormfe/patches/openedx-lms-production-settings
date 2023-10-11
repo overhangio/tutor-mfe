@@ -76,7 +76,7 @@ MFE_CONFIG["SCHEDULE_EMAIL_SECTION"] = True
 
 LOGIN_REDIRECT_WHITELIST.append("{{ MFE_HOST }}")
 CORS_ORIGIN_WHITELIST.append("{% if ENABLE_HTTPS %}https://{% else %}http://{% endif %}{{ MFE_HOST }}")
-CSRF_TRUSTED_ORIGINS.append("{{ MFE_HOST }}")
+CSRF_TRUSTED_ORIGINS.append("{% if ENABLE_HTTPS %}https://{% else %}http://{% endif %}{{ MFE_HOST }}")
 
 {{ patch("mfe-lms-common-settings") }}
 {{ patch("mfe-lms-production-settings") }}

@@ -19,6 +19,20 @@ instructions, because git commits are used to generate release notes:
 
 <!-- scriv-insert-here -->
 
+<a id='changelog-17.0.0'></a>
+## v17.0.0 (2023-12-09)
+
+- 💥Upgrade to Quince (by @regisb).
+- [Improvement] Added Makefile and test action to repository and formatted code with Black and isort. (by @CodeWithEmad)
+- [Feature] Add support for the Learner Dashboard MFE. (by @arbrandes)
+- [Bugfix] Append trailing slash to PUBLIC_PATH, as its absence breaks some MFEs. (by @arbrandes)
+- [Feature] Added patch to allow changes to Dockerfile after the npm build has completed. (by @Danyal-Faheem)
+- [Bugfix] Auto-build "mfe" image during `dev/local launch` in nightly. (by @regisb)
+- [Bugfix] Specify port for dev server to listen on (by @michaelwheeler)
+- [Feature] Enable the new per-unit discussions sidebar in the Learning MFE. (by @arbrandes)
+- [Bugfix] Support MFE remotes that are not on GitHub. (by @gabor-boros and @regisb)
+- 💥[Bugfix] Bypass rate-limiting when checking for upstream git changes. To achieve that, we use the `ADD --keep-git-dir` option, which is only compatible with BuildKit 0.11, from January 2023. Also, we get rid of the `get_github_refs_path` function. (by @gabor-boros and @regisb)
+
 <a id='changelog-16.1.3'></a>
 ## v16.1.3 (2023-12-07)
 

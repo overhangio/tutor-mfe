@@ -1,1 +1,0 @@
-- [Feature] Enable the new per-unit discussions sidebar in the Learning MFE. (by @arbrandes)

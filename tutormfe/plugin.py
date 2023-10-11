@@ -90,7 +90,7 @@ def get_mfes() -> dict[str, MFE_ATTRS_TYPE]:
 
 
 @tutor_hooks.Actions.PLUGIN_LOADED.add()
-def _clear_get_mfes_cache(_name: str):
+def _clear_get_mfes_cache(_name: str) -> None:
     """
     Don't forget to clear cache, or we'll have some strange surprises...
     """

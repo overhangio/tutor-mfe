@@ -1,1 +1,0 @@
-- [Feature] Add support for the Learner Dashboard MFE. (by @arbrandes)

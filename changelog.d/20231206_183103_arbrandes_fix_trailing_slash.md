@@ -1,1 +1,0 @@
-- [Bugfix] Append trailing slash to PUBLIC_PATH, as its absence breaks some MFEs. (by @arbrandes)
