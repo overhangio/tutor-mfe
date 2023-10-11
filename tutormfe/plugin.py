@@ -26,7 +26,8 @@ config = {
 
 # If the package version suffix is set (for instance, in the nightly branch) use the "heads" Github refs API endpoint by default.
 def gh_refs_path() -> str:
-    return "heads" if __version_suffix__ else "tags"
+    return "heads" # TODO restore previous behaviour
+    # return "heads" if __version_suffix__ else "tags"
 
 
 CORE_MFE_APPS: dict[str, MFE_ATTRS_TYPE] = {
