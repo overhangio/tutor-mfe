@@ -207,12 +207,12 @@ def _print_mfe_public_hosts(
 def _build_3rd_party_dev_mfes_on_launch(
     image_names: list[str], context_name: t.Literal["local", "dev"]
 ) -> list[str]:
-    if context_name == "dev":
-        for mfe_name, _mfe_attrs in iter_mfes():
-            if mfe_name not in CORE_MFE_APPS:
-                # We don't require to build core MFEs because images are available from
-                # the public registry.
-                image_names.append(f"{mfe_name}-dev")
+    for mfe_name, _mfe_attrs in iter_mfes():
+        if __version_suffix__ or (context_name == "dev" and mfe_name not in CORE_MFE_APPS):
+            # We build MFE images:
+            # - in nightly
+            # - in development for non-core apps
+            image_names.append(f"{mfe_name}-dev")
     return image_names
 
 
