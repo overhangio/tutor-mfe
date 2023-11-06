@@ -19,6 +19,14 @@ instructions, because git commits are used to generate release notes:
 
 <!-- scriv-insert-here -->
 
+<a id='changelog-16.1.2'></a>
+## v16.1.2 (2023-11-06)
+
+- [Improvement] Include additional patches in the Dockerfile to add instructions just before the build step. (by @MoisesGSalas)
+- [Improvement] Allow to patch MFE Caddyfile. (by @snglth)
+- [Feature] The new `CONFIG_LOADED` action checks if `MFE_HOST` is a subdomain of `LMS_HOST`. If not, display a warning message to the user. (by @CodeWithEmad)
+- [Bugfix] Fix automated image building in nightly. (by @regisb)
+
 <a id='changelog-16.1.1'></a>
 ## v16.1.1 (2023-08-28)
 
