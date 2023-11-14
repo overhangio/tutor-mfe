@@ -318,14 +318,14 @@ Then, access http://apps.local.overhang.io:1995/profile/u/YOURUSERNAME
 
 You can also bind-mount your own fork of an MFE. For example::
 
-    tutor config save --append MOUNTS=/path/to/frontend-app-profile
+    tutor mounts add /path/to/frontend-app-profile
     tutor dev launch
 
 With this change, the "profile-dev" image will be automatically re-built during ``launch``. Your host repository will then be bind-mounted at runtime in the "profile" container. This means that changes you make to the host repository will be automatically picked up and hot-reloaded by your development server.
 
 This works for custom MFEs, as well. For example, if you added your own MFE named frontend-app-myapp, then you can bind-mount it like so::
 
-    tutor config save --append MOUNTS=/path/to/frontend-app-myapp
+    tutor mounts add /path/to/frontend-app-myapp
 
 Similarly, in production, the "mfe" Docker image will be rebuilt automatically during ``tutor local launch``.
 

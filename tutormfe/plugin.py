@@ -1,17 +1,17 @@
 from __future__ import annotations
 
-from glob import glob
 import os
 import typing as t
+from glob import glob
 
 import pkg_resources
-
 from tutor import fmt
 from tutor import hooks as tutor_hooks
 from tutor.hooks import priorities
 from tutor.types import Config, get_typed
+
 from .__about__ import __version__, __version_suffix__
-from .hooks import MFE_ATTRS_TYPE, MFE_APPS
+from .hooks import MFE_APPS, MFE_ATTRS_TYPE
 
 config = {
     "defaults": {
@@ -24,55 +24,64 @@ config = {
 }
 
 
-# If the package version suffix is set (for instance, in the nightly branch) use the "heads" Github refs API endpoint by default.
-def gh_refs_path() -> str:
-    return "heads" if __version_suffix__ else "tags"
+def get_github_refs_path(name: str) -> str:
+    """
+    Generate a URL to access refs in heads (nightly) or tags (stable) via Github API.
+    Args:
+        name (str): Consisted of the repository owner and the repository name, as a string in 'owner/repo' format.
+
+    Returns:
+        str: A string URL to the Github API, pointing to heads if version_suffix is set, tags otherwise.
+
+    """
+
+    return f"https://api.github.com/repos/{name}/git/refs/{'heads' if __version_suffix__ else 'tags'}"
 
 
 CORE_MFE_APPS: dict[str, MFE_ATTRS_TYPE] = {
     "authn": {
         "repository": "https://github.com/openedx/frontend-app-authn",
-        "refs": "https://api.github.com/repos/openedx/frontend-app-authn/git/refs/" + gh_refs_path(),
+        "refs": get_github_refs_path("openedx/frontend-app-authn"),
         "port": 1999,
     },
     "account": {
         "repository": "https://github.com/openedx/frontend-app-account",
-        "refs": "https://api.github.com/repos/openedx/frontend-app-account/git/refs/" + gh_refs_path(),
+        "refs": get_github_refs_path("openedx/frontend-app-account"),
         "port": 1997,
     },
     "communications": {
         "repository": "https://github.com/openedx/frontend-app-communications",
-        "refs": "https://api.github.com/repos/openedx/frontend-app-communications/git/refs/" + gh_refs_path(),
+        "refs": get_github_refs_path("openedx/frontend-app-communications"),
         "port": 1984,
     },
     "course-authoring": {
         "repository": "https://github.com/openedx/frontend-app-course-authoring",
-        "refs": "https://api.github.com/repos/openedx/frontend-app-course-authoring/git/refs/" + gh_refs_path(),
+        "refs": get_github_refs_path("openedx/frontend-app-course-authoring"),
         "port": 2001,
     },
     "discussions": {
         "repository": "https://github.com/openedx/frontend-app-discussions",
-        "refs": "https://api.github.com/repos/openedx/frontend-app-discussions/git/refs/" + gh_refs_path(),
+        "refs": get_github_refs_path("openedx/frontend-app-discussions"),
         "port": 2002,
     },
     "gradebook": {
         "repository": "https://github.com/openedx/frontend-app-gradebook",
-        "refs": "https://api.github.com/repos/openedx/frontend-app-gradebook/git/refs/" + gh_refs_path(),
+        "refs": get_github_refs_path("openedx/frontend-app-gradebook"),
         "port": 1994,
     },
     "learning": {
         "repository": "https://github.com/openedx/frontend-app-learning",
-        "refs": "https://api.github.com/repos/openedx/frontend-app-learning/git/refs/" + gh_refs_path(),
+        "refs": get_github_refs_path("openedx/frontend-app-learning"),
         "port": 2000,
     },
     "ora-grading": {
         "repository": "https://github.com/openedx/frontend-app-ora-grading",
-        "refs": "https://api.github.com/repos/openedx/frontend-app-ora-grading/git/refs/" + gh_refs_path(),
+        "refs": get_github_refs_path("openedx/frontend-app-ora-grading"),
         "port": 1993,
     },
     "profile": {
         "repository": "https://github.com/openedx/frontend-app-profile",
-        "refs": "https://api.github.com/repos/openedx/frontend-app-profile/git/refs/" + gh_refs_path(),
+        "refs": get_github_refs_path("openedx/frontend-app-profile"),
         "port": 1995,
     },
 }
@@ -161,7 +170,9 @@ REPO_PREFIX = "frontend-app-"
 
 
 @tutor_hooks.Filters.COMPOSE_MOUNTS.add()
-def _mount_frontend_apps(volumes, path_basename):
+def _mount_frontend_apps(
+    volumes: list[tuple[str, str]], path_basename: str
+) -> list[tuple[str, str]]:
     """
     If the user mounts any repo named frontend-app-APPNAME, then make sure
     it's available in the APPNAME service container. This is only applicable
