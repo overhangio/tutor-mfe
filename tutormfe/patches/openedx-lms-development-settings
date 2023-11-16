@@ -40,6 +40,8 @@ DISCUSSIONS_MICROFRONTEND_URL = "http://{{ MFE_HOST }}:{{ app["port"] }}/discuss
 DISCUSSIONS_MFE_FEEDBACK_URL = None
 {% elif app_name == "gradebook" %}
 WRITABLE_GRADEBOOK_URL = "http://{{ MFE_HOST }}:{{ app["port"] }}/gradebook"
+{% elif app_name == "learner-dashboard" %}
+LEARNER_HOME_MICROFRONTEND_URL = "http://{{ MFE_HOST }}:{{ app["port"] }}/learner-dashboard"
 {% elif app_name == "learning" %}
 LEARNING_MICROFRONTEND_URL = "http://{{ MFE_HOST }}:{{ app["port"] }}/learning"
 MFE_CONFIG["LEARNING_BASE_URL"] = "http://{{ MFE_HOST }}:{{ app["port"] }}"
