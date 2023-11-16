@@ -69,6 +69,11 @@ CORE_MFE_APPS: dict[str, MFE_ATTRS_TYPE] = {
         "refs": get_github_refs_path("openedx/frontend-app-gradebook"),
         "port": 1994,
     },
+    "learner-dashboard": {
+        "repository": "https://github.com/openedx/frontend-app-learner-dashboard",
+        "refs": get_github_refs_path("openedx/frontend-app-learner-dashboard"),
+        "port": 1996,
+    },
     "learning": {
         "repository": "https://github.com/openedx/frontend-app-learning",
         "refs": get_github_refs_path("openedx/frontend-app-learning"),

@@ -11,6 +11,7 @@ In addition, this plugin comes with a few MFEs which are enabled by default:
 - `Course Authoring <https://github.com/openedx/frontend-app-course-authoring/>`__
 - `Discussions <https://github.com/openedx/frontend-app-discussions/>`__
 - `Gradebook <https://github.com/openedx/frontend-app-gradebook/>`__
+- `Learner Dashboard <https://github.com/openedx/frontend-app-learner-dashboard/>`__
 - `Learning <https://github.com/openedx/frontend-app-learning/>`__
 - `ORA Grading <https://github.com/openedx/frontend-app-ora-grading/>`__
 - `Profile <https://github.com/openedx/frontend-app-profile/>`__
@@ -85,6 +86,14 @@ Gradebook
     :alt: Gradebook MFE screenshot
 
 This instructor-only MFE is for viewing individual and aggregated grade results for a course. To access this MFE, go to a course → Instructor tab → Student Admin → View gradebook. The URL should be: ``http(s)://{{ MFE_HOST }}/gradebook/{{ course ID }}``. When running locally, the gradebook of the demo course is available at: http://apps.local.overhang.io/gradebook/course-v1:edX+DemoX+Demo_Course
+
+Learner Dashboard
+~~~~~~~~~~~~~~~~~
+
+.. image:: https://raw.githubusercontent.com/overhangio/tutor-mfe/master/screenshots/learner-dashboard.png
+    :alt: Learner Dashboard MFE screenshot
+
+The Learner Dashboard MFE provides a clean and functional interface to allow learners to view all of their open enrollments, as well as take relevant actions on those enrollments.
 
 Learning
 ~~~~~~~~
