@@ -6,12 +6,17 @@ from glob import glob
 
 import pkg_resources
 from tutor import fmt
+from tutor.__about__ import __version_suffix__
 from tutor import hooks as tutor_hooks
 from tutor.hooks import priorities
 from tutor.types import Config, get_typed
 
-from .__about__ import __version__, __version_suffix__
+from .__about__ import __version__
 from .hooks import MFE_APPS, MFE_ATTRS_TYPE
+
+# Handle version suffix in nightly mode, just like tutor core
+if __version_suffix__:
+    __version__ += "-" + __version_suffix__
 
 config = {
     "defaults": {
