@@ -9,6 +9,6 @@ import typing as t
 
 from tutor.core.hooks import Filter
 
-MFE_ATTRS_TYPE = t.Dict[t.Literal["repository", "refs", "port"], t.Union["str", int]]
+MFE_ATTRS_TYPE = t.Dict[t.Literal["repository", "port", "version"], t.Union["str", int]]
 
 MFE_APPS: Filter[dict[str, MFE_ATTRS_TYPE], []] = Filter()

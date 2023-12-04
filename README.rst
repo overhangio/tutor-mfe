@@ -138,14 +138,10 @@ Other MFE developers can take advantage of this plugin to deploy their own MFEs.
             "repository": "https://github.com/myorg/mymfe",
             "port": 2001,
             "version": "me/my-custom-branch", # optional, will default to the Open edX current tag.
-            "refs": https://api.github.com/repos/myorg/mymfe/git/refs/heads", # optional
         }
         return mfes
 
-The MFE assets will then be bundled in the "mfe" Docker image whenever it is rebuilt with ``tutor images build mfe``. Providing a ``refs`` URL will ensure the build cache for that MFE is invalidated whenever a change is detected upstream at the git version in question.  You can use the `GitHub references API`_ or the `GitLab branches API`_ for this.
-
-.. _GitHub references API: https://docs.github.com/en/rest/git/refs?apiVersion=2022-11-28#get-a-reference
-.. _GitLab branches API: https://docs.gitlab.com/ee/api/branches.html#get-single-repository-branch
+The MFE assets will then be bundled in the "mfe" Docker image whenever it is rebuilt with ``tutor images build mfe``.
 
 Assets will be served at ``http(s)://{{ MFE_HOST }}/mymfe``. Developers are free to add extra template patches to their plugins, as usual: for instance LMS setting patches to make sure that the LMS correctly connects to the MFEs.
 

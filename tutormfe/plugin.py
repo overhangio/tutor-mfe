@@ -29,70 +29,45 @@ config = {
     },
 }
 
-
-def get_github_refs_path(name: str) -> str:
-    """
-    Generate a URL to access refs in heads (nightly) or tags (stable) via Github API.
-    Args:
-        name (str): Consisted of the repository owner and the repository name, as a string in 'owner/repo' format.
-
-    Returns:
-        str: A string URL to the Github API, pointing to heads if version_suffix is set, tags otherwise.
-
-    """
-
-    return f"https://api.github.com/repos/{name}/git/refs/{'heads' if __version_suffix__ else 'tags'}"
-
-
 CORE_MFE_APPS: dict[str, MFE_ATTRS_TYPE] = {
     "authn": {
-        "repository": "https://github.com/openedx/frontend-app-authn",
-        "refs": get_github_refs_path("openedx/frontend-app-authn"),
+        "repository": "https://github.com/openedx/frontend-app-authn.git",
         "port": 1999,
     },
     "account": {
-        "repository": "https://github.com/openedx/frontend-app-account",
-        "refs": get_github_refs_path("openedx/frontend-app-account"),
+        "repository": "https://github.com/openedx/frontend-app-account.git",
         "port": 1997,
     },
     "communications": {
-        "repository": "https://github.com/openedx/frontend-app-communications",
-        "refs": get_github_refs_path("openedx/frontend-app-communications"),
+        "repository": "https://github.com/openedx/frontend-app-communications.git",
         "port": 1984,
     },
     "course-authoring": {
-        "repository": "https://github.com/openedx/frontend-app-course-authoring",
-        "refs": get_github_refs_path("openedx/frontend-app-course-authoring"),
+        "repository": "https://github.com/openedx/frontend-app-course-authoring.git",
         "port": 2001,
     },
     "discussions": {
-        "repository": "https://github.com/openedx/frontend-app-discussions",
-        "refs": get_github_refs_path("openedx/frontend-app-discussions"),
+        "repository": "https://github.com/openedx/frontend-app-discussions.git",
         "port": 2002,
     },
     "gradebook": {
-        "repository": "https://github.com/openedx/frontend-app-gradebook",
-        "refs": get_github_refs_path("openedx/frontend-app-gradebook"),
+        "repository": "https://github.com/openedx/frontend-app-gradebook.git",
         "port": 1994,
     },
     "learner-dashboard": {
-        "repository": "https://github.com/openedx/frontend-app-learner-dashboard",
-        "refs": get_github_refs_path("openedx/frontend-app-learner-dashboard"),
+        "repository": "https://github.com/openedx/frontend-app-learner-dashboard.git",
         "port": 1996,
     },
     "learning": {
-        "repository": "https://github.com/openedx/frontend-app-learning",
-        "refs": get_github_refs_path("openedx/frontend-app-learning"),
+        "repository": "https://github.com/openedx/frontend-app-learning.git",
         "port": 2000,
     },
     "ora-grading": {
-        "repository": "https://github.com/openedx/frontend-app-ora-grading",
-        "refs": get_github_refs_path("openedx/frontend-app-ora-grading"),
+        "repository": "https://github.com/openedx/frontend-app-ora-grading.git",
         "port": 1993,
     },
     "profile": {
-        "repository": "https://github.com/openedx/frontend-app-profile",
-        "refs": get_github_refs_path("openedx/frontend-app-profile"),
+        "repository": "https://github.com/openedx/frontend-app-profile.git",
         "port": 1995,
     },
 }
