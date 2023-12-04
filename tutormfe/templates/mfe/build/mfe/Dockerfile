@@ -34,10 +34,7 @@ RUN echo "copying i18n data" \
 ######## {{ app_name }} (git)
 FROM base AS {{ app_name }}-git
 {#- Invalidate the build cache if a change is detected upstream #}
-{%- if app.get("refs") %}
-ADD {{ app["refs"] }}/{{ app.get("version", MFE_COMMON_VERSION) }} /tmp/gitref-{{ app_name }}
-{%- endif %}
-RUN git clone {{ app["repository"] }} --branch {{ app.get("version", MFE_COMMON_VERSION) }} --depth 1 .
+ADD --keep-git-dir=true {{ app["repository"] }}#{{ app.get("version", MFE_COMMON_VERSION) }} .
 
 ######## {{ app_name }} (src)
 # Empty layer with just the repo at the root, for build-time bind-mounts
