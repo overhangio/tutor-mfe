@@ -160,19 +160,21 @@ tutor_hooks.Filters.IMAGES_PUSH.add_item(
 
 
 # Build, pull and push {mfe}-dev images
-for mfe_name, mfe_attrs in iter_mfes():
-    name = f"{mfe_name}-dev"
-    tag = "{{ DOCKER_REGISTRY }}overhangio/openedx-" + name + ":{{ MFE_VERSION }}"
-    tutor_hooks.Filters.IMAGES_BUILD.add_item(
-        (
-            name,
-            os.path.join("plugins", "mfe", "build", "mfe"),
-            tag,
-            (f"--target={mfe_name}-dev",),
+@tutor_hooks.Actions.PLUGINS_LOADED.add()
+def _mounted_mfe_image_management() -> None:
+    for mfe_name, _mfe_attrs in iter_mfes():
+        name = f"{mfe_name}-dev"
+        tag = "{{ DOCKER_REGISTRY }}overhangio/openedx-" + name + ":{{ MFE_VERSION }}"
+        tutor_hooks.Filters.IMAGES_BUILD.add_item(
+            (
+                name,
+                os.path.join("plugins", "mfe", "build", "mfe"),
+                tag,
+                (f"--target={mfe_name}-dev",),
+            )
         )
-    )
-    tutor_hooks.Filters.IMAGES_PULL.add_item((name, tag))
-    tutor_hooks.Filters.IMAGES_PUSH.add_item((name, tag))
+        tutor_hooks.Filters.IMAGES_PULL.add_item((name, tag))
+        tutor_hooks.Filters.IMAGES_PUSH.add_item((name, tag))
 
 
 # init script
