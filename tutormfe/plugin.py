@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import functools
 import os
 import typing as t
 from glob import glob
@@ -100,22 +101,38 @@ def _add_core_mfe_apps(apps: dict[str, MFE_ATTRS_TYPE]) -> dict[str, MFE_ATTRS_T
     return apps
 
 
+@functools.lru_cache(maxsize=None)
+def get_mfes() -> dict[str, MFE_ATTRS_TYPE]:
+    """
+    This function is cached for performance.
+    """
+    return MFE_APPS.apply({})
+
+
 def iter_mfes() -> t.Iterable[tuple[str, MFE_ATTRS_TYPE]]:
     """
     Yield:
 
         (name, dict)
     """
-    yield from MFE_APPS.apply({}).items()
+    yield from get_mfes().items()
 
 
 def is_mfe_enabled(mfe_name: str) -> bool:
-    return mfe_name in MFE_APPS.apply({})
+    return mfe_name in get_mfes()
+
+
+def get_mfe(mfe_name: str) -> MFE_ATTRS_TYPE:
+    return get_mfes().get(mfe_name, {})
 
 
 # Make the mfe functions available within templates
 tutor_hooks.Filters.ENV_TEMPLATE_VARIABLES.add_items(
-    [("iter_mfes", iter_mfes), ("is_mfe_enabled", is_mfe_enabled)]
+    [
+        ("get_mfe", get_mfe),
+        ("iter_mfes", iter_mfes),
+        ("is_mfe_enabled", is_mfe_enabled),
+    ]
 )
 
 

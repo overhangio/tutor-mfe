@@ -24,35 +24,50 @@ MFE_CONFIG = {
 }
 
 # MFE-specific settings
-{% for app_name, app in iter_mfes() %}
-{% if app_name == "authn" %}
+
+{% if get_mfe("authn") %}
 AUTHN_MICROFRONTEND_URL = "{% if ENABLE_HTTPS %}https://{% else %}http://{% endif %}{{ MFE_HOST }}/authn"
 AUTHN_MICROFRONTEND_DOMAIN  = "{{ MFE_HOST }}/authn"
 MFE_CONFIG["DISABLE_ENTERPRISE_LOGIN"] = True
-{% elif app_name == "account" %}
+{% endif %}
+
+{% if get_mfe("account") %}
 ACCOUNT_MICROFRONTEND_URL = "{% if ENABLE_HTTPS %}https://{% else %}http://{% endif %}{{ MFE_HOST }}/account"
 MFE_CONFIG["ACCOUNT_SETTINGS_URL"] = ACCOUNT_MICROFRONTEND_URL
-{% elif app_name == "course-authoring" %}
+{% endif %}
+
+{% if get_mfe("course-authoring") %}
 MFE_CONFIG["ENABLE_NEW_EDITOR_PAGES"] = True
 MFE_CONFIG["ENABLE_PROGRESS_GRAPH_SETTINGS"] = True
-{% elif app_name == "discussions" %}
+{% endif %}
+
+{% if get_mfe("discussions") %}
 DISCUSSIONS_MICROFRONTEND_URL = "{% if ENABLE_HTTPS %}https://{% else %}http://{% endif %}{{ MFE_HOST }}/discussions"
 DISCUSSIONS_MFE_FEEDBACK_URL = None
-{% elif app_name == "gradebook" %}
+{% endif %}
+
+{% if get_mfe("gradebook") %}
 WRITABLE_GRADEBOOK_URL = "{% if ENABLE_HTTPS %}https://{% else %}http://{% endif %}{{ MFE_HOST }}/gradebook"
-{% elif app_name == "learning" %}
+{% endif %}
+
+{% if get_mfe("learning") %}
 LEARNING_MICROFRONTEND_URL = "{% if ENABLE_HTTPS %}https://{% else %}http://{% endif %}{{ MFE_HOST }}/learning"
 MFE_CONFIG["LEARNING_BASE_URL"] = "{{ "https" if ENABLE_HTTPS else "http" }}://{{ MFE_HOST }}/learning"
-{% elif app_name == "ora-grading" %}
+{% endif %}
+
+{% if get_mfe("ora-grading") %}
 ORA_GRADING_MICROFRONTEND_URL = "{% if ENABLE_HTTPS %}https://{% else %}http://{% endif %}{{ MFE_HOST }}/ora-grading"
-{% elif app_name == "profile" %}
+{% endif %}
+
+{% if get_mfe("profile") %}
 PROFILE_MICROFRONTEND_URL = "{% if ENABLE_HTTPS %}https://{% else %}http://{% endif %}{{ MFE_HOST }}/profile/u/"
 MFE_CONFIG["ACCOUNT_PROFILE_URL"] = "{% if ENABLE_HTTPS %}https://{% else %}http://{% endif %}{{ MFE_HOST }}/profile"
-{% elif app_name == "communications" %}
+{% endif %}
+
+{% if get_mfe("communications") %}
 COMMUNICATIONS_MICROFRONTEND_URL = "{% if ENABLE_HTTPS %}https://{% else %}http://{% endif %}{{ MFE_HOST }}/communications"
 MFE_CONFIG["SCHEDULE_EMAIL_SECTION"] = True
 {% endif %}
-{% endfor %}
 
 LOGIN_REDIRECT_WHITELIST.append("{{ MFE_HOST }}")
 CORS_ORIGIN_WHITELIST.append("{% if ENABLE_HTTPS %}https://{% else %}http://{% endif %}{{ MFE_HOST }}")
