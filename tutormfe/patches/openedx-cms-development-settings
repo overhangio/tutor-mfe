@@ -1,9 +1,5 @@
 # MFE-specific settings
-{% for app_name, app in iter_mfes() %}
-{% if app_name == "course-authoring" %}
-COURSE_AUTHORING_MICROFRONTEND_URL = "http://{{ MFE_HOST }}:{{ app["port"] }}/course-authoring"
-CORS_ORIGIN_WHITELIST.append("http://{{ MFE_HOST }}:{{ app["port"] }}")
-LOGIN_REDIRECT_WHITELIST.append("{{ MFE_HOST }}:{{ app["port"] }}")
-CSRF_TRUSTED_ORIGINS.append("{{ MFE_HOST }}:{{ app["port"] }}")
-{% endif %}
-{% endfor %}
+COURSE_AUTHORING_MICROFRONTEND_URL = "http://{{ MFE_HOST }}:{{ get_mfe('course-authoring')["port"] }}/course-authoring"
+CORS_ORIGIN_WHITELIST.append("http://{{ MFE_HOST }}:{{ get_mfe('course-authoring')["port"] }}")
+LOGIN_REDIRECT_WHITELIST.append("{{ MFE_HOST }}:{{ get_mfe('course-authoring')["port"] }}")
+CSRF_TRUSTED_ORIGINS.append("{{ MFE_HOST }}:{{ get_mfe('course-authoring')["port"] }}")

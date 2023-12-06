@@ -5,10 +5,9 @@ ENABLE_MFE_CONFIG_API = True
 MFE_CONFIG_API_CACHE_TIMEOUT = 1
 
 # MFE-specific settings
-{% for app_name, app in iter_mfes() %}
-{% if app_name == "authn" %}
+{% if get_mfe("authn") %}
 FEATURES['ENABLE_AUTHN_MICROFRONTEND'] = True
-{% elif app_name == "communications" %}
+{% endif %}
+{% if get_mfe("communications") %}
 FEATURES['ENABLE_NEW_BULK_EMAIL_EXPERIENCE'] = True
 {% endif %}
-{% endfor %}
