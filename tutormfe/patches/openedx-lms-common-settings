@@ -10,6 +10,7 @@ FEATURES['ENABLE_AUTHN_MICROFRONTEND'] = True
 {% endif %}
 {% if get_mfe("communications") %}
 FEATURES['ENABLE_NEW_BULK_EMAIL_EXPERIENCE'] = True
-{% elif app_name == "learner-dashboard" %}
+{% endif %}
+{% if get_mfe("learner-dashboard") %}
 LEARNER_HOME_MFE_REDIRECT_PERCENTAGE = 100
 {% endif %}
