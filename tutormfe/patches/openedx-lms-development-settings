@@ -69,7 +69,6 @@ MFE_CONFIG["ACCOUNT_PROFILE_URL"] = "http://{{ MFE_HOST }}:{{ get_mfe("profile")
 
 {% if get_mfe("communications") %}
 COMMUNICATIONS_MICROFRONTEND_URL = "http://{{ MFE_HOST }}:{{ get_mfe("communications")["port"] }}/communications"
->>>>>>> master
 MFE_CONFIG["SCHEDULE_EMAIL_SECTION"] = True
 {% endif %}
 
