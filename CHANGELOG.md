@@ -19,6 +19,13 @@ instructions, because git commits are used to generate release notes:
 
 <!-- scriv-insert-here -->
 
+<a id='changelog-16.1.3'></a>
+## v16.1.3 (2023-12-07)
+
+- [Improvement] Added Makefile and test action to repository and formatted code with Black and isort. (by @CodeWithEmad)
+- [Bugfix] Fix image build/pull/push when 3rd-party microfrontends are bind-mounted. (by @regisb)
+- [Feature] Introduce a `get_mfe(name)` template function to make it easier to write patches. (by @regisb)
+
 <a id='changelog-16.1.2'></a>
 ## v16.1.2 (2023-11-06)
 
