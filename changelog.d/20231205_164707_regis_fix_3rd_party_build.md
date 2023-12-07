@@ -1,1 +1,0 @@
-- [Bugfix] Fix image build/pull/push when 3rd-party microfrontends are bind-mounted. (by @regisb)
