@@ -24,37 +24,54 @@ MFE_CONFIG = {
 }
 
 # MFE-specific settings
-{% for app_name, app in iter_mfes() %}
-{% if app_name == "authn" %}
-AUTHN_MICROFRONTEND_URL = "http://{{ MFE_HOST }}:{{ app["port"] }}/authn"
+{% if get_mfe("authn") %}
+AUTHN_MICROFRONTEND_URL = "http://{{ MFE_HOST }}:{{ get_mfe("authn")["port"] }}/authn"
 AUTHN_MICROFRONTEND_DOMAIN  = "{{ MFE_HOST }}/authn"
 MFE_CONFIG["DISABLE_ENTERPRISE_LOGIN"] = True
-{% elif app_name == "account" %}
-ACCOUNT_MICROFRONTEND_URL = "http://{{ MFE_HOST }}:{{ app["port"] }}/account"
+{% endif %}
+
+{% if get_mfe("account") %}
+ACCOUNT_MICROFRONTEND_URL = "http://{{ MFE_HOST }}:{{ get_mfe("account")["port"] }}/account"
 MFE_CONFIG["ACCOUNT_SETTINGS_URL"] = ACCOUNT_MICROFRONTEND_URL
-{% elif app_name == "course-authoring" %}
+{% endif %}
+
+{% if get_mfe("course-authoring") %}
 MFE_CONFIG["ENABLE_NEW_EDITOR_PAGES"] = True
 MFE_CONFIG["ENABLE_PROGRESS_GRAPH_SETTINGS"] = True
-{% elif app_name == "discussions" %}
-DISCUSSIONS_MICROFRONTEND_URL = "http://{{ MFE_HOST }}:{{ app["port"] }}/discussions"
+{% endif %}
+
+{% if get_mfe("discussions") %}
+DISCUSSIONS_MICROFRONTEND_URL = "http://{{ MFE_HOST }}:{{ get_mfe("discussions")["port"] }}/discussions"
 DISCUSSIONS_MFE_FEEDBACK_URL = None
-{% elif app_name == "gradebook" %}
-WRITABLE_GRADEBOOK_URL = "http://{{ MFE_HOST }}:{{ app["port"] }}/gradebook"
-{% elif app_name == "learner-dashboard" %}
-LEARNER_HOME_MICROFRONTEND_URL = "http://{{ MFE_HOST }}:{{ app["port"] }}/learner-dashboard"
-{% elif app_name == "learning" %}
-LEARNING_MICROFRONTEND_URL = "http://{{ MFE_HOST }}:{{ app["port"] }}/learning"
-MFE_CONFIG["LEARNING_BASE_URL"] = "http://{{ MFE_HOST }}:{{ app["port"] }}"
-{% elif app_name == "ora-grading" %}
-ORA_GRADING_MICROFRONTEND_URL = "http://{{ MFE_HOST }}:{{ app["port"] }}/ora-grading"
-{% elif app_name == "profile" %}
-PROFILE_MICROFRONTEND_URL = "http://{{ MFE_HOST }}:{{ app["port"] }}/profile/u/"
-MFE_CONFIG["ACCOUNT_PROFILE_URL"] = "http://{{ MFE_HOST }}:{{ app["port"] }}/profile"
-{% elif app_name == "communications" %}
-COMMUNICATIONS_MICROFRONTEND_URL = "http://{{ MFE_HOST }}:{{ app["port"] }}/communications"
+{% endif %}
+
+{% if get_mfe("gradebook") %}
+WRITABLE_GRADEBOOK_URL = "http://{{ MFE_HOST }}:{{ get_mfe("gradebook")["port"] }}/gradebook"
+{% endif %}
+
+{% if get_mfe("learner-dashboard") %}
+LEARNER_HOME_MICROFRONTEND_URL = "http://{{ MFE_HOST }}:{{ get_mfe("learner-dashboard")["port"] }}/learner-dashboard"
+{% endif %}
+
+{% if get_mfe("learning") %}
+LEARNING_MICROFRONTEND_URL = "http://{{ MFE_HOST }}:{{ get_mfe("learning")["port"] }}/learning"
+MFE_CONFIG["LEARNING_BASE_URL"] = "http://{{ MFE_HOST }}:{{ get_mfe("learning")["port"] }}"
+{% endif %}
+
+{% if get_mfe("ora-grading") %}
+ORA_GRADING_MICROFRONTEND_URL = "http://{{ MFE_HOST }}:{{ get_mfe("ora-grading")["port"] }}/ora-grading"
+{% endif %}
+
+{% if get_mfe("profile") %}
+PROFILE_MICROFRONTEND_URL = "http://{{ MFE_HOST }}:{{ get_mfe("profile")["port"] }}/profile/u/"
+MFE_CONFIG["ACCOUNT_PROFILE_URL"] = "http://{{ MFE_HOST }}:{{ get_mfe("profile")["port"] }}/profile"
+{% endif %}
+
+{% if get_mfe("communications") %}
+COMMUNICATIONS_MICROFRONTEND_URL = "http://{{ MFE_HOST }}:{{ get_mfe("communications")["port"] }}/communications"
+>>>>>>> master
 MFE_CONFIG["SCHEDULE_EMAIL_SECTION"] = True
 {% endif %}
-{% endfor %}
 
 # Cors configuration
 {% for app_name, app in iter_mfes() %}
