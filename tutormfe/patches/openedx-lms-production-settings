@@ -32,7 +32,7 @@ MFE_CONFIG["DISABLE_ENTERPRISE_LOGIN"] = True
 {% endif %}
 
 {% if get_mfe("account") %}
-ACCOUNT_MICROFRONTEND_URL = "{% if ENABLE_HTTPS %}https://{% else %}http://{% endif %}{{ MFE_HOST }}/account"
+ACCOUNT_MICROFRONTEND_URL = "{% if ENABLE_HTTPS %}https://{% else %}http://{% endif %}{{ MFE_HOST }}/account/"
 MFE_CONFIG["ACCOUNT_SETTINGS_URL"] = ACCOUNT_MICROFRONTEND_URL
 {% endif %}
 
@@ -51,7 +51,7 @@ WRITABLE_GRADEBOOK_URL = "{% if ENABLE_HTTPS %}https://{% else %}http://{% endif
 {% endif %}
 
 {% if get_mfe("learner-dashboard") %}
-LEARNER_HOME_MICROFRONTEND_URL = "{% if ENABLE_HTTPS %}https://{% else %}http://{% endif %}{{ MFE_HOST }}/learner-dashboard"
+LEARNER_HOME_MICROFRONTEND_URL = "{% if ENABLE_HTTPS %}https://{% else %}http://{% endif %}{{ MFE_HOST }}/learner-dashboard/"
 {% endif %}
 
 {% if get_mfe("learning") %}

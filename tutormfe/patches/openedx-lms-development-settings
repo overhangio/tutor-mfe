@@ -31,7 +31,7 @@ MFE_CONFIG["DISABLE_ENTERPRISE_LOGIN"] = True
 {% endif %}
 
 {% if get_mfe("account") %}
-ACCOUNT_MICROFRONTEND_URL = "http://{{ MFE_HOST }}:{{ get_mfe("account")["port"] }}/account"
+ACCOUNT_MICROFRONTEND_URL = "http://{{ MFE_HOST }}:{{ get_mfe("account")["port"] }}/account/"
 MFE_CONFIG["ACCOUNT_SETTINGS_URL"] = ACCOUNT_MICROFRONTEND_URL
 {% endif %}
 
@@ -50,7 +50,7 @@ WRITABLE_GRADEBOOK_URL = "http://{{ MFE_HOST }}:{{ get_mfe("gradebook")["port"] 
 {% endif %}
 
 {% if get_mfe("learner-dashboard") %}
-LEARNER_HOME_MICROFRONTEND_URL = "http://{{ MFE_HOST }}:{{ get_mfe("learner-dashboard")["port"] }}/learner-dashboard"
+LEARNER_HOME_MICROFRONTEND_URL = "http://{{ MFE_HOST }}:{{ get_mfe("learner-dashboard")["port"] }}/learner-dashboard/"
 {% endif %}
 
 {% if get_mfe("learning") %}
