@@ -42,6 +42,7 @@ MFE_CONFIG["ENABLE_PROGRESS_GRAPH_SETTINGS"] = True
 
 {% if get_mfe("discussions") %}
 DISCUSSIONS_MICROFRONTEND_URL = "http://{{ MFE_HOST }}:{{ get_mfe("discussions")["port"] }}/discussions"
+MFE_CONFIG["DISCUSSIONS_MFE_BASE_URL"] = DISCUSSIONS_MICROFRONTEND_URL
 DISCUSSIONS_MFE_FEEDBACK_URL = None
 {% endif %}
 
