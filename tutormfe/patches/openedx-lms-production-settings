@@ -43,6 +43,7 @@ MFE_CONFIG["ENABLE_PROGRESS_GRAPH_SETTINGS"] = True
 
 {% if get_mfe("discussions") %}
 DISCUSSIONS_MICROFRONTEND_URL = "{% if ENABLE_HTTPS %}https://{% else %}http://{% endif %}{{ MFE_HOST }}/discussions"
+MFE_CONFIG["DISCUSSIONS_MFE_BASE_URL"] = DISCUSSIONS_MICROFRONTEND_URL
 DISCUSSIONS_MFE_FEEDBACK_URL = None
 {% endif %}
 
