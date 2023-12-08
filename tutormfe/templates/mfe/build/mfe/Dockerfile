@@ -100,6 +100,8 @@ CMD ["/bin/bash", "-c", "npm run start --- --config ./webpack.dev-tutor.config.j
 FROM {{ app_name }}-common AS {{ app_name }}-prod
 ENV NODE_ENV=production
 RUN npm run build
+{{ patch("mfe-dockerfile-post-npm-build") }}
+{{ patch("mfe-dockerfile-post-npm-build-{}".format(app_name)) }}
 {% endfor %}
 
 ####### final production image with all static assets
