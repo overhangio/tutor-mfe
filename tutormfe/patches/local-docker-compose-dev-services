@@ -23,5 +23,7 @@ mfe:
     restart: unless-stopped
     depends_on:
         - lms
+    environment:
+        - "PORT={{ app['port'] }}"
 {%- endif %}
 {%- endfor %}
