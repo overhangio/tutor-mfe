@@ -89,6 +89,14 @@ def get_mfes() -> dict[str, MFE_ATTRS_TYPE]:
     return MFE_APPS.apply({})
 
 
+@tutor_hooks.Actions.PLUGIN_LOADED.add()
+def _clear_get_mfes_cache(_name: str):
+    """
+    Don't forget to clear cache, or we'll have some strange surprises...
+    """
+    get_mfes.cache_clear()
+
+
 def iter_mfes() -> t.Iterable[tuple[str, MFE_ATTRS_TYPE]]:
     """
     Yield:
