@@ -185,6 +185,8 @@ Your custom translation strings should now appear in your app.
 Customising MFEs
 ~~~~~~~~~~~~~~~~
 
+.. _mfe-lms-settings:
+
 To change the MFEs logos from the default to your own logos, override the corresponding settings in the MFEs environment using patches `mfe-lms-production-settings` and `mfe-lms-development-settings`. For example, using the following plugin:
 ::
 
@@ -214,6 +216,8 @@ To change the MFEs logos from the default to your own logos, override the corres
     )
 
 If patches are the same in development and production, they can be replaced by a single `mfe-lms-common-settings` patch.
+
+.. _mfe-docker-post-npm-install:
 
 To install custom components for the MFEs, such as the `header <https://github.com/openedx/frontend-component-header>`_ and `footer <https://github.com/openedx/frontend-component-footer>`_, override the components by adding a patch to ``mfe-dockerfile-post-npm-install`` in your plugin:
 ::
@@ -263,6 +267,8 @@ In both cases above, the ``npm`` commands affect every MFE being built.  If you 
         ]
     )
 
+.. _mfe-docker-pre-npm-build:
+
 In case you need to run additional instructions just before the build step you can use the ``mfe-dockerfile-pre-npm-build`` or ``mfe-dockerfile-pre-npm-build-*`` patches. For example, you may want to override existing env variables or define new ones.
 ::
 
@@ -290,7 +296,7 @@ In case you need to run additional instructions just before the build step you c
         ]
     )
 
-
+You can find more patches in the patch catalog below.
 
 Installing from a private npm registry
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -365,10 +371,100 @@ You will also have to manually remove a few settings::
 
     # MFE ora-grading
     tutor local run lms ./manage.py lms waffle_delete --flags openresponseassessment.enhanced_staff_grader
-
 Finally, restart the platform with::
 
     tutor local launch
+
+
+Template patch catalog
+----------------------
+
+This is the list of all patches used across tutor-mfe (outside of any plugin). Alternatively, you can search for patches in tutor-mfe templates by grepping the source code::
+    
+    git clone https://github.com/overhangio/tutor-mfe
+    cd tutor-mfe
+    git grep "{{ patch" -- tutormfe/templates
+
+mfe-lms-development-settings
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Python-formatted LMS settings in development. Values defined here override the values from `mfe-lms-common-settings <#mfe-lms-common-settings>`_ or `mfe-lms-production-settings <#mfe-lms-production-settings>`_. For an example on the usage of this patch, check out `this section <#mfe-lms-settings>`_.
+
+File changed: ``apps/openedx/settings/lms/development.py``
+
+mfe-lms-production-settings
+~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Python-formatted LMS settings in production. Values defined here override the values from `mfe-lms-common-settings <#mfe-lms-common-settings>`_. For an example on the usage of this patch, check out `this section <#mfe-lms-settings>`_.
+
+File changed: ``apps/openedx/settings/lms/production.py``
+
+mfe-lms-common-settings
+~~~~~~~~~~~~~~~~~~~~~~~
+Python-formatted LMS settings used both in production and development.
+
+File changed: ``apps/openedx/settings/partials/common_lms.py``
+
+mfe-webpack-dev-config
+~~~~~~~~~~~~~~~~~~~~~~
+Add any additional configurations to be added at the end of the development webpack config file in Javascript format.
+
+File changed: ``tutormfe/templates/mfe/apps/mfe/webpack.dev-tutor.config.js``
+
+mfe-dockerfile-pre-npm-install
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Add any additional instructions for before the npm install is initiated.
+
+File changed: ``tutormfe/templates/mfe/build/mfe/Dockerfile``
+
+mfe-dockerfile-pre-npm-install-{}
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Add any additional instructions for before the npm install is initiated for a specific mfe. Add the exact mfe name at the end to only change instructions for that mfe.
+
+Example: ``mfe-dockerfile-pre-npm-install-learning`` Will only apply any instructions specified for the learning mfe.
+
+File changed: ``tutormfe/templates/mfe/build/mfe/Dockerfile``
+
+mfe-dockerfile-post-npm-install
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Add any additional instructions for after the npm install has completed. This will apply the instructions to every MFE. For an example on the usage of this patch, check out `here <#mfe-docker-post-npm-install>`_.
+
+File changed: ``tutormfe/templates/mfe/build/mfe/Dockerfile``
+
+mfe-dockerfile-post-npm-install-{}
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Add any additional instructions for after the npm install has completed for a specific mfe. Add the exact mfe name at the end to only change instructions for that mfe. For an example on the usage of this patch, check out `here <#mfe-docker-post-npm-install>`_.
+
+Example: ``mfe-dockerfile-post-npm-install-authn`` Will only apply any instructions specified for the authn mfe.
+
+File changed: ``tutormfe/templates/mfe/build/mfe/Dockerfile``
+
+mfe-dockerfile-pre-npm-build
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Add any additional instructions for before the build step initializes. This will apply the instructions to every MFE. For an example on the usage of this patch, see `over here <#mfe-docker-pre-npm-build>`_.
+
+File changed: ``tutormfe/templates/mfe/build/mfe/Dockerfile``
+
+mfe-dockerfile-pre-npm-build-{}
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Add any additional instructions for before the build step initializes for a specific mfe. Add the exact mfe name at the end to only change instructions for that mfe. For an example on the usage of this patch, see `over here <#mfe-docker-pre-npm-build>`_.
+
+Example: ``mfe-dockerfile-post-npm-build-learning`` Will only apply any instructions specified for the learning mfe.
+
+File changed: ``tutormfe/templates/mfe/build/mfe/Dockerfile``
+
+mfe-dockerfile-post-npm-build
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Add any additional instructions for after the build step has completed. This will apply the instructions to every MFE.
+
+File changed: ``tutormfe/templates/mfe/build/mfe/Dockerfile``
+
+mfe-dockerfile-post-npm-build-{}
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Add any additional instructions for after the build step has completed for a specific mfe. Add the exact mfe name at the end to only change instructions for that mfe.
+
+Example: ``mfe-dockerfile-post-npm-build-learning`` Will only apply any instructions specified for the learning mfe.
+
+File changed: ``tutormfe/templates/mfe/build/mfe/Dockerfile``
+
 
 Troubleshooting
 ---------------
