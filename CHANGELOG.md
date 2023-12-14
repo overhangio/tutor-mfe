@@ -23,9 +23,10 @@ instructions, because git commits are used to generate release notes:
 ## v17.0.0 (2023-12-09)
 
 - 💥Upgrade to Quince (by @regisb).
+- 💥[Improvement] If you implement the `MFE_APPS` filter with a custom GitHub repository, you must make sure to add the ".git" extension to the URL. For instance: `"repository": "https://github.com/username/frontend-app-learning.git"`. This is because we changed the way we git-clone MFE repositories. (by @regisb)
 - [Improvement] Added Makefile and test action to repository and formatted code with Black and isort. (by @CodeWithEmad)
 - [Feature] Add support for the Learner Dashboard MFE. (by @arbrandes)
-- [Bugfix] Append trailing slash to PUBLIC_PATH, as its absence breaks some MFEs. (by @arbrandes)
+- [Bugfix] Append trailing slash to `PUBLIC_PATH`, as its absence breaks some MFEs. (by @arbrandes)
 - [Feature] Added patch to allow changes to Dockerfile after the npm build has completed. (by @Danyal-Faheem)
 - [Bugfix] Auto-build "mfe" image during `dev/local launch` in nightly. (by @regisb)
 - [Bugfix] Specify port for dev server to listen on (by @michaelwheeler)
