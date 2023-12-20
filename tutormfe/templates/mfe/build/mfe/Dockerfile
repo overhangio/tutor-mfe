@@ -111,3 +111,5 @@ RUN mkdir -p /openedx/dist
 {% for app_name, app in iter_mfes() %}
 COPY --from={{ app_name }}-prod /openedx/app/dist /openedx/dist/{{ app_name }}
 {% endfor %}
+
+{{ patch("mfe-dockerfile-production-final") }}

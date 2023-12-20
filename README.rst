@@ -424,6 +424,12 @@ Example: ``mfe-dockerfile-pre-npm-install-learning`` will only apply any instruc
 
 File changed: ``tutormfe/templates/mfe/build/mfe/Dockerfile``
 
+mfe-dockerfile-production-final
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Add any instructions in the final layer. Useful for overriding the CMD or ENTRYPOINT.
+
+File changed: ``tutormfe/templates/mfe/build/mfe/Dockerfile``
+
 mfe-dockerfile-post-npm-install
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 Add any instructions for after the npm install has completed. This will apply the instructions to every MFE. For an example on the usage of this patch, check out `here <#mfe-docker-post-npm-install>`_.
