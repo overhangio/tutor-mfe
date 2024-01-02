@@ -157,30 +157,17 @@ To disable an existing MFE, remove the corresponding entry from the ``MFE_APPS``
         mfes.pop("profile")
         return mfes
 
-Adding custom translations to your MFEs
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Using custom translations to your MFEs
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-This plugin makes it possible to change existing and add new translation strings to MFEs. Here is how to do it:
+By default, translations are pulled from the `openedx/openedx-translations repository <https://github.com/openedx/openedx-translations>`_ on build time.
 
-1. Identify the ID of the string you would like to translate. For instance, the ID of the "Account Information" string in the account MFE is "account.settings.section.account.information" (see `source <https://github.com/edx/frontend-app-account/blob/1444831833cad4746b9ed14618a499b425ccc907/src/account-settings/AccountSettingsPage.messages.jsx#L34>`__).
-2. Create a folder and i18n file corresponding to your MFE app and language in the Tutor root. This location of this file should be ``/path/to/tutor/env/plugins/mfe/build/mfe/i18n/<app name>/<language code>.json``. For instance, to add French ("fr") translation strings to the account MFE, run::
+To use your own translations repository, you can override the
+``ATLAS_REPOSITORY: your-organization/translations`` configuration variable.
 
-    cd "$(tutor config printroot)/env/plugins/mfe/build/mfe/i18n/"
-    mkdir account
-    touch account/fr.json
-
-3. Add your entries to this file in JSON format, where the key is the string ID and the value is the actual string. For instance::
-
-    {
-      "account.settings.section.account.information": "Information du compte"
-    }
-
-4. Rebuild the MFE image and restart the MFE with::
-
-    tutor images build mfe
-    tutor local start -d
-
-Your custom translation strings should now appear in your app.
+The
+`Getting and customizing Translations <https://docs.tutor.edly.io/configuration.html#getting-and-customizing-translations>`_
+section in the Tutor configuration documentation explains how to do this.
 
 Customising MFEs
 ~~~~~~~~~~~~~~~~
