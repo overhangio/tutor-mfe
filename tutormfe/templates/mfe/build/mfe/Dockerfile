@@ -20,16 +20,6 @@ RUN mkdir -p /openedx/app /openedx/env
 WORKDIR /openedx/app
 ENV PATH /openedx/app/node_modules/.bin:${PATH}
 
-######## i18n strings
-FROM base AS i18n
-COPY ./i18n /openedx/i18n
-RUN chmod a+x /openedx/i18n/*.js
-RUN echo "copying i18n data" \
-  {%- for app_name, app in iter_mfes() %}
-  && mkdir -p /openedx/i18n/{{ app_name }} \
-  {%- endfor %}
-  echo "done."
-
 {% for app_name, app in iter_mfes() %}
 ####################### {{ app_name }} MFE
 ######## {{ app_name }} (git)
@@ -41,14 +31,6 @@ ADD --keep-git-dir=true {{ app["repository"] }}#{{ app.get("version", MFE_COMMON
 # Empty layer with just the repo at the root, for build-time bind-mounts
 FROM scratch as {{ app_name }}-src
 COPY --from={{ app_name }}-git /openedx/app /
-
-######## {{ app_name }} (i18n)
-FROM base AS {{ app_name }}-i18n
-COPY --from={{ app_name }}-src / /openedx/app
-COPY --from=i18n /openedx/i18n/{{ app_name }} /openedx/i18n/{{ app_name }}
-COPY --from=i18n /openedx/i18n/i18n-merge.js /openedx/i18n/i18n-merge.js
-RUN stat /openedx/app/src/i18n/messages 2> /dev/null || (echo "missing messages folder" && mkdir -p /openedx/app/src/i18n/messages)
-RUN /openedx/i18n/i18n-merge.js /openedx/app/src/i18n/messages /openedx/i18n/{{ app_name }} /openedx/app/src/i18n/messages
 
 ######## {{ app_name }} (common)
 FROM base AS {{ app_name }}-common
@@ -65,12 +47,11 @@ RUN --mount=type=cache,target=/root/.npm,sharing=shared npm clean-install --no-a
 {{ patch("mfe-dockerfile-post-npm-install") }}
 {{ patch("mfe-dockerfile-post-npm-install-{}".format(app_name)) }}
 COPY --from={{ app_name }}-src / /openedx/app
-COPY --from={{ app_name }}-i18n /openedx/app/src/i18n/messages /openedx/app/src/i18n/messages
 
 # Whenever a new MFE supports Atlas, it should be added to this list.
 # When all MFEs support Atlas, this if-statement should be removed.
 {% if app_name in ["communications"] %}
-RUN make OPENEDX_ATLAS_PULL=true pull_translations
+RUN make OPENEDX_ATLAS_PULL=true ATLAS_OPTIONS="--repository={{ ATLAS_REPOSITORY }} --revision={{ ATLAS_REVISION }} {{ ATLAS_OPTIONS }}" pull_translations
 {% endif %}
 
 EXPOSE {{ app['port'] }}
