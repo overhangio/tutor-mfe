@@ -126,18 +126,21 @@ MFE management
 Adding new MFEs
 ~~~~~~~~~~~~~~~
 
-.. warning:: As of Tutor v16 (Palm release) it is no longer possible to add new MFEs by creating ``*_MFE_APP`` settings. Instead, users must implement the approach described here.
+⚠️ **Warnings**
 
-Other MFE developers can take advantage of this plugin to deploy their own MFEs. To declare a new MFE, create a Tutor plugin and add your MFE configuration to the ``tutormfe.hooks.MFE_APPS`` filter. This configuration should include the name, git repository (and optionally: git branch) and development port. For example::
+- As of Tutor v16 (Palm release) it is no longer possible to add new MFEs by creating ``*_MFE_APP`` settings. Instead, users must implement the approach described below.
+- As of Tutor v17 (Quince release) you must make sure that the git URL of your MFE repository ends with ``.git``. Otherwise the plugin build will fail.
+
+Other MFE developers can take advantage of this plugin to deploy their own MFEs. To declare a new MFE, create a Tutor plugin and add your MFE configuration to the ``tutormfe.hooks.MFE_APPS`` filter. This configuration should include the name, git repository (and optionally: git branch or tag) and development port. For example::
 
     from tutormfe.hooks import MFE_APPS
 
     @MFE_APPS.add()
     def _add_my_mfe(mfes):
         mfes["mymfe"] = {
-            "repository": "https://github.com/myorg/mymfe",
+            "repository": "https://github.com/myorg/mymfe.git",
             "port": 2001,
-            "version": "me/my-custom-branch", # optional, will default to the Open edX current tag.
+            "version": "me/my-custom-branch-or-tag", # optional, will default to the Open edX current tag.
         }
         return mfes
 
