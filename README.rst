@@ -130,6 +130,7 @@ Adding new MFEs
 
 - As of Tutor v16 (Palm release) it is no longer possible to add new MFEs by creating ``*_MFE_APP`` settings. Instead, users must implement the approach described below.
 - As of Tutor v17 (Quince release) you must make sure that the git URL of your MFE repository ends with ``.git``. Otherwise the plugin build will fail.
+- As of Tutor v18 (Redwood release) all MFEs must provide a ``make pull_translations`` command. Otherwise the plugin build will fail. Providing an empty command is enough to bypass this requirement. See the `Custom translations section <#mfe-custom-translations>`_ for more information.
 
 Other MFE developers can take advantage of this plugin to deploy their own MFEs. To declare a new MFE, create a Tutor plugin and add your MFE configuration to the ``tutormfe.hooks.MFE_APPS`` filter. This configuration should include the name, git repository (and optionally: git branch or tag) and development port. For example::
 
@@ -163,10 +164,19 @@ To disable an existing MFE, remove the corresponding entry from the ``MFE_APPS``
 Using custom translations to your MFEs
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-By default, translations are pulled from the `openedx/openedx-translations repository <https://github.com/openedx/openedx-translations>`_ on build time.
+.. _mfe-custom-translations:
 
-To use your own translations repository, you can override the
-``ATLAS_REPOSITORY: your-organization/translations`` configuration variable.
+During docker image build, this plugin runs ``make pull_translations`` for each Micro-frontend. This
+program is used in the ``Dockerfile`` to pull translations from the `openedx/openedx-translations repository <https://github.com/openedx/openedx-translations>`_ via `openedx-atlas <https://github.com/openedx/openedx-atlas>`_.
+
+The ``make pull_translations`` command passes the ``ATLAS_OPTIONS`` environment variable to the ``atlas pull`` command. This allows specifying a custom repository or branch to pull translations from.
+
+Translations in the MFE plugin as well as other Tutor plugins can be customized with the following configuration
+variables:
+
+- ``ATLAS_REVISION`` (default: ``"main"`` on nightly and ``"{{ OPENEDX_COMMON_VERSION }}"`` if a named release is used)
+- ``ATLAS_REPOSITORY`` (default: ``"openedx/openedx-translations"``).
+- ``ATLAS_OPTIONS`` (default: ``""``) Pass additional arguments to ``atlas pull``. Refer to the `atlas documentations <https://github.com/openedx/openedx-atlas>`_ for more information.
 
 The
 `Getting and customizing Translations <https://docs.tutor.edly.io/configuration.html#getting-and-customizing-translations>`_

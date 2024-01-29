@@ -48,11 +48,7 @@ RUN --mount=type=cache,target=/root/.npm,sharing=shared npm clean-install --no-a
 {{ patch("mfe-dockerfile-post-npm-install-{}".format(app_name)) }}
 COPY --from={{ app_name }}-src / /openedx/app
 
-# Whenever a new MFE supports Atlas, it should be added to this list.
-# When all MFEs support Atlas, this if-statement should be removed.
-{% if app_name in ["communications"] %}
 RUN make OPENEDX_ATLAS_PULL=true ATLAS_OPTIONS="--repository={{ ATLAS_REPOSITORY }} --revision={{ ATLAS_REVISION }} {{ ATLAS_OPTIONS }}" pull_translations
-{% endif %}
 
 EXPOSE {{ app['port'] }}
 
