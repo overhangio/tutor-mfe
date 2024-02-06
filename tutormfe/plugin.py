@@ -5,10 +5,10 @@ import os
 import typing as t
 from glob import glob
 
-import pkg_resources
+import importlib_resources
 from tutor import fmt
-from tutor.__about__ import __version_suffix__
 from tutor import hooks as tutor_hooks
+from tutor.__about__ import __version_suffix__
 from tutor.hooks import priorities
 from tutor.types import Config, get_typed
 
@@ -168,11 +168,14 @@ def _mounted_mfe_image_management() -> None:
 # init script
 with open(
     os.path.join(
-        pkg_resources.resource_filename("tutormfe", "templates"),
-        "mfe",
-        "tasks",
-        "lms",
-        "init",
+        str(
+            importlib_resources.files("tutormfe")
+            / "templates"
+            / "mfe"
+            / "tasks"
+            / "lms"
+            / "init"
+        )
     ),
     encoding="utf-8",
 ) as task_file:
@@ -248,7 +251,7 @@ def _build_3rd_party_dev_mfes_on_launch(
 # Boilerplate code
 # Add the "templates" folder as a template root
 tutor_hooks.Filters.ENV_TEMPLATE_ROOTS.add_item(
-    pkg_resources.resource_filename("tutormfe", "templates")
+    str(importlib_resources.files("tutormfe") / "templates")
 )
 # Render the "build" and "apps" folders
 tutor_hooks.Filters.ENV_TEMPLATE_TARGETS.add_items(
@@ -258,12 +261,7 @@ tutor_hooks.Filters.ENV_TEMPLATE_TARGETS.add_items(
     ],
 )
 # Load patches from files
-for path in glob(
-    os.path.join(
-        pkg_resources.resource_filename("tutormfe", "patches"),
-        "*",
-    )
-):
+for path in glob(str(importlib_resources.files("tutormfe") / "patches" / "*")):
     with open(path, encoding="utf-8") as patch_file:
         # Here we force tutor-mfe lms patches to be loaded first, thus ensuring when operators override
         # MFE_CONFIG and/or MFE_CONFIG_OVERRIDES, their patches will be loaded after this plugin's
