@@ -15,7 +15,10 @@ module.exports = merge(baseDevConfig, {
     // https://github.com/webpack/webpack-dev-server/blob/master/migration-v4.md
     allowedHosts: 'all',
     proxy: {
-      '/api/mfe_config/v1' : 'http://{{ LMS_HOST }}:8000',
+      '/api/mfe_config/v1': {
+        target: 'http://{{ LMS_HOST }}:8000',
+        changeOrigin: true,
+      }
     }
   },
 })
