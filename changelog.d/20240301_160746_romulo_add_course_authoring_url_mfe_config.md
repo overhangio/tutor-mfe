@@ -1,0 +1,1 @@
+- [Improvement] Adds the "COURSE_AUTHORING_MFE_BASE_URL" to MFE_CONFIG pointing to the Course Authoring MFE address. (by @rpenido)
