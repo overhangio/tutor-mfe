@@ -1,5 +1,5 @@
 {{ MFE_HOST }}{$default_site_port} {
-    respond / 204
+    redir / {% if ENABLE_HTTPS %}https://{% else %}http://{% endif %}{{ LMS_HOST }}
     request_body {
         max_size 2MB
     }
