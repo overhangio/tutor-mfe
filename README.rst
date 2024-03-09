@@ -332,6 +332,10 @@ You can also bind-mount your own fork of an MFE. For example::
     tutor mounts add /path/to/frontend-app-profile
     tutor dev launch
 
+.. note::
+
+  The name of the bind-mount folder needs to match the name of the repository word-for-word. If you've forked an MFE repository with a custom name, be sure to change the name back to ensure the bind-mount works properly.
+
 With this change, the "profile-dev" image will be automatically re-built during ``launch``. Your host repository will then be bind-mounted at runtime in the "profile" container. This means that changes you make to the host repository will be automatically picked up and hot-reloaded by your development server.
 
 This works for custom MFEs, as well. For example, if you added your own MFE named frontend-app-myapp, then you can bind-mount it like so::
@@ -340,7 +344,15 @@ This works for custom MFEs, as well. For example, if you added your own MFE name
 
 Similarly, in production, the "mfe" Docker image will be rebuilt automatically during ``tutor local launch``.
 
-Note: the name of the bind-mount folder needs to match the name of the repository word-for-word. If you've forked an MFE repository with a custom name, be sure to change the name back to ensure the bind-mount works properly.
+.. note::
+
+  Docker tries to run as many build processes in parallel as possible, but this can cause failures in the MFE image build.  If you're running into OOM issues, RAM starvation, or network failures during NPM installs, try the following before restarting::
+
+    cat >buildkitd.toml <<EOF
+    [worker.oci]
+      max-parallelism = 1
+    EOF
+    docker buildx create --use --name=singlecpu --config=./buildkitd.toml
 
 Uninstall
 ---------
