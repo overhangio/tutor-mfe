@@ -1,1 +1,0 @@
-- [Bugfix] Fix MFE runtime config via site configuration in dev mode (by @arbrandes).
