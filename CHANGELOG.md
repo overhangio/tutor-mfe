@@ -19,6 +19,17 @@ instructions, because git commits are used to generate release notes:
 
 <!-- scriv-insert-here -->
 
+<a id='changelog-17.0.1'></a>
+## v17.0.1 (2024-03-26)
+
+- [Feature] Add a new `mfe-dockerfile-production-final` patch to define additional instructions in the final image. (by @MoisesGSalas)
+- [Bugfix] Fix MFE runtime config via site configuration in dev mode (by @arbrandes).
+- [Bugfix] Make plugin compatible with Python 3.12 by removing dependency on `pkg_resources`. (by @regisb)
+- [Bugfix] Make sure course-authoring mfe is present in `MFE_APPS` before applying cms-development-settings. (by @Danyal-Faheem)
+- [Bugfix] Fix issue of `MFE_HOST` url redirection to `LMS_HOST` (by @hinakhadim)
+- [Bugfix] Added the learner-dashboard-dev image to the gitlab ci. (by @Danyal-Faheem)
+- [Improvement] Adds the `COURSE_AUTHORING_MFE_BASE_URL` to `MFE_CONFIG` pointing to the Course Authoring MFE address. (by @rpenido)
+
 <a id='changelog-17.0.0'></a>
 ## v17.0.0 (2023-12-09)
 
