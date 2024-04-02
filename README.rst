@@ -525,7 +525,21 @@ File changed: ``tutormfe/templates/mfe/apps/mfe/Caddyfile``
 Troubleshooting
 ---------------
 
-This Tutor plugin is maintained by Adolfo Brandes from `Axim <https://openedx.org>`__. Community support is available from the official `Open edX forum <https://discuss.openedx.org>`__. Do you need help with this plugin? See the `troubleshooting <https://docs.tutor.edly.io/troubleshooting.html>`__ section from the Tutor documentation.
+NPM Dependency Conflict When overriding ``@edx/frontend-component-header`` or ``@edx/frontend-component-footer``
+----------------------------------------------------------------------------------------------------------------
+
+When there is a need to customize the ``@edx/frontend-component-header`` or ``@edx/frontend-component-footer`` component, two things we have to care of to avoid dependency conflict error during ``npm`` installation. 
+
+1. Identify your openedx version, for example ``quince``.
+2. Navigate to `learning <https://github.com/openedx/frontend-app-learning>`_ and `learner-dashboard <https://github.com/openedx/frontend-app-learner-dashboard>`_ MFEs repositories and checkout to branch ``open-release/quince.master``. Inspect which header and footer versions are installed from ``package.json``. You can explore the header and footer versions for additional MFEs to ensure that all MFEs support the same major versions of header and footer. 
+3. Then, determine which versions of ``@edx/frontend-platform`` MFEs are utilizing and the header you plan to customize is compatible with the same version of ``@edx/frontend-platform`` specified in ``package.json`` file (peer-dependencies).
+4. Ensure consistency between the versions. For example, If MFE has ``@edx/frontend-platform: 7.0.1``, then customize the header component which has ``@edx/frontend-platform: ^7.0.0`` in ``package.json`` under peer-dependencies
+5. Checkout to that specific tag (e.g: ``v7.0.0``) of header component and customize it
+6. Install the customized header/footer components into your MFEs. This will resolve any npm dependency conflict issues.
+7. Repeat the same process for customizing the footer component if necessary.
+
+
+This Tutor plugin is maintained by Adolfo Brandes from `tCRIL <https://openedx.org>`__. Community support is available from the official `Open edX forum <https://discuss.openedx.org>`__. Do you need help with this plugin? See the `troubleshooting <https://docs.tutor.edly.io/troubleshooting.html>`__ section from the Tutor documentation.
 
 License
 -------
