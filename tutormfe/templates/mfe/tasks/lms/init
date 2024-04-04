@@ -30,6 +30,7 @@ site-configuration unset --domain={{ LMS_HOST }}:8000 ENABLE_PROFILE_MICROFRONTE
 
 {% if is_mfe_enabled("course-authoring") %}
 (./manage.py lms waffle_flag --list | grep discussions.pages_and_resources_mfe) || ./manage.py lms waffle_flag --create --everyone discussions.pages_and_resources_mfe
+(./manage.py lms waffle_flag --list | grep contentstore.new_studio_mfe.use_new_files_uploads_page) || ./manage.py lms waffle_flag --create --everyone contentstore.new_studio_mfe.use_new_files_uploads_page
 (./manage.py lms waffle_flag --list | grep new_core_editors.use_new_text_editor) || ./manage.py lms waffle_flag --create --deactivate new_core_editors.use_new_text_editor
 (./manage.py lms waffle_flag --list | grep new_core_editors.use_new_video_editor) || ./manage.py lms waffle_flag --create --deactivate new_core_editors.use_new_video_editor
 (./manage.py lms waffle_flag --list | grep new_core_editors.use_new_problem_editor) || ./manage.py lms waffle_flag --create --deactivate new_core_editors.use_new_problem_editor
@@ -38,6 +39,7 @@ site-configuration unset --domain={{ LMS_HOST }}:8000 ENABLE_PROFILE_MICROFRONTE
 ./manage.py lms waffle_delete --flags new_core_editors.use_new_text_editor
 ./manage.py lms waffle_delete --flags new_core_editors.use_new_video_editor
 ./manage.py lms waffle_delete --flags new_core_editors.use_new_problem_editor
+./manage.py lms waffle_delete --flags contentstore.new_studio_mfe.use_new_files_uploads_page
 {% endif %}
 
 {% if is_mfe_enabled("discussions") %}
