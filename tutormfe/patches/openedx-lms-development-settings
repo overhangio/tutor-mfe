@@ -27,7 +27,7 @@ MFE_CONFIG = {
 {% if get_mfe("authn") %}
 AUTHN_MICROFRONTEND_URL = "http://{{ MFE_HOST }}:{{ get_mfe("authn")["port"] }}/authn"
 AUTHN_MICROFRONTEND_DOMAIN  = "{{ MFE_HOST }}/authn"
-MFE_CONFIG["DISABLE_ENTERPRISE_LOGIN"] = True
+MFE_CONFIG["DISABLE_ENTERPRISE_LOGIN"] = "true"
 {% endif %}
 
 {% if get_mfe("account") %}
@@ -36,8 +36,8 @@ MFE_CONFIG["ACCOUNT_SETTINGS_URL"] = ACCOUNT_MICROFRONTEND_URL
 {% endif %}
 
 {% if get_mfe("course-authoring") %}
-MFE_CONFIG["ENABLE_NEW_EDITOR_PAGES"] = True
-MFE_CONFIG["ENABLE_PROGRESS_GRAPH_SETTINGS"] = True
+MFE_CONFIG["ENABLE_NEW_EDITOR_PAGES"] = "true"
+MFE_CONFIG["ENABLE_PROGRESS_GRAPH_SETTINGS"] = "true"
 MFE_CONFIG["COURSE_AUTHORING_MICROFRONTEND_URL"] = "http://{{ MFE_HOST }}:{{ get_mfe("course-authoring")["port"] }}/course-authoring"
 {% endif %}
 
@@ -71,7 +71,7 @@ MFE_CONFIG["ACCOUNT_PROFILE_URL"] = "http://{{ MFE_HOST }}:{{ get_mfe("profile")
 
 {% if get_mfe("communications") %}
 COMMUNICATIONS_MICROFRONTEND_URL = "http://{{ MFE_HOST }}:{{ get_mfe("communications")["port"] }}/communications"
-MFE_CONFIG["SCHEDULE_EMAIL_SECTION"] = True
+MFE_CONFIG["SCHEDULE_EMAIL_SECTION"] = "true"
 {% endif %}
 
 # Cors configuration
