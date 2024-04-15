@@ -528,7 +528,7 @@ Troubleshooting
 NPM Dependency Conflict When overriding ``@edx/frontend-component-header`` or ``@edx/frontend-component-footer``
 ----------------------------------------------------------------------------------------------------------------
 
-When there is a need to customize the ``@edx/frontend-component-header`` or ``@edx/frontend-component-footer`` component, two things we have to care of to avoid dependency conflict error during ``npm`` installation. 
+When there is a need to customize the ``@edx/frontend-component-header`` or ``@edx/frontend-component-footer`` component, it is necessary to address a crucial concerns to prevent dependency conflict errors during ``npm`` installation.. 
 
 1. Identify your openedx version, for example ``quince``.
 2. Navigate to `learning <https://github.com/openedx/frontend-app-learning>`_ and `learner-dashboard <https://github.com/openedx/frontend-app-learner-dashboard>`_ MFEs repositories and checkout to branch ``open-release/quince.master``. Inspect which header and footer versions are installed from ``package.json``. This can also be applied to all MFEs to ensure consistency of versions but Learning and Learner Dashboard MFE carry the most weight.
@@ -538,6 +538,11 @@ When there is a need to customize the ``@edx/frontend-component-header`` or ``@e
 6. Install the customized header/footer components into your MFEs. This will resolve any npm dependency conflict issues.
 7. Repeat the same process for customizing the footer component if necessary.
 
+.. image:: https://raw.githubusercontent.com/overhangio/tutor-mfe/master/screenshots/npm-conflict-deps.png
+    :alt: Observation of MFE header and footer versions
+
+From the above image, it can be observed that ``master`` branch of Learning MFE uses ``@edx/platform@5.6.1`` and Discussoins MFE uses ``@edx/platform@7.1.0``. If customized header is created from ``master`` branch, it ensures compatibility with the Discussions MFE as header module supports ``@edx/platform@^7.0.0``. However, The customized header triggers npm dependencies conflit error for learning MFE. 
+In this case, checkout custom branch from ``v4.11.1`` of header for Learning MFE and ``v5.0.0`` for Discussions MFE.
 
 This Tutor plugin is maintained by Adolfo Brandes from `tCRIL <https://openedx.org>`__. Community support is available from the official `Open edX forum <https://discuss.openedx.org>`__. Do you need help with this plugin? See the `troubleshooting <https://docs.tutor.edly.io/troubleshooting.html>`__ section from the Tutor documentation.
 
