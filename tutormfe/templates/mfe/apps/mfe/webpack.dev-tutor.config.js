@@ -23,4 +23,25 @@ module.exports = merge(baseDevConfig, {
   },
 })
 
+// Serve frontend-app-course-authoring's XBlock bootstrap files statically.
+if (fs.existsSync("src/course-unit/course-xblock/xblock-content/iframe-wrapper/static/xblock-bootstrap.html")) {
+  const path = require('path');
+  const CopyPlugin = require('copy-webpack-plugin');
+
+  module.exports.plugins.push(
+    new CopyPlugin({
+      patterns: [
+        {
+          context: path.resolve(__dirname, 'src/course-unit/course-xblock/xblock-content/iframe-wrapper/static'),
+          from: 'xblock-bootstrap.html',
+        },
+        {
+          context: path.resolve(__dirname, 'src/course-unit/course-xblock/xblock-content/iframe-wrapper/static'),
+          from: 'XBlockIFrame.css',
+        },
+      ],
+    }),
+  );
+}
+
 {{ patch("mfe-webpack-dev-config") }}
