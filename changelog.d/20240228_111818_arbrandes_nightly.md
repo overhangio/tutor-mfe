@@ -1,1 +1,0 @@
-- [Bugfix] Fix dev mode after frontend-build NPM namespace change (by @arbrandes)
