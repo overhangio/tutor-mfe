@@ -528,15 +528,15 @@ Troubleshooting
 NPM Dependency Conflict When overriding ``@edx/frontend-component-header`` or ``@edx/frontend-component-footer``
 ----------------------------------------------------------------------------------------------------------------
 
-When there is a need to customize the ``@edx/frontend-component-header`` or ``@edx/frontend-component-footer`` component, it is necessary to address crucial concerns to prevent dependency conflict errors during ``npm`` installation.
+When there is a need to customize the ``@edx/frontend-component-header`` or ``@edx/frontend-component-footer`` component, there is a chance that npm dependency conflicts can occur. In the case of such a conflict, perform the following to resolve the conflicts while keeping the customizations in place:
 
 1. Identify your openedx version, for example, ``quince``.
-2. Navigate to `learning <https://github.com/openedx/frontend-app-learning>`_ and `learner-dashboard <https://github.com/openedx/frontend-app-learner-dashboard>`_ MFEs repositories and checkout to branch ``open-release/quince.master``. Inspect which header and footer versions are installed from ``package.json``. This can also be applied to all MFEs to ensure consistency of versions but Learning and Learner Dashboard MFE carry the most weight.
-3. Determine which versions of ``@edx/frontend-platform`` MFEs are utilizing and the header/footer you plan to customize is compatible with the same version of ``@edx/frontend-platform`` specified in ``package.json`` file (peer-dependencies).
+2. Navigate to `Learning <https://github.com/openedx/frontend-app-learning>`_ and `Learner Dashboard <https://github.com/openedx/frontend-app-learner-dashboard>`_ MFEs repositories and checkout to branch ``open-release/quince.master``. Inspect which header and footer versions are installed from ``package.json``. Learning and Learner Dashboard MFEs are mentioned only as an example. Hence, This step can be applied to all MFEs.
+3. Determine the versions of ``@edx/frontend-platform`` used in MFEs. Also, check that the header/footer you plan to customize is compatible with the same version of ``@edx/frontend-platform`` specified in their ``package.json`` file (peer-dependencies).
 4. Ensure consistency between the versions. For example, If MFE has ``@edx/frontend-platform: 7.0.1``, then customize the header/footer component which has ``@edx/frontend-platform: ^7.0.0`` in ``package.json`` under peer-dependencies
 5. Checkout to that specific tag (e.g: ``v7.0.0``) of header component and customize it
 6. Install the customized header/footer components into your MFEs. This will resolve any npm dependency conflict issues.
-7. All the steps outlined above need to be followed for the footer as well, if you have followed them for the header
+7. All the steps outlined above need to be followed for the footer as well, if you have followed them for the header or vice versa.
 
 .. image:: https://raw.githubusercontent.com/overhangio/tutor-mfe/master/screenshots/npm-conflict-deps.png
     :alt: Observation of MFE header and footer versions
