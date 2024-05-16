@@ -24,8 +24,12 @@ site-configuration unset --domain={{ LMS_HOST }}:8000 ENABLE_PROFILE_MICROFRONTE
 
 {% if is_mfe_enabled("learning") %}
 (./manage.py lms waffle_flag --list | grep course_home.course_home_mfe_progress_tab) || ./manage.py lms waffle_flag --create --everyone course_home.course_home_mfe_progress_tab
+(./manage.py lms waffle_flag --list | grep courseware.enable_navigation_sidebar) || ./manage.py lms waffle_flag --create --deactivate courseware.enable_navigation_sidebar
+(./manage.py lms waffle_flag --list | grep courseware.always_open_auxiliary_sidebar) || ./manage.py lms waffle_flag --create --deactivate courseware.always_open_auxiliary_sidebar
 {% else %}
 ./manage.py lms waffle_delete --flags course_home.course_home_mfe_progress_tab
+./manage.py lms waffle_delete --flags courseware.enable_navigation_sidebar
+./manage.py lms waffle_delete --flags courseware.always_open_auxiliary_sidebar
 {% endif %}
 
 {% if is_mfe_enabled("course-authoring") %}
