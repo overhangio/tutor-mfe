@@ -45,6 +45,7 @@ site-configuration unset --domain={{ LMS_HOST }}:8000 ENABLE_PROFILE_MICROFRONTE
 (./manage.py lms waffle_flag --list | grep contentstore.new_studio_mfe.use_new_import_page) || ./manage.py lms waffle_flag --create --everyone contentstore.new_studio_mfe.use_new_import_page
 (./manage.py lms waffle_flag --list | grep contentstore.new_studio_mfe.use_new_schedule_details_page) || ./manage.py lms waffle_flag --create --everyone contentstore.new_studio_mfe.use_new_schedule_details_page
 (./manage.py lms waffle_flag --list | grep contentstore.new_studio_mfe.use_new_textbooks_page) || ./manage.py lms waffle_flag --create --everyone contentstore.new_studio_mfe.use_new_textbooks_page
+(./manage.py lms waffle_flag --list | grep contentstore.new_studio_mfe.use_new_updates_page) || ./manage.py lms waffle_flag --create --everyone contentstore.new_studio_mfe.use_new_updates_page
 (./manage.py lms waffle_flag --list | grep discussions.pages_and_resources_mfe) || ./manage.py lms waffle_flag --create --everyone discussions.pages_and_resources_mfe
 (./manage.py lms waffle_flag --list | grep new_core_editors.use_new_problem_editor) || ./manage.py lms waffle_flag --create --everyone new_core_editors.use_new_problem_editor
 (./manage.py lms waffle_flag --list | grep new_core_editors.use_new_text_editor) || ./manage.py lms waffle_flag --create --everyone new_core_editors.use_new_text_editor
