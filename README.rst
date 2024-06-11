@@ -156,7 +156,7 @@ Disabling individual MFEs
 
 To disable an existing MFE, remove the corresponding entry from the ``MFE_APPS`` filter. For instance, to disable some of the MFEs that ship with this plugin:
 
-.. code-block::python
+.. code-block:: python
 
     @MFE_APPS.add()
     def _remove_some_my_mfe(mfes):
@@ -192,7 +192,7 @@ Customising MFEs
 
 To change the MFEs logos from the default to your own logos, override the corresponding settings in the MFEs environment using patches `mfe-lms-production-settings` and `mfe-lms-development-settings`. For example, using the following plugin:
 
-.. code-block::python
+.. code-block:: python
 
     from tutor import hooks
 
@@ -225,7 +225,7 @@ If patches are the same in development and production, they can be replaced by a
 
 To install custom components for the MFEs, such as the `header <https://github.com/openedx/frontend-component-header>`_ and `footer <https://github.com/openedx/frontend-component-footer>`_, override the components by adding a patch to ``mfe-dockerfile-post-npm-install`` in your plugin:
 
-.. code-block::python
+.. code-block:: python
 
     from tutor import hooks
 
@@ -243,7 +243,7 @@ To install custom components for the MFEs, such as the `header <https://github.c
 
 The same applies to installing a custom `brand <https://github.com/openedx/brand-openedx>`_ package:
 
-.. code-block::python
+.. code-block:: python
 
     hooks.Filters.ENV_PATCHES.add_item(
         (
@@ -256,7 +256,7 @@ The same applies to installing a custom `brand <https://github.com/openedx/brand
 
 In both cases above, the ``npm`` commands affect every MFE being built.  If you want have different commands apply to different MFEs, you can add one or more patches to ``mfe-dockerfile-post-npm-install-*`` instead.  For instance, you could install one particular version of the header to the Learning MFE by patching ``mfe-dockerfile-post-npm-install-learning``, and another one to the ORA Grading MFE by patching ``mfe-dockerfile-post-npm-install-ora-grading``:
 
-.. code-block::python
+.. code-block:: python
 
     hooks.Filters.ENV_PATCHES.add_items(
         [
@@ -279,7 +279,7 @@ In both cases above, the ``npm`` commands affect every MFE being built.  If you 
 
 In case you need to run additional instructions just before the build step you can use the ``mfe-dockerfile-pre-npm-build`` or ``mfe-dockerfile-pre-npm-build-*`` patches. For example, you may want to override existing env variables or define new ones.
 
-.. code-block::python
+.. code-block:: python
 
     from tutor import hooks
 
@@ -313,7 +313,7 @@ Installing from a private npm registry
 In case you need to install components from a private NPM registry, you can append the ``--registry`` option to your install statement or add a ``npm config set`` command to the plugin.
 In some cases, for example when using `GitLab's NPM package registry <https://docs.gitlab.com/ee/user/packages/npm_registry/>`_, you might also need to provide a token for your registry, which can be done with an additional ``npm config set`` command as well:
 
-.. code-block::python
+.. code-block:: python
 
     from tutor import hooks
 
@@ -404,7 +404,7 @@ Template patch catalog
 
 This is the list of all patches used across tutor-mfe (outside of any plugin). Alternatively, you can search for patches in tutor-mfe templates by grepping the source code:
 
-.. code-block::python
+.. code-block:: python
 
     git clone https://github.com/overhangio/tutor-mfe
     cd tutor-mfe
