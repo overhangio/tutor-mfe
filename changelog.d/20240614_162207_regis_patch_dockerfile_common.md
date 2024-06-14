@@ -1,0 +1,1 @@
+- [Feature] Introduce a "mfe-dockerfile-base" patch to customise the base layer of the "mfe" Docker image. (by @regisb)

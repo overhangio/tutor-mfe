@@ -438,6 +438,13 @@ Add any configurations at the end of the development webpack config file in Java
 
 File changed: ``tutormfe/templates/mfe/apps/mfe/webpack.dev-tutor.config.js``
 
+mfe-dockerfile-base
+~~~~~~~~~~~~~~~~~~~
+
+Add Dockerfile instructions that will be applied to the base layer of the "mfe" image. This base layer is used both in production and development, for all applications.
+
+File changed: ``tutormfe/templates/mfe/build/mfe/Dockerfile``
+
 mfe-dockerfile-pre-npm-install
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 

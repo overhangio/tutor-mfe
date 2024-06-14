@@ -20,6 +20,8 @@ RUN mkdir -p /openedx/app /openedx/env
 WORKDIR /openedx/app
 ENV PATH=/openedx/app/node_modules/.bin:${PATH}
 
+{{ patch("mfe-dockerfile-base") }}
+
 {% for app_name, app in iter_mfes() %}
 ####################### {{ app_name }} MFE
 ######## {{ app_name }} (git)
