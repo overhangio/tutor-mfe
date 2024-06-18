@@ -152,7 +152,7 @@ tutor_hooks.Filters.IMAGES_PUSH.add_item(
 def _mounted_mfe_image_management() -> None:
     for mfe_name, _mfe_attrs in iter_mfes():
         name = f"{mfe_name}-dev"
-        tag = "{{ DOCKER_REGISTRY }}overhangio/openedx-" + name + ":{{ MFE_VERSION }}"
+        tag = "{{ MFE_DOCKER_IMAGE }}-" + name + ":{{ MFE_VERSION }}"
         tutor_hooks.Filters.IMAGES_BUILD.add_item(
             (
                 name,
