@@ -37,9 +37,11 @@ MFE_CONFIG["ACCOUNT_SETTINGS_URL"] = ACCOUNT_MICROFRONTEND_URL
 {% endif %}
 
 {% if get_mfe("course-authoring") %}
-MFE_CONFIG["ENABLE_NEW_EDITOR_PAGES"] = True
-MFE_CONFIG["ENABLE_PROGRESS_GRAPH_SETTINGS"] = True
 MFE_CONFIG["COURSE_AUTHORING_MICROFRONTEND_URL"] = "{% if ENABLE_HTTPS %}https://{% else %}http://{% endif %}{{ MFE_HOST }}/course-authoring"
+MFE_CONFIG["ENABLE_ASSETS_PAGE"] = "true"
+MFE_CONFIG["ENABLE_HOME_PAGE_COURSE_API_V2"] = "true"
+MFE_CONFIG["ENABLE_PROGRESS_GRAPH_SETTINGS"] = "true"
+MFE_CONFIG["ENABLE_TAGGING_TAXONOMY_PAGES"] = "true"
 {% endif %}
 
 {% if get_mfe("discussions") %}

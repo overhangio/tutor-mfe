@@ -19,6 +19,13 @@ instructions, because git commits are used to generate release notes:
 
 <!-- scriv-insert-here -->
 
+<a id='changelog-18.0.0'></a>
+## v18.0.0 (2024-06-19)
+
+- 💥[Feature] Upgrade to Redwood (by @hinakhadim)
+- [Feature] Enable `atlas pull` on all Micro-frontends. (by @omarithawi)
+- 💥[Feature] Use `ATLAS_OPTIONS` for `atlas pull`. This breaks the `i18n-merge.js` custom locale Tutor MFE feature in favor of [OEP-58](https://docs.openedx.org/en/latest/developers/concepts/oep58.html) `atlas pull` options. (by @omarithawi)
+
 <a id='changelog-17.0.1'></a>
 ## v17.0.1 (2024-03-26)
 

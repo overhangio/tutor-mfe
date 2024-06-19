@@ -4,7 +4,7 @@ const fs = require('fs');
 const baseDevConfig = (
   fs.existsSync('./webpack.dev.config.js')
     ? require('./webpack.dev.config.js')
-    : require('@edx/frontend-build/config/webpack.dev.config.js')
+    : require('@openedx/frontend-build/config/webpack.dev.config.js')
 );
 
 module.exports = merge(baseDevConfig, {

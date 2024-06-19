@@ -130,6 +130,7 @@ Adding new MFEs
 
 - As of Tutor v16 (Palm release) it is no longer possible to add new MFEs by creating ``*_MFE_APP`` settings. Instead, users must implement the approach described below.
 - As of Tutor v17 (Quince release) you must make sure that the git URL of your MFE repository ends with ``.git``. Otherwise the plugin build will fail.
+- As of Tutor v18 (Redwood release) all MFEs must provide a ``make pull_translations`` command. Otherwise the plugin build will fail. Providing an empty command is enough to bypass this requirement. See the `Custom translations section <#mfe-custom-translations>`_ for more information.
 
 Other MFE developers can take advantage of this plugin to deploy their own MFEs. To declare a new MFE, create a Tutor plugin and add your MFE configuration to the ``tutormfe.hooks.MFE_APPS`` filter. This configuration should include the name, git repository (and optionally: git branch or tag) and development port. For example:
 
@@ -163,32 +164,26 @@ To disable an existing MFE, remove the corresponding entry from the ``MFE_APPS``
         mfes.pop("profile")
         return mfes
 
-Adding custom translations to your MFEs
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Using custom translations to your MFEs
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-This plugin makes it possible to change existing and add new translation strings to MFEs. Here is how to do it:
+.. _mfe-custom-translations:
 
-1. Identify the ID of the string you would like to translate. For instance, the ID of the "Account Information" string in the account MFE is "account.settings.section.account.information" (see `source <https://github.com/edx/frontend-app-account/blob/1444831833cad4746b9ed14618a499b425ccc907/src/account-settings/AccountSettingsPage.messages.jsx#L34>`__).
-2. Create a folder and i18n file corresponding to your MFE app and language in the Tutor root. This location of this file should be ``/path/to/tutor/env/plugins/mfe/build/mfe/i18n/<app name>/<language code>.json``. For instance, to add French ("fr") translation strings to the account MFE, run::
+During docker image build, this plugin runs ``make pull_translations`` for each Micro-frontend. This
+program is used in the ``Dockerfile`` to pull translations from the `openedx/openedx-translations repository <https://github.com/openedx/openedx-translations>`_ via `openedx-atlas <https://github.com/openedx/openedx-atlas>`_.
 
-    cd "$(tutor config printroot)/env/plugins/mfe/build/mfe/i18n/"
-    mkdir account
-    touch account/fr.json
+The ``make pull_translations`` command passes the ``ATLAS_OPTIONS`` environment variable to the ``atlas pull`` command. This allows specifying a custom repository or branch to pull translations from.
 
-3. Add your entries to this file in JSON format, where the key is the string ID and the value is the actual string. For instance:
+Translations in the MFE plugin as well as other Tutor plugins can be customized with the following configuration 
+variables:
 
-.. code-block::json
+- ``ATLAS_REVISION`` (default: ``"main"`` on nightly and ``"{{ OPENEDX_COMMON_VERSION }}"`` if a named release is used)
+- ``ATLAS_REPOSITORY`` (default: ``"openedx/openedx-translations"``).
+- ``ATLAS_OPTIONS`` (default: ``""``) Pass additional arguments to ``atlas pull``. Refer to the `atlas documentations <https://github.com/openedx/openedx-atlas>`_ for more information.
 
-    {
-      "account.settings.section.account.information": "Information du compte"
-    }
-
-4. Rebuild the MFE image and restart the MFE with::
-
-    tutor images build mfe
-    tutor local start -d
-
-Your custom translation strings should now appear in your app.
+The
+`Getting and customizing Translations <https://docs.tutor.edly.io/configuration.html#getting-and-customizing-translations>`_
+section in the Tutor configuration documentation explains how to do this.
 
 Customising MFEs
 ~~~~~~~~~~~~~~~~
