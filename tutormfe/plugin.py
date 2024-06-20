@@ -19,11 +19,11 @@ from .hooks import MFE_APPS, MFE_ATTRS_TYPE
 if __version_suffix__:
     __version__ += "-" + __version_suffix__
 
-# Use DOCKER_IMAGE_OPENEDX to determine MFE docker image names
+# Use DOCKER_IMAGE_OPENEDX to generate MFE docker image names
 base_docker_image = "{{ DOCKER_IMAGE_OPENEDX }}"
+# Strip the version, if present
 if ":" in base_docker_image:
     base_docker_image = base_docker_image.split(":")[0]
-
 
 config = {
     "defaults": {
