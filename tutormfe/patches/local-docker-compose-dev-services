@@ -9,8 +9,12 @@ mfe:
 {%- for app_name, app in iter_mfes() %}
 {%- set mounts = iter_mounts(MOUNTS, app_name)|list %}
 {%- if mounts %}
+{%- set base_docker_image = DOCKER_IMAGE_OPENEDX %}
+{%- if ":" in base_docker_image %}
+{%- set base_docker_image = DOCKER_IMAGE_OPENEDX.split(':')[0] %}
+{%- endif %}
 {{ app_name }}: # Work on this MFE for development
-    image: "{{ DOCKER_REGISTRY }}overhangio/openedx-{{ app_name }}-dev:{{ MFE_VERSION }}"
+    image: "{{ base_docker_image }}-{{ app_name }}-dev:{{ MFE_VERSION }}"
     ports:
         - "{{ app["port"] }}:{{ app["port"] }}"
     stdin_open: true

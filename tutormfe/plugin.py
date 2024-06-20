@@ -19,10 +19,16 @@ from .hooks import MFE_APPS, MFE_ATTRS_TYPE
 if __version_suffix__:
     __version__ += "-" + __version_suffix__
 
+# Use DOCKER_IMAGE_OPENEDX to determine MFE docker image names
+base_docker_image = "{{ DOCKER_IMAGE_OPENEDX }}"
+if ":" in base_docker_image:
+    base_docker_image = base_docker_image.split(":")[0]
+
+
 config = {
     "defaults": {
         "VERSION": __version__,
-        "DOCKER_IMAGE": "{{ DOCKER_REGISTRY }}overhangio/openedx-mfe:{{ MFE_VERSION }}",
+        "DOCKER_IMAGE": base_docker_image + "-mfe:{{ MFE_VERSION }}",
         "HOST": "apps.{{ LMS_HOST }}",
         "COMMON_VERSION": "{{ OPENEDX_COMMON_VERSION }}",
         "CADDY_DOCKER_IMAGE": "{{ DOCKER_IMAGE_CADDY }}",
@@ -151,8 +157,8 @@ tutor_hooks.Filters.IMAGES_PUSH.add_item(
 @tutor_hooks.Actions.PLUGINS_LOADED.add()
 def _mounted_mfe_image_management() -> None:
     for mfe_name, _mfe_attrs in iter_mfes():
-        name = f"{mfe_name}-dev"
-        tag = "{{ MFE_DOCKER_IMAGE }}-" + name + ":{{ MFE_VERSION }}"
+        name = f"-{mfe_name}-dev"
+        tag = base_docker_image + name + ":{{ MFE_VERSION }}"
         tutor_hooks.Filters.IMAGES_BUILD.add_item(
             (
                 name,
