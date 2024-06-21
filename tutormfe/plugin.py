@@ -152,8 +152,8 @@ tutor_hooks.Filters.IMAGES_PUSH.add_item(
 @tutor_hooks.Actions.PLUGINS_LOADED.add()
 def _mounted_mfe_image_management() -> None:
     for mfe_name, _mfe_attrs in iter_mfes():
-        name = f"-{mfe_name}-dev"
-        tag = "{{ MFE_DOCKER_IMAGE_DEV_PREFIX }}" + name + ":{{ MFE_VERSION }}"
+        name = f"{mfe_name}-dev"
+        tag = "{{ MFE_DOCKER_IMAGE_DEV_PREFIX }}-" + name + ":{{ MFE_VERSION }}"
         tutor_hooks.Filters.IMAGES_BUILD.add_item(
             (
                 name,
