@@ -18,7 +18,7 @@ RUN apt update \
 
 RUN mkdir -p /openedx/app /openedx/env
 WORKDIR /openedx/app
-ENV PATH /openedx/app/node_modules/.bin:${PATH}
+ENV PATH=/openedx/app/node_modules/.bin:${PATH}
 
 {% for app_name, app in iter_mfes() %}
 ####################### {{ app_name }} MFE
@@ -29,7 +29,7 @@ ADD --keep-git-dir=true {{ app["repository"] }}#{{ app.get("version", MFE_COMMON
 
 ######## {{ app_name }} (src)
 # Empty layer with just the repo at the root, for build-time bind-mounts
-FROM scratch as {{ app_name }}-src
+FROM scratch AS {{ app_name }}-src
 COPY --from={{ app_name }}-git /openedx/app /
 
 ######## {{ app_name }} (common)
@@ -80,7 +80,7 @@ RUN npm run build
 {% endfor %}
 
 ####### final production image with all static assets
-FROM {{ MFE_CADDY_DOCKER_IMAGE }} as production
+FROM {{ MFE_CADDY_DOCKER_IMAGE }} AS production
 
 RUN mkdir -p /openedx/dist
 
