@@ -1,0 +1,1 @@
+- [Feature] Introduce a `MFE_DOCKER_IMAGE_DEV_PREFIX` setting to customize dev MFE image docker repos. (by @rediris)
