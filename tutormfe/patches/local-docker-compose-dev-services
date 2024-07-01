@@ -10,7 +10,7 @@ mfe:
 {%- set mounts = iter_mounts(MOUNTS, app_name)|list %}
 {%- if mounts %}
 {{ app_name }}: # Work on this MFE for development
-    image: "{{ DOCKER_REGISTRY }}overhangio/openedx-{{ app_name }}-dev:{{ MFE_VERSION }}"
+    image: "{{ MFE_DOCKER_IMAGE_DEV_PREFIX }}-{{ app_name }}-dev:{{ MFE_VERSION }}"
     ports:
         - "{{ app["port"] }}:{{ app["port"] }}"
     stdin_open: true

@@ -23,6 +23,7 @@ config = {
     "defaults": {
         "VERSION": __version__,
         "DOCKER_IMAGE": "{{ DOCKER_REGISTRY }}overhangio/openedx-mfe:{{ MFE_VERSION }}",
+        "DOCKER_IMAGE_DEV_PREFIX": "{{ DOCKER_REGISTRY }}overhangio/openedx",
         "HOST": "apps.{{ LMS_HOST }}",
         "COMMON_VERSION": "{{ OPENEDX_COMMON_VERSION }}",
         "CADDY_DOCKER_IMAGE": "{{ DOCKER_IMAGE_CADDY }}",
@@ -152,7 +153,7 @@ tutor_hooks.Filters.IMAGES_PUSH.add_item(
 def _mounted_mfe_image_management() -> None:
     for mfe_name, _mfe_attrs in iter_mfes():
         name = f"{mfe_name}-dev"
-        tag = "{{ DOCKER_REGISTRY }}overhangio/openedx-" + name + ":{{ MFE_VERSION }}"
+        tag = "{{ MFE_DOCKER_IMAGE_DEV_PREFIX }}-" + name + ":{{ MFE_VERSION }}"
         tutor_hooks.Filters.IMAGES_BUILD.add_item(
             (
                 name,
