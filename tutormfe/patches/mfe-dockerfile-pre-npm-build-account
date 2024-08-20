@@ -1,0 +1,4 @@
+RUN git config --global user.email "tutor@overhang.io" \
+  && git config --global user.name "Tutor"
+  
+RUN curl -fsSL https://github.com/openedx/frontend-app-account/commit/16fb3a1bb4c00d2b60ec3686001814461437e3a5.patch | git am
