@@ -1,1 +1,0 @@
-- [Improvement] Faster initialisation by optimising waffle flag listing and creation. (by @regisb)
