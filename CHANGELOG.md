@@ -19,6 +19,17 @@ instructions, because git commits are used to generate release notes:
 
 <!-- scriv-insert-here -->
 
+<a id='changelog-18.0.1'></a>
+## v18.0.1 (2024-09-09)
+
+- [Feature] Introduce a "mfe-dockerfile-base" patch to customise the base layer of the "mfe" Docker image. (by @regisb)
+
+- [Feature] Introduce a `MFE_DOCKER_IMAGE_DEV_PREFIX` setting to customize dev MFE image docker repos. (by @rediris)
+
+- [Bugfix] Fix legacy warnings during Docker build. (by @regisb)
+
+- [Improvement] Faster initialisation by optimising waffle flag listing and creation. (by @regisb)
+
 <a id='changelog-18.0.0'></a>
 ## v18.0.0 (2024-06-19)
 
