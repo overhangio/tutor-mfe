@@ -20,6 +20,12 @@
         header_up Host {{ LMS_HOST }}
     }
 
+    {% if is_mfe_enabled("authoring") %}
+    # redirect /course-authoring to /authoring, for backward compatibility
+    @authoring path_regexp authoring /course-authoring/(.*)
+    redir @authoring /authoring/{re.authoring.1} permanent
+    {% endif %}
+
     {% for app_name, app in iter_mfes() %}
     @mfe_{{ app_name }} {
         path /{{ app_name }} /{{ app_name }}/*
