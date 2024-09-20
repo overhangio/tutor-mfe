@@ -12,7 +12,7 @@ RUN apt update \
     python g++ \
     # required for image-webpack-loader (on arm)
     libpng-dev \
-    # required for building node-canvas (on arm, for course-authoring)
+    # required for building node-canvas (on arm, for authoring)
     # https://www.npmjs.com/package/canvas
     libcairo2-dev libpango1.0-dev libjpeg-dev libgif-dev librsvg2-dev
 

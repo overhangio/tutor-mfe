@@ -1,0 +1,1 @@
+- 💥[Feature] Rename course-authoring MFE to "authoring". Existing URLs are redirected for backward compatibility. (by @regisb)

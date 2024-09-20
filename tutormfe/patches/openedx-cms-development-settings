@@ -1,7 +1,7 @@
 # MFE-specific settings
-{% if get_mfe("course-authoring") %}
-COURSE_AUTHORING_MICROFRONTEND_URL = "http://{{ MFE_HOST }}:{{ get_mfe('course-authoring')["port"] }}/course-authoring"
-CORS_ORIGIN_WHITELIST.append("http://{{ MFE_HOST }}:{{ get_mfe('course-authoring')["port"] }}")
-LOGIN_REDIRECT_WHITELIST.append("{{ MFE_HOST }}:{{ get_mfe('course-authoring')["port"] }}")
-CSRF_TRUSTED_ORIGINS.append("http://{{ MFE_HOST }}:{{ get_mfe('course-authoring')["port"] }}")
+{% if get_mfe("authoring") %}
+COURSE_AUTHORING_MICROFRONTEND_URL = "http://{{ MFE_HOST }}:{{ get_mfe('authoring')["port"] }}/authoring"
+CORS_ORIGIN_WHITELIST.append("http://{{ MFE_HOST }}:{{ get_mfe('authoring')["port"] }}")
+LOGIN_REDIRECT_WHITELIST.append("{{ MFE_HOST }}:{{ get_mfe('authoring')["port"] }}")
+CSRF_TRUSTED_ORIGINS.append("http://{{ MFE_HOST }}:{{ get_mfe('authoring')["port"] }}")
 {% endif %}

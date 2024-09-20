@@ -35,7 +35,7 @@ grep courseware.always_open_auxiliary_sidebar /tmp/lms_waffle_flags.txt || ./man
     courseware.always_open_auxiliary_sidebar
 {% endif %}
 
-{% if is_mfe_enabled("course-authoring") %}
+{% if is_mfe_enabled("authoring") %}
 grep contentstore.new_studio_mfe.use_new_advanced_settings_page /tmp/lms_waffle_flags.txt || ./manage.py lms waffle_flag --create --everyone contentstore.new_studio_mfe.use_new_advanced_settings_page
 grep contentstore.new_studio_mfe.use_new_certificates_page /tmp/lms_waffle_flags.txt || ./manage.py lms waffle_flag --create --everyone contentstore.new_studio_mfe.use_new_certificates_page
 grep contentstore.new_studio_mfe.use_new_course_outline_page /tmp/lms_waffle_flags.txt || ./manage.py lms waffle_flag --create --everyone contentstore.new_studio_mfe.use_new_course_outline_page
