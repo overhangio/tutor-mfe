@@ -31,7 +31,7 @@ setup(
         "Community": "https://discuss.openedx.org/tag/tutor",
     },
     license="AGPLv3",
-    author="Overhang.IO",
+    author="Edly",
     maintainer="tCRIL",
     maintainer_email="adolfo@tcril.org",
     description="mfe plugin for Tutor",
