@@ -45,7 +45,7 @@ Account
 .. image:: https://raw.githubusercontent.com/overhangio/tutor-mfe/master/media/account.png
     :alt: Account MFE screenshot
 
-An MFE to manage account-specific information for every LMS user. Each user's account page is available at ``http(s)://{{ MFE_HOST }}/account``. For instance, when running locally: https://apps.local.edly.io/account.
+An MFE to manage account-specific information for every LMS user. Each user's account page is available at ``http(s)://{{ MFE_HOST }}/account``. For instance, when running locally: https://apps.local.openedx.io/account.
 
 Authn
 ~~~~~
@@ -86,7 +86,7 @@ Gradebook
 .. image:: https://raw.githubusercontent.com/overhangio/tutor-mfe/master/media/gradebook.png
     :alt: Gradebook MFE screenshot
 
-This instructor-only MFE is for viewing individual and aggregated grade results for a course. To access this MFE, go to a course → Instructor tab → Student Admin → View gradebook. The URL should be: ``http(s)://{{ MFE_HOST }}/gradebook/{{ course ID }}``. When running locally, the gradebook of the demo course is available at: http://apps.local.edly.io/gradebook/course-v1:edX+DemoX+Demo_Course
+This instructor-only MFE is for viewing individual and aggregated grade results for a course. To access this MFE, go to a course → Instructor tab → Student Admin → View gradebook. The URL should be: ``http(s)://{{ MFE_HOST }}/gradebook/{{ course ID }}``. When running locally, the gradebook of the demo course is available at: http://apps.local.openedx.io/gradebook/course-v1:edX+DemoX+Demo_Course
 
 Learner Dashboard
 ~~~~~~~~~~~~~~~~~
@@ -118,7 +118,7 @@ Profile
 .. image:: https://raw.githubusercontent.com/overhangio/tutor-mfe/master/media/profile.png
     :alt: Profile MFE screenshot
 
-Edit and display user-specific profile information. The profile page of every user is visible at ``http(s)://{{ MFE_HOST }}/profile/u/{{ username }}``. For instance, when running locally, the profile page of the "admin" user is: http://apps.local.edly.io/profile/u/admin.
+Edit and display user-specific profile information. The profile page of every user is visible at ``http(s)://{{ MFE_HOST }}/profile/u/{{ username }}``. For instance, when running locally, the profile page of the "admin" user is: http://apps.local.openedx.io/profile/u/admin.
 
 
 MFE management
@@ -336,7 +336,7 @@ Tutor makes it possible to run any MFE in development mode. For instance, to run
 
     tutor dev start profile
 
-Then, access http://apps.local.edly.io:1995/profile/u/YOURUSERNAME
+Then, access http://apps.local.openedx.io:1995/profile/u/YOURUSERNAME
 
 You can also bind-mount your own fork of an MFE. For example::
 
