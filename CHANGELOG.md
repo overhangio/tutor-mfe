@@ -19,6 +19,15 @@ instructions, because git commits are used to generate release notes:
 
 <!-- scriv-insert-here -->
 
+<a id='changelog-19.0.0'></a>
+## v19.0.0 (2024-10-21)
+
+- 💥[Feature] Rename course-authoring MFE to "authoring". Existing URLs are redirected for backward compatibility. (by @regisb)
+
+- [Feature] Upgrade to Node 20. (by @arbrandes)
+
+- 💥[Feature] Upgrade to Sumac (by @hinakhadim)
+
 <a id='changelog-18.0.1'></a>
 ## v18.0.1 (2024-09-09)
 
