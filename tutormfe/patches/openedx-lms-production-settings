@@ -15,6 +15,7 @@ MFE_CONFIG = {
     "LOGO_TRADEMARK_URL": "{% if ENABLE_HTTPS %}https{% else %}http{% endif %}://{{ LMS_HOST }}/theming/asset/images/logo.png",
     "LOGOUT_URL": "{% if ENABLE_HTTPS %}https{% else %}http{% endif %}://{{ LMS_HOST }}/logout",
     "MARKETING_SITE_BASE_URL": "{% if ENABLE_HTTPS %}https{% else %}http{% endif %}://{{ LMS_HOST }}",
+    "MEILISEARCH_ENABLED": True,
     "PASSWORD_RESET_SUPPORT_LINK": "mailto:{{ CONTACT_EMAIL }}",
     "REFRESH_ACCESS_TOKEN_ENDPOINT": "{% if ENABLE_HTTPS %}https{% else %}http{% endif %}://{{ LMS_HOST }}/login_refresh",
     "SITE_NAME": "{{ PLATFORM_NAME }}",
