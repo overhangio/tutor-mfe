@@ -736,3 +736,27 @@ def _render_per_mfe_compat_files(root: str, config: Config) -> None:
     for path in glob(os.path.join(out_dir, "env.config.*.jsx")):
         if os.path.basename(path) not in valid:
             os.remove(path)
+
+
+@tutor_hooks.Actions.CONFIG_LOADED.add()
+def _run_jobs_in_mounted_mfes(config: Config) -> None:
+    mounts = get_typed(config, "MOUNTS", list, [])
+
+    pattern = re.compile(r'frontend-app-(\w+)')
+    mounted_mfes = [match.group(1) for mount in mounts if (match := pattern.search(mount))]
+
+    mfe_task_file = os.path.join(
+        str(
+            importlib_resources.files("tutormfe")
+            / "templates"
+            / "mfe"
+            / "tasks"
+            / "mfe"
+            / "npm-install.sh"
+        )
+    )
+
+    for mounted_mfe in mounted_mfes:
+        with tutor_hooks.Contexts.app("mfe").enter():
+            with open(mfe_task_file, encoding='utf-8') as fi:
+                tutor_hooks.Filters.CLI_DO_INIT_TASKS.add_item((mounted_mfe , fi.read()))
