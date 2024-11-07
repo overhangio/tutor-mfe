@@ -308,6 +308,131 @@ In case you need to run additional instructions just before the build step you c
 
 You can find more patches in the `patch catalog <#template-patch-catalog>`_ below.
 
+Using Frontend Plugin Slots
+~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+It's possible to take advantage of this plugin's hooks to configure frontend plugin slots. Let's say you want to replace the entire footer with a simple message. Where before you might have had to fork ``frontend-component-footer``, the following is all that's currently needed:
+
+.. code-block:: python
+
+    from tutormfe.hooks import PLUGIN_SLOTS
+
+    PLUGIN_SLOTS.add_items([
+        # Hide the default footer
+        (
+            "all",
+            "footer_slot",
+            """
+            {
+              op: PLUGIN_OPERATIONS.Hide,
+              widgetId: 'default_contents',
+            }"""
+        ),
+        # Insert a custom footer
+        (
+            "all",
+            "footer_slot",
+            """
+            {
+              op: PLUGIN_OPERATIONS.Insert,
+              widget: {
+                id: 'custom_footer',
+                type: DIRECT_PLUGIN,
+                RenderWidget: () => (
+                  <h1>This is the footer.</h1>
+                ),
+              },
+            }"""
+        )
+    ])
+
+Let's take a closer look at what's happening here.  To begin with, we're using tutormfe's own ``PLUGIN_SLOTS`` filter.  It's a regular Tutor filter, but you won't find it in the main ``tutor`` package:
+
+.. code-block:: python
+
+    from tutormfe.hooks import PLUGIN_SLOTS
+
+Next up, we're adding actual slot configuration, starting by hiding the default footer.  The first parameter in a filter item specifies which MFE to apply the slot configuration to; for example: ``"learner-dashboard"``, or ``"learning"``. We're using ``"all"`` here, which is a special case: it means the slot configuration should be applied to all MFEs that actually have that slot.  (If a particular MFE doesn't have the slot, it will just ignore its configuration.)
+
+The second parameter, ``"footer_slot"``, is the name of the slot as defined in the code of the MFE itself.
+
+.. code-block:: python
+
+    PLUGIN_SLOTS.add_items([
+        # Hide the default footer
+        (
+            "all",
+            "footer_slot",
+            """
+            {
+              op: PLUGIN_OPERATIONS.Hide,
+              widgetId: 'default_contents',
+            }"""
+        ),
+
+The last parameter to ``add_item()`` is a big string with the actual slot configuration, which will be interpreted as JSX. What we're doing there is hiding the default contents of the footer with a ``PLUGIN_OPERATIONS.Hide``. (You can refer to the `frontend-plugin-framework README <https://github.com/openedx/frontend-plugin-framework/#>`_ for a full description of the possible plugin types and operations.) And the ``default_contents`` widget ID we're targetting always refers to what's in an unconfigured slot by default.
+
+In the second filter item, we once again target the ``"footer_slot"`` on ``"all"`` MFEs. This time, we use ``PLUGIN_OPERATIONS.Insert`` to add our custom JSX component, comprised of a simple ``<h1>`` message we're defining in an anonymous function. We give it a widgetID of ``custom_footer``:
+
+.. code-block:: python
+
+    # Insert a custom footer
+    (
+        "all",
+        "footer_slot",
+        """
+        {
+          op: PLUGIN_OPERATIONS.Insert,
+          widget: {
+            id: 'custom_footer',
+            type: DIRECT_PLUGIN,
+            RenderWidget: () => (
+              <h1>This is the footer.</h1>
+            ),
+          },
+        }"""
+    )
+
+That's it!  If you rebuild the ``mfe`` image after enabling the plugin (via ``tutor images build mfe`` or ``tutor local launch``), "This is the footer." should appear at the bottom of every MFE.
+
+It's also possible to target a specific MFE's footer. For instance:
+
+.. code-block:: python
+
+    PLUGIN_SLOTS.add_items([
+        # Hide the custom footer
+        (
+            "profile",
+            "footer_slot",
+            """
+            {
+              op: PLUGIN_OPERATIONS.Hide,
+              widgetId: 'custom_footer',
+            }"""
+        ),
+        # Insert a footer just for the Profile MFE
+        (
+            "profile",
+            "footer_slot",
+            """
+            {
+              op: PLUGIN_OPERATIONS.Insert,
+              widget: {
+                id: 'custom_profile_footer',
+                type: DIRECT_PLUGIN,
+                RenderWidget: () => (
+                  <h1>This is the Profile MFE's footer.</h1>
+                ),
+              },
+            }"""
+        )
+    ])
+
+Note that here we're assuming you didn't remove the global footer configuration defined by the filter items targeting ``"all"``, so you have to hide ``custom_footer`` instead of ``default_contents``.  If you were to rebuild the MFE image now, the Profile MFE's footer would say "This is the Profile MFE's footer", whereas all the others would still contain the global "This is the footer." message.
+
+For more complex frontend plugins, you should make use of ``mfe-env-config-*`` patches to define your JSX components separately.  For instance, you could create an NPM plugin package, install it via ``mfe-dockerfile-post-npm-install``, import the desired components via ``mfe-env-config-buildtime-imports``, then refer to them with the ``PLUGIN_SLOTS`` filter as described above.  Refer to the `patch catalog <#template-patch-catalog>`_ below for more details.
+
+
 Installing from a private npm registry
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -410,6 +535,58 @@ This is the list of all patches used across tutor-mfe (outside of any plugin). A
     git clone https://github.com/overhangio/tutor-mfe
     cd tutor-mfe
     git grep "{{ patch" -- tutormfe/templates
+
+mfe-env-config-buildtime-imports
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Use this patch for any static imports you need in ``env.config.jsx``. They will be available here if you used the `mfe-docker-post-npm-install patch <#mfe-docker-post-npm-install>`_ to install an NPM package for all MFEs.
+
+It gets rendered at the very top of the file. You should use normal `ES6 import syntax <https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/import>`_.
+
+Note that if you want to only import a module for a particular MFE, doing it here won't work: you'll probably want to use the ``mfe-env-config-runtime-definitions-{}`` patch described below.
+
+File changed: ``tutormfe/templates/mfe/build/mfe/env.config.jsx``
+
+mfe-env-config-buildtime-definitions
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Use this patch for arbitrary ``env.config.jsx`` javascript code that gets evaluated at build time. It is particularly useful for defining slightly more complex components for use in plugin slots.
+
+There's no version of this patch that runs per MFE.  If you want to define MFE-specific code, you should use the MFE-specific ``mfe-env-config-runtime-definitions-{}`` to achieve the same effect.
+
+File changed: ``tutormfe/templates/mfe/build/mfe/env.config.jsx``
+
+mfe-env-config-runtime-definitions
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+This patch gets rendered inside an ``async`` function in ``env.config.jsx`` that runs in the browser, allowing you to define conditional imports for external modules that may only be available at runtime. Just make sure to use `import() function <https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/import>`_ syntax:
+
+.. code-block:: javascript
+
+    const mymodule1 = await import('mymodule1');
+    const { default: myComponent } = await import('mymodule2');
+
+Note the second line in the example above: default module exports work a little differently with ``import()``.  To use the default export you can destructure the imported module, but you have to explicitly rename the ``default`` key, as `documented in MDN <https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/import#importing_defaults>`_.
+
+Warning: if the dynamic import of a module fails for whatever reason, ``env.config.jsx`` execution will fail silently.
+
+File changed: ``tutormfe/templates/mfe/build/mfe/env.config.jsx``
+
+mfe-env-config-runtime-definitions-{}
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+With this patch you can conditionally import modules or define code for specific MFEs in ``env.config.jsx``. This is a useful place to put an import if you're using the ``mfe-docker-post-npm-install-*`` patch to install a plugin that only works on a particular MFE.
+
+As above, make sure to use the ``import()`` function.
+
+File changed: ``tutormfe/templates/mfe/build/mfe/env.config.jsx``
+
+mfe-env-config-runtime-final
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+At this point, ``env.config.jsx`` is ready to return the ``config`` object to the initialization code at runtime. You can use this patch to do anything to the object, including using modules that were imported dynamically earlier.
+
+File changed: ``tutormfe/templates/mfe/build/mfe/env.config.jsx``
 
 mfe-lms-development-settings
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
