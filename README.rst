@@ -308,6 +308,117 @@ In case you need to run additional instructions just before the build step you c
 
 You can find more patches in the `patch catalog <#template-patch-catalog>`_ below.
 
+Using Frontend Plugin Slots
+~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+It's possible to take advantage of this plugin's patches to configure frontend plugin slots. Let's say you want to replace the entire footer with a simple message. Where before you might have had to fork ``frontend-component-footer``, the following is all that's currently needed:
+
+.. code-block:: python
+
+    from tutor import hooks
+
+    hooks.Filters.ENV_PATCHES.add_item(
+        (
+            "mfe-env-config-plugin-footer_slot",
+            """
+              {
+                /* Hide the default footer. */
+                op: PLUGIN_OPERATIONS.Hide,
+                widgetId: 'default_contents',
+              },
+              {
+                /* Insert a custom footer. */
+                op: PLUGIN_OPERATIONS.Insert,
+                widget: {
+                  id: 'custom_footer',
+                  type: DIRECT_PLUGIN,
+                  RenderWidget: () => (
+                    <h1>This is the footer.</h1>
+                  ),
+                },
+              },
+    """
+        )
+    )
+
+Let's take a closer look at what's happening here, starting with the patch name: the prefix is ``mfe-env-config-plugin-`` followed by the name of the slot you're trying to configure. In this case, ``footer_slot``.  (There's a full list of `possible slot names <#mfe-env-config-plugin-slot-catalog>`_ below.) Next, we're hiding the default contents of the footer with a ``PLUGIN_OPERATIONS.Hide``. (Refer to the `frontend-plugin-framework README <https://github.com/openedx/frontend-plugin-framework/#>`_ for a full description of the possible plugin types and operations.) The ``default_contents`` widget ID always refers to what's in an unconfigured slot. Finally, we use ``PLUGIN_OPERATIONS.Insert`` to add our custom JSX component, composed of a simple ``<h1>`` message.  We give it a widgetID of ``custom_footer``.
+
+That's it!  If you rebuild the ``mfe`` image after enabling the plugin, "This is the footer." should appear at the bottom of every MFE.
+
+It's also possible to target a specific MFE's footer. For that, you'd use a patch such as ``mfe-env-config-plugin-profile-footer_slot``, ``profile`` being the name of the MFE and ``footer_slot`` the name of the slot:
+
+.. code-block:: python
+
+    hooks.Filters.ENV_PATCHES.add_item(
+        (
+            "mfe-env-config-plugin-profile-footer_slot",
+            """
+              {
+                /* Hide the global footer we defined earlier. */
+                op: PLUGIN_OPERATIONS.Hide,
+                widgetId: 'custom_footer',
+              },
+              {
+                /* Insert a custom footer specific to the Profile MFE. */
+                op: PLUGIN_OPERATIONS.Insert,
+                widget: {
+                  id: 'custom_profile_footer',
+                  type: DIRECT_PLUGIN,
+                  RenderWidget: () => (
+                    <h1>This is the Profile MFE's footer.</h1>
+                  ),
+                },
+              },
+    """
+        )
+    )
+
+Note that we haven't removed the first ``mfe-env-config-plugin-footer_slot`` patch, so here we hide our ``custom_footer`` instead of ``default_contents``.
+
+If you were to rebuild the MFE image now, the Profile MFE's footer would say "This is the Profile MFE's footer", whereas all the others would still contain the global "This is the footer." message.
+
+.. _mfe-env-config-plugin-slot-catalog:
+
+Here's a list of the currently available frontend plugin slots, separated by category. The documentation of each slot can be found by following the corresponding link.
+
+Header slots, available in MFEs that use ``frontend-component-header``:
+
+- `course_info_slot <https://github.com/openedx/frontend-component-header/tree/v5.7.1/src/plugin-slots/CourseInfoSlot#course-info-slot>`_
+- `desktop_header_slot <https://github.com/openedx/frontend-component-header/tree/v5.7.1/src/plugin-slots/DesktopHeaderSlot#desktop-header-slot>`_
+- `desktop_logged_out_items_slot <https://github.com/openedx/frontend-component-header/tree/v5.7.1/src/plugin-slots/DesktopLoggedOutItemsSlot#desktop-logged-out-items-slot>`_
+- `desktop_main_menu_slot <https://github.com/openedx/frontend-component-header/tree/v5.7.1/src/plugin-slots/DesktopMainMenuSlot#desktop-main-menu-slot>`_
+- `desktop_secondary_menu_slot <https://github.com/openedx/frontend-component-header/tree/v5.7.1/src/plugin-slots/DesktopSecondaryMenuSlot#desktop-secondary-menu-slot>`_
+- `desktop_user_menu_slot <https://github.com/openedx/frontend-component-header/tree/v5.7.1/src/plugin-slots/DesktopUserMenuSlot#desktop-user-menu-slot>`_
+- `learning_help_slot <https://github.com/openedx/frontend-component-header/tree/v5.7.1/src/plugin-slots/LearningHelpSlot#learning-help-slot>`_
+- `learning_logged_out_items_slot <https://github.com/openedx/frontend-component-header/tree/v5.7.1/src/plugin-slots/LearningLoggedOutItemsSlot#learning-logged-out-items-slot>`_
+- `learning_user_menu_slot <https://github.com/openedx/frontend-component-header/tree/v5.7.1/src/plugin-slots/LearningUserMenuSlot#learning-user-menu-slot>`_
+- `logo_slot <https://github.com/openedx/frontend-component-header/tree/v5.7.1/src/plugin-slots/LogoSlot#logo-slot>`_
+- `mobile_header_slot <https://github.com/openedx/frontend-component-header/tree/v5.7.1/src/plugin-slots/MobileHeaderSlot#mobile-header-slot>`_
+- `mobile_logged_out_items_slot <https://github.com/openedx/frontend-component-header/tree/v5.7.1/src/plugin-slots/MobileLoggedOutItemsSlot#mobile-logged-out-items-slot>`_
+- `mobile_main_menu_slot <https://github.com/openedx/frontend-component-header/tree/v5.7.1/src/plugin-slots/MobileMainMenuSlot#slot-id-mobile_main_menu_slot>`_
+- `mobile_user_menu_slot <https://github.com/openedx/frontend-component-header/tree/v5.7.1/src/plugin-slots/MobileUserMenuSlot#mobile-user-menu-slot>`_
+
+The footer slot, available in MFEs that use ``frontend-slot-footer``:
+
+- `footer_slot <https://github.com/openedx/frontend-slot-footer/tree/v1.0.6?tab=readme-ov-file#frontend-slot-footer>`_
+
+A slot only available in the Account MFE:
+
+- `id_verification_page_plugin <https://github.com/openedx/frontend-app-account/tree/open-release/sumac.master/src/plugin-slots/IdVerificationPageSlot#slot-id-id_verification_page_plugin>`_
+
+Slots only available in the Learner Dashboard MFE:
+
+- `course_card_action_slot <https://github.com/openedx/frontend-app-learner-dashboard/tree/open-release/sumac.master/src/plugin-slots/CourseCardActionSlot#course-card-action-slot>`_
+- `course_list_slot <https://github.com/openedx/frontend-app-learner-dashboard/tree/open-release/sumac.master/src/plugin-slots/CourseListSlot#course-list-slot>`_
+- `no_courses_view_slot <https://github.com/openedx/frontend-app-learner-dashboard/tree/open-release/sumac.master/src/plugin-slots/NoCoursesViewSlot#no-courses-view-slot>`_
+- `widget_sidebar_slot <https://github.com/openedx/frontend-app-learner-dashboard/tree/open-release/sumac.master/src/plugin-slots/WidgetSidebarSlot#widget-sidebar-slot>`_
+
+Slots only available in the Learning MFE:
+
+- `header_slot <https://github.com/openedx/frontend-app-learning/tree/open-release/sumac.master/src/plugin-slots/HeaderSlot#header-slot>`_
+- `sequence_container_slot <https://github.com/openedx/frontend-app-learning/tree/open-release/sumac.master/src/plugin-slots/SequenceContainerSlot#sequence-container-slot>`_
+- `unit_title_slot <https://github.com/openedx/frontend-app-learning/tree/open-release/sumac.master/src/plugin-slots/UnitTitleSlot#slot-id-unit_title_slot>`_
+
 Installing from a private npm registry
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -410,6 +521,70 @@ This is the list of all patches used across tutor-mfe (outside of any plugin). A
     git clone https://github.com/overhangio/tutor-mfe
     cd tutor-mfe
     git grep "{{ patch" -- tutormfe/templates
+
+mfe-env-config-static-imports
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Use this patch for any additional static imports you need in ``env.config.jsx``. They will be available here if you used the `mfe-docker-post-npm-install patch <#mfe-docker-post-npm-install>`_ to install an NPM package globally.
+
+It gets rendered at the very top of the file. You should use normal `ES6 import syntax <https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/import>`_.
+
+File changed: ``tutormfe/templates/mfe/build/mfe/env.config.jsx``
+
+mfe-env-config-head
+~~~~~~~~~~~~~~~~~~~
+
+Use this patch for arbitrary ``env.config.jsx`` javascript code. It gets rendered immediately after static imports, and is particularly useful for defining slightly more complex components for use in plugin slots.
+
+File changed: ``tutormfe/templates/mfe/build/mfe/env.config.jsx``
+
+mfe-env-config-dynamic-imports
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+This patch gets rendered inside an ``async`` function in ``env.config.jsx`` that runs in the browser, allowing you to define conditional imports for external modules that may only be available at runtime. The following syntax is recommended:
+
+.. code-block:: javascript
+
+    const mymodule1 = await import('mymodule1');
+    const { mycomponent1, mycomponent2 } = await import('mymodule2');
+
+Note that if any module is not available at runtime, ``env.config.jsx`` execution will fail silently.
+
+File changed: ``tutormfe/templates/mfe/build/mfe/env.config.jsx``
+
+mfe-env-config-dynamic-imports-{}
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+With this patch you can conditionally import a module for specific MFEs in ``env.config.jsx``. This is a useful place to put an import if you're using the ``mfe-docker-post-npm-install-*`` patch to install a plugin that only works on a particular MFE.
+
+As above, make sure to use the `import() function <https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/import>`_. Failures here don't abort ``env.config.jsx`` processing entirely, but do short-circuit any MFE-specific configuration.
+
+File changed: ``tutormfe/templates/mfe/build/mfe/env.config.jsx``
+
+mfe-env-config-plugin-{}
+~~~~~~~~~~~~~~~~~~~~~~~~
+
+Use these to configure plugins in particular slots via ``env.config.jsx``. In this form, the suffix is one of the `possible slot names <#mfe-env-config-plugin-slot-catalog>`_. For instance, ``mfe-env-config-plugin-header_slot``.
+
+You should provide a list of plugin operations, as per the expectations of `frontend-plugin-framework <https://github.com/openedx/frontend-plugin-framework/#>`_.
+
+File changed: ``tutormfe/templates/mfe/build/mfe/env.config.jsx``
+
+mfe-env-config-plugin-{}-{}
+~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+In this second form of plugin slot configuration via ``env.config.jsx``, the first suffix is the MFE name, and the last one after the dash is the slot name. For example, ``mfe-env-config-plugin-learner-dashboard-course_list_slot``.
+
+It expects the same list of plugin operations as the ``mfe-env-config-plugin-{}`` form, the difference being that it is only applicable to the MFE in question.
+
+File changed: ``tutormfe/templates/mfe/build/mfe/env.config.jsx``
+
+mfe-env-config-tail
+~~~~~~~~~~~~~~~~~~~
+
+At this point, ``env.config.jsx`` is ready to return the ``config`` object to the initialization code. You can use this patch to do anything to the object, including using modules that were imported dynamically earlier.
+
+File changed: ``tutormfe/templates/mfe/build/mfe/env.config.jsx``
 
 mfe-lms-development-settings
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~

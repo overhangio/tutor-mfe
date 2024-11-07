@@ -13,7 +13,7 @@ from tutor.hooks import priorities
 from tutor.types import Config, get_typed
 
 from .__about__ import __version__
-from .hooks import MFE_APPS, MFE_ATTRS_TYPE
+from .hooks import MFE_APPS, MFE_ATTRS_TYPE, MFE_SLOTS
 
 # Handle version suffix in nightly mode, just like tutor core
 if __version_suffix__:
@@ -73,6 +73,37 @@ CORE_MFE_APPS: dict[str, MFE_ATTRS_TYPE] = {
     },
 }
 
+CORE_MFE_SLOTS: list[str] = [
+    # frontend-component-header
+    "course_info_slot",
+    "desktop_header_slot",
+    "desktop_logged_out_items_slot",
+    "desktop_main_menu_slot",
+    "desktop_secondary_menu_slot",
+    "desktop_user_menu_slot",
+    "learning_help_slot",
+    "learning_logged_out_items_slot",
+    "learning_user_menu_slot",
+    "logo_slot",
+    "mobile_header_slot",
+    "mobile_logged_out_items_slot",
+    "mobile_main_menu_slot",
+    "mobile_user_menu_slot",
+    # frontend-component-footer
+    "footer_slot",
+    # account
+    "id_verification_page_plugin",
+    # learner-dashboard
+    "course_card_action_slot",
+    "course_list_slot",
+    "no_courses_view_slot",
+    "widget_sidebar_slot",
+    # learning
+    "header_slot",
+    "sequence_container_slot",
+    "unit_title_slot",
+]
+
 
 # The core MFEs are added with a high priority, such that other users can override or
 # remove them.
@@ -80,6 +111,12 @@ CORE_MFE_APPS: dict[str, MFE_ATTRS_TYPE] = {
 def _add_core_mfe_apps(apps: dict[str, MFE_ATTRS_TYPE]) -> dict[str, MFE_ATTRS_TYPE]:
     apps.update(CORE_MFE_APPS)
     return apps
+
+
+@MFE_SLOTS.add(priority=tutor_hooks.priorities.HIGH)
+def _add_core_mfe_slots(slots: list[str]) -> list[str]:
+    slots.extend(CORE_MFE_SLOTS)
+    return slots
 
 
 @functools.lru_cache(maxsize=None)
@@ -90,12 +127,21 @@ def get_mfes() -> dict[str, MFE_ATTRS_TYPE]:
     return MFE_APPS.apply({})
 
 
+@functools.lru_cache(maxsize=None)
+def get_slots() -> list[str]:
+    """
+    This function is cached for performance.
+    """
+    return MFE_SLOTS.apply([])
+
+
 @tutor_hooks.Actions.PLUGIN_LOADED.add()
 def _clear_get_mfes_cache(_name: str) -> None:
     """
     Don't forget to clear cache, or we'll have some strange surprises...
     """
     get_mfes.cache_clear()
+    get_slots.cache_clear()
 
 
 def iter_mfes() -> t.Iterable[tuple[str, MFE_ATTRS_TYPE]]:
@@ -105,6 +151,15 @@ def iter_mfes() -> t.Iterable[tuple[str, MFE_ATTRS_TYPE]]:
         (name, dict)
     """
     yield from get_mfes().items()
+
+
+def iter_slots() -> t.Iterable[str]:
+    """
+    Yield:
+
+        name
+    """
+    yield from get_slots()
 
 
 def is_mfe_enabled(mfe_name: str) -> bool:
@@ -120,6 +175,7 @@ tutor_hooks.Filters.ENV_TEMPLATE_VARIABLES.add_items(
     [
         ("get_mfe", get_mfe),
         ("iter_mfes", iter_mfes),
+        ("iter_slots", iter_slots),
         ("is_mfe_enabled", is_mfe_enabled),
     ]
 )
