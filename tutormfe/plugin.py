@@ -13,7 +13,7 @@ from tutor.hooks import priorities
 from tutor.types import Config, get_typed
 
 from .__about__ import __version__
-from .hooks import MFE_APPS, MFE_ATTRS_TYPE
+from .hooks import MFE_APPS, MFE_ATTRS_TYPE, PLUGIN_SLOTS
 
 # Handle version suffix in main mode, just like tutor core
 if __version_suffix__:
@@ -82,7 +82,7 @@ def _add_core_mfe_apps(apps: dict[str, MFE_ATTRS_TYPE]) -> dict[str, MFE_ATTRS_T
     return apps
 
 
-@functools.lru_cache(maxsize=None)
+@tutor_hooks.lru_cache
 def get_mfes() -> dict[str, MFE_ATTRS_TYPE]:
     """
     This function is cached for performance.
@@ -90,12 +90,12 @@ def get_mfes() -> dict[str, MFE_ATTRS_TYPE]:
     return MFE_APPS.apply({})
 
 
-@tutor_hooks.Actions.PLUGIN_LOADED.add()
-def _clear_get_mfes_cache(_name: str) -> None:
+@tutor_hooks.lru_cache
+def get_plugin_slots(mfe_name: str) -> list[tuple[str, str]]:
     """
-    Don't forget to clear cache, or we'll have some strange surprises...
+    This function is cached for performance.
     """
-    get_mfes.cache_clear()
+    return [i[-2:] for i in PLUGIN_SLOTS.iterate() if i[0] == mfe_name]
 
 
 def iter_mfes() -> t.Iterable[tuple[str, MFE_ATTRS_TYPE]]:
@@ -107,11 +107,20 @@ def iter_mfes() -> t.Iterable[tuple[str, MFE_ATTRS_TYPE]]:
     yield from get_mfes().items()
 
 
+def iter_plugin_slots(mfe_name: str) -> t.Iterable[tuple[str, str]]:
+    """
+    Yield:
+
+        (slot_name, plugin_config)
+    """
+    yield from get_plugin_slots(mfe_name)
+
+
 def is_mfe_enabled(mfe_name: str) -> bool:
     return mfe_name in get_mfes()
 
 
-def get_mfe(mfe_name: str) -> MFE_ATTRS_TYPE:
+def get_mfe(mfe_name: str) -> t.Union[MFE_ATTRS_TYPE, t.Any]:
     return get_mfes().get(mfe_name, {})
 
 
@@ -120,6 +129,7 @@ tutor_hooks.Filters.ENV_TEMPLATE_VARIABLES.add_items(
     [
         ("get_mfe", get_mfe),
         ("iter_mfes", iter_mfes),
+        ("iter_plugin_slots", iter_plugin_slots),
         ("is_mfe_enabled", is_mfe_enabled),
     ]
 )
