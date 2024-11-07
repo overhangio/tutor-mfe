@@ -308,6 +308,122 @@ In case you need to run additional instructions just before the build step you c
 
 You can find more patches in the `patch catalog <#template-patch-catalog>`_ below.
 
+Using Frontend Plugin Slots
+~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+The ``mfe-dockerfile-pre-npm-build`` patch is also suitable for taking advantage of the ``env.config.jsx`` mechanism, which lets you define and use frontend plugins.  For instance, you can use it to modify the footer across all MFEs *without* having to maintain a fork of ``frontend-component-footer``.
+
+Start by following the Tutor plugin tutorial at the `Adding new templates <https://docs.tutor.edly.io/tutorials/plugin.html#adding-new-templates>`_ section.  Instead of adding a whole new ``Dockerfile``, though, you'll just modify the exiting one.  Your ``myplugin.py`` should look something like this:
+
+.. code-block:: python
+
+    import os
+    from tutor import hooks
+
+    # Add the template root folder
+    template_folder = os.path.join(os.path.dirname(__file__), "templates")
+    hooks.Filters.ENV_TEMPLATE_ROOTS.add_item(template_folder)
+
+    # env.config.jsx files should live in `mfe/build/mfe`, which is also where the
+    # tutor-mfe Dockerfile goes.  This is so it's more straightforward to copy it
+    # in, as seen below.
+    hooks.Filters.ENV_TEMPLATE_TARGETS.add_item(("mfe/build/mfe", "plugins"))
+
+    # This patch gets inserted into the tutor-mfe Dockerfile.  It copies our
+    # env.config.jsx into the root of each and every MFE before the npm build step.
+    hooks.Filters.ENV_PATCHES.add_item(("mfe-dockerfile-pre-npm-build",
+        "COPY env.config.jsx /openedx/app"
+    ))
+
+As for ``env.config.jsx``, as noted above, it should be put into a ``templates/mfe/build/mfe`` subdirectory below ``myplugin.py``.  This is so it's easy to ``COPY`` it into the Docker image.
+
+In order for ``env.config.jsx`` to work with all current MFEs (including ones that don't yet have any plugin slots), it needs to be defined in a particular way.  This is what it should look like:
+
+.. code-block:: javascript
+
+    /* We can't just assume FPF exists, as it's not declared as a dependency in all
+     * MFEs.  Therefore, we have to use dynamic imports to check if it's available.
+     *
+     * We also have to use a `try` block (as opposed to `.then()`), otherwise
+     * Webpack won't treat the import as optional. Hence the async function.
+     */
+    async function getConfig () {
+      let config = {};
+
+      try {
+        const { DIRECT_PLUGIN, PLUGIN_OPERATIONS } = await import('@openedx/frontend-plugin-framework');
+
+        config = {
+          pluginSlots: {
+            footer_slot: {
+              plugins: [
+                {
+                  /* Hide the default footer. */
+                  op: PLUGIN_OPERATIONS.Hide,
+                  widgetId: 'default_contents',
+                },
+                {
+                  /* Insert a custom footer. */
+                  op: PLUGIN_OPERATIONS.Insert,
+                  widget: {
+                    id: 'custom_footer',
+                    type: DIRECT_PLUGIN,
+                    RenderWidget: () => (
+                      <h1 style={{ "{{textAlign: 'center'}}" }}>This is the footer.</h1>
+                    ),
+                  },
+                },
+              ]
+            }
+          }
+        };
+
+        /* NPM allows us to introspect the package name at build time, which in turn
+         * lets us tailor the configuration for individual MFEs.
+         */
+        if (process.env.npm_package_name == '@edx/frontend-app-profile') {
+          config.pluginSlots.footer_slot.plugins[1].widget.RenderWidget = () => (
+            <h1 style={{ "{{textAlign: 'center'}}" }}>This is the profile MFE's footer.</h1>
+          );
+        }
+      } catch { };
+
+      return config;
+    }
+
+    export default getConfig;
+
+As you can see, by using the ``process.env.npm_package_name`` variable you can use a single ``env.config.jsx`` to selectively apply configuration to different MFEs.
+
+If, on the other hand, you prefer to maintain entirely separate ``env.config.jsx`` files, one for each mfe, that can also be done.  For that you can rely on the ``mfe-dockerfile-pre-npm-build-*`` patches.  For instance:
+
+.. code-block:: python
+
+    hooks.Filters.ENV_PATCHES.add_items([
+        (
+            "mfe-dockerfile-pre-npm-build",
+            "COPY env.config.jsx /openedx/app"
+        ),
+        (
+            "mfe-dockerfile-pre-npm-build-account",
+            "COPY env-account.config.jsx /openedx/app/env.config.jsx"
+        ),
+        (
+            "mfe-dockerfile-pre-npm-build-profile",
+            "COPY env-profile.config.jsx /openedx/app/env.config.jsx"
+        )
+    ])
+
+In this case, there's a global ``env.config.jsx``, but it would get overwritten by the specific ones for the Account and Profile MFEs.  Note that while they originally have different names, they should all still be copied to ``env.config.jsx``.
+
+You can find what slots a library or MFE supports by inspecting its ``src/plugin-slots`` directory on Github.  For example:
+
+- `Header slots <https://github.com/openedx/frontend-component-header/tree/master/src/plugin-slots>`_
+- `Learning MFE slots <https://github.com/openedx/frontend-app-learning/tree/master/src/plugin-slots>`_
+- `Learner dashboard MFE slots <https://github.com/openedx/frontend-app-learner-dashboard/tree/master/src/plugin-slots>`_
+
+For more information on how frontend plugin slots work, refer to the `Frontend Plugin Framework README <https://github.com/openedx/frontend-plugin-framework/?tab=readme-ov-file>`_.
+
 Installing from a private npm registry
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
