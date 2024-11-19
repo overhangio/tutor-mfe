@@ -15,7 +15,7 @@ from tutor.types import Config, get_typed
 from .__about__ import __version__
 from .hooks import MFE_APPS, MFE_ATTRS_TYPE
 
-# Handle version suffix in nightly mode, just like tutor core
+# Handle version suffix in main mode, just like tutor core
 if __version_suffix__:
     __version__ += "-" + __version_suffix__
 
@@ -235,7 +235,7 @@ def _build_3rd_party_dev_mfes_on_launch(
     image_names: list[str], context_name: t.Literal["local", "dev"]
 ) -> list[str]:
     if __version_suffix__:
-        # Build mfe image in nightly mode
+        # Build mfe image in main mode
         image_names.append("mfe")
 
     for mfe_name, _mfe_attrs in iter_mfes():
@@ -243,7 +243,7 @@ def _build_3rd_party_dev_mfes_on_launch(
             context_name == "dev" and mfe_name not in CORE_MFE_APPS
         ):
             # We build MFE images:
-            # - in nightly
+            # - in main
             # - in development for non-core apps
             image_names.append(f"{mfe_name}-dev")
     return image_names
