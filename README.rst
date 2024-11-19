@@ -177,7 +177,7 @@ The ``make pull_translations`` command passes the ``ATLAS_OPTIONS`` environment 
 Translations in the MFE plugin as well as other Tutor plugins can be customized with the following configuration 
 variables:
 
-- ``ATLAS_REVISION`` (default: ``"main"`` on main and ``"{{ OPENEDX_COMMON_VERSION }}"`` if a named release is used)
+- ``ATLAS_REVISION`` (default: ``"main"`` on tutor Main branch and ``"{{ OPENEDX_COMMON_VERSION }}"`` if a named release is used)
 - ``ATLAS_REPOSITORY`` (default: ``"openedx/openedx-translations"``).
 - ``ATLAS_OPTIONS`` (default: ``""``) Pass additional arguments to ``atlas pull``. Refer to the `atlas documentations <https://github.com/openedx/openedx-atlas>`_ for more information.
 
@@ -533,8 +533,7 @@ NPM Dependency Conflict When overriding ``@edx/frontend-component-header`` or ``
 When there is a need to customize the ``@edx/frontend-component-header`` or ``@edx/frontend-component-footer`` component, there is a chance that npm dependency conflicts can occur. In the case of such a conflict, perform the following to resolve the conflicts while keeping the customizations in place:
 
 1. Identify your openedx version, for example, ``quince``.
-2. Navigate to `Learning <https://github.com/openedx/frontend-app-learning>`_ and `Learner Dashboard <https://github.com/openedx/frontend-app-learner-dashboard>`_ MFEs repositories and checkout to branch ``open-release/quince.master
-``. Inspect which header and footer versions are installed from ``package.json``. Learning and Learner Dashboard MFEs are mentioned only as an example. Hence, This step can be applied to all MFEs.
+2. Navigate to `Learning <https://github.com/openedx/frontend-app-learning>`_ and `Learner Dashboard <https://github.com/openedx/frontend-app-learner-dashboard>`_ MFEs repositories and checkout to branch ``open-release/quince.master``. Inspect which header and footer versions are installed from ``package.json``. Learning and Learner Dashboard MFEs are mentioned only as an example. Hence, This step can be applied to all MFEs.
 3. Determine the versions of ``@edx/frontend-platform`` used in MFEs. Also, check that the header/footer you plan to customize is compatible with the same version of ``@edx/frontend-platform`` specified in their ``package.json`` file (peer-dependencies).
 4. Ensure consistency between the versions. For example, If MFE has ``@edx/frontend-platform: 7.0.1``, then customize the header/footer component which has ``@edx/frontend-platform: ^7.0.0`` in ``package.json`` under peer-dependencies
 5. Checkout to that specific tag (e.g: ``v7.0.0``) of header component and customize it
