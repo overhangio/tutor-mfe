@@ -42,7 +42,7 @@ To check what the current value of `MFE_HOST` is actually set to, run::
 Account
 ~~~~~~~
 
-.. image:: https://raw.githubusercontent.com/overhangio/tutor-mfe/master/media/account.png
+.. image:: https://raw.githubusercontent.com/overhangio/tutor-mfe/release/media/account.png
     :alt: Account MFE screenshot
 
 An MFE to manage account-specific information for every LMS user. Each user's account page is available at ``http(s)://{{ MFE_HOST }}/account``. For instance, when running locally: https://apps.local.openedx.io/account.
@@ -50,7 +50,7 @@ An MFE to manage account-specific information for every LMS user. Each user's ac
 Authn
 ~~~~~
 
-.. image:: https://raw.githubusercontent.com/overhangio/tutor-mfe/master/media/authn.png
+.. image:: https://raw.githubusercontent.com/overhangio/tutor-mfe/release/media/authn.png
     :alt: Authn MFE screenshot
 
 This is a micro-frontend application responsible for the login, registration and password reset functionality.
@@ -58,7 +58,7 @@ This is a micro-frontend application responsible for the login, registration and
 Authoring
 ~~~~~~~~~
 
-.. image:: https://raw.githubusercontent.com/overhangio/tutor-mfe/master/media/authoring.png
+.. image:: https://raw.githubusercontent.com/overhangio/tutor-mfe/release/media/authoring.png
     :alt: Course Authoring MFE screenshot
 
 This MFE is meant for course authors and maintainers. For a given course, it exposes a "Pages & Resources" menu in Studio where one can enable or disable a variety of features, including, for example, the Wiki and Discussions.  Optionally, it allows authors to replace the legacy HTML, Video, and Problem authoring tools with experimental React-based versions, as well as exposing a new proctoring interface that can be enabled if the `edx-exams <https://github.com/edx/edx-exams>`_ service is available.
@@ -67,7 +67,7 @@ This MFE is meant for course authors and maintainers. For a given course, it exp
 Communications
 ~~~~~~~~~~~~~~
 
-.. image:: https://raw.githubusercontent.com/overhangio/tutor-mfe/master/media/communications.png
+.. image:: https://raw.githubusercontent.com/overhangio/tutor-mfe/release/media/communications.png
     :alt: Communications MFE screenshot
 
 The Communications micro-frontend exposes an interface for course teams to communicate with learners.  It achieves this by allowing instructors to send out emails in bulk, either by scheduling them or on demand.
@@ -75,7 +75,7 @@ The Communications micro-frontend exposes an interface for course teams to commu
 Discussions
 ~~~~~~~~~~~
 
-.. image:: https://raw.githubusercontent.com/overhangio/tutor-mfe/master/media/discussions.png
+.. image:: https://raw.githubusercontent.com/overhangio/tutor-mfe/release/media/discussions.png
     :alt: Discussions MFE screenshot
 
 The Discussions MFE updates the previous discussions UI with a new look and better features.
@@ -83,7 +83,7 @@ The Discussions MFE updates the previous discussions UI with a new look and bett
 Gradebook
 ~~~~~~~~~
 
-.. image:: https://raw.githubusercontent.com/overhangio/tutor-mfe/master/media/gradebook.png
+.. image:: https://raw.githubusercontent.com/overhangio/tutor-mfe/release/media/gradebook.png
     :alt: Gradebook MFE screenshot
 
 This instructor-only MFE is for viewing individual and aggregated grade results for a course. To access this MFE, go to a course → Instructor tab → Student Admin → View gradebook. The URL should be: ``http(s)://{{ MFE_HOST }}/gradebook/{{ course ID }}``. When running locally, the gradebook of the demo course is available at: http://apps.local.openedx.io/gradebook/course-v1:edX+DemoX+Demo_Course
@@ -91,7 +91,7 @@ This instructor-only MFE is for viewing individual and aggregated grade results 
 Learner Dashboard
 ~~~~~~~~~~~~~~~~~
 
-.. image:: https://raw.githubusercontent.com/overhangio/tutor-mfe/master/media/learner-dashboard.png
+.. image:: https://raw.githubusercontent.com/overhangio/tutor-mfe/release/media/learner-dashboard.png
     :alt: Learner Dashboard MFE screenshot
 
 The Learner Dashboard MFE provides a clean and functional interface to allow learners to view all of their open enrollments, as well as take relevant actions on those enrollments.
@@ -99,7 +99,7 @@ The Learner Dashboard MFE provides a clean and functional interface to allow lea
 Learning
 ~~~~~~~~
 
-.. image:: https://raw.githubusercontent.com/overhangio/tutor-mfe/master/media/learning.png
+.. image:: https://raw.githubusercontent.com/overhangio/tutor-mfe/release/media/learning.png
     :alt: Learning MFE screenshot
 
 The Learning MFE replaces the former courseware, which is the core part of the LMS where students follow courses.
@@ -107,7 +107,7 @@ The Learning MFE replaces the former courseware, which is the core part of the L
 ORA Grading
 ~~~~~~~~~~~
 
-.. image:: https://raw.githubusercontent.com/overhangio/tutor-mfe/master/media/ora-grading.png
+.. image:: https://raw.githubusercontent.com/overhangio/tutor-mfe/release/media/ora-grading.png
     :alt: ORA Grading MFE screenshot
 
 When enabled, Open Response Assessments ("ORA") that have a staff grading step will link to this new MFE, either when clicking "Grade Available Responses" from the exercise itself, or via a link in the Instructor Dashboard.  It is meant to streamline the grading process with better previews of submitted content.
@@ -115,7 +115,7 @@ When enabled, Open Response Assessments ("ORA") that have a staff grading step w
 Profile
 ~~~~~~~
 
-.. image:: https://raw.githubusercontent.com/overhangio/tutor-mfe/master/media/profile.png
+.. image:: https://raw.githubusercontent.com/overhangio/tutor-mfe/release/media/profile.png
     :alt: Profile MFE screenshot
 
 Edit and display user-specific profile information. The profile page of every user is visible at ``http(s)://{{ MFE_HOST }}/profile/u/{{ username }}``. For instance, when running locally, the profile page of the "admin" user is: http://apps.local.openedx.io/profile/u/admin.
@@ -178,7 +178,7 @@ The ``make pull_translations`` command passes the ``ATLAS_OPTIONS`` environment 
 Translations in the MFE plugin as well as other Tutor plugins can be customized with the following configuration 
 variables:
 
-- ``ATLAS_REVISION`` (default: ``"main"`` on nightly and ``"{{ OPENEDX_COMMON_VERSION }}"`` if a named release is used)
+- ``ATLAS_REVISION`` (default: ``"main"`` on tutor Main branch and ``"{{ OPENEDX_COMMON_VERSION }}"`` if a named release is used)
 - ``ATLAS_REPOSITORY`` (default: ``"openedx/openedx-translations"``).
 - ``ATLAS_OPTIONS`` (default: ``""``) Pass additional arguments to ``atlas pull``. Refer to the `atlas documentations <https://github.com/openedx/openedx-atlas>`_ for more information.
 
@@ -541,10 +541,10 @@ When there is a need to customize the ``@edx/frontend-component-header`` or ``@e
 6. Install the customized header/footer components into your MFEs. This will resolve any npm dependency conflict issues.
 7. All the steps outlined above need to be followed for the footer as well, if you have followed them for the header or vice versa.
 
-.. image:: https://raw.githubusercontent.com/overhangio/tutor-mfe/master/media/npm-conflict-deps.png
+.. image:: https://raw.githubusercontent.com/overhangio/tutor-mfe/release/media/npm-conflict-deps.png
     :alt: Observation of MFE header and footer versions
 
-From the above image, it can be observed that ``master`` branch of Learning MFE uses ``@edx/platform@5.6.1`` and Discussions MFE uses ``@edx/platform@7.1.0``. If customized header is created from ``master`` branch, it ensures compatibility with the Discussions MFE as header module supports ``@edx/platform@^7.0.0``. However, the customized header triggers npm dependencies conflit error for learning MFE. 
+From the above image, it can be observed that ``master`` branch of Learning MFE uses ``@edx/platform@5.6.1`` and Discussions MFE uses ``@edx/platform@7.1.0``. If customized header is created from ``master`` branch, it ensures compatibility with the Discussions MFE as header module supports ``@edx/platform@^7.0.0``. However, the customized header triggers npm dependencies conflit error for learning MFE.
 In this case, checkout custom branch from ``v4.11.1`` of header for Learning MFE and ``v5.0.0`` for Discussions MFE. You can install your customized header versions in their respective MFEs as shown below::
 
     hooks.Filters.ENV_PATCHES.add_items(
@@ -570,4 +570,4 @@ This Tutor plugin is maintained by Adolfo Brandes from `tCRIL <https://openedx.o
 License
 -------
 
-This software is licensed under the terms of the `GNU Affero General Public License (AGPL) <https://github.com/overhangio/tutor-mfe/blob/master/LICENSE.txt>`_.
+This software is licensed under the terms of the `GNU Affero General Public License (AGPL) <https://github.com/overhangio/tutor-mfe/blob/release/LICENSE.txt>`_.
