@@ -1,6 +1,6 @@
 # MFE-specific settings
-{% if get_mfe("course-authoring") %}
-COURSE_AUTHORING_MICROFRONTEND_URL = "{% if ENABLE_HTTPS %}https://{% else %}http://{% endif %}{{ MFE_HOST }}/course-authoring"
+{% if get_mfe("authoring") %}
+COURSE_AUTHORING_MICROFRONTEND_URL = "{% if ENABLE_HTTPS %}https://{% else %}http://{% endif %}{{ MFE_HOST }}/authoring"
 {% endif %}
 
 LOGIN_REDIRECT_WHITELIST.append("{{ MFE_HOST }}")

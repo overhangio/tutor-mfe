@@ -6,9 +6,9 @@ This plugin makes it possible to easily add micro frontend (MFE) applications on
 In addition, this plugin comes with a few MFEs which are enabled by default:
 
 - `Authn <https://github.com/openedx/frontend-app-authn/>`__
+- `Authoring <https://github.com/openedx/frontend-app-authoring/>`__
 - `Account <https://github.com/openedx/frontend-app-account/>`__
 - `Communications <https://github.com/openedx/frontend-app-communications/>`__
-- `Course Authoring <https://github.com/openedx/frontend-app-course-authoring/>`__
 - `Discussions <https://github.com/openedx/frontend-app-discussions/>`__
 - `Gradebook <https://github.com/openedx/frontend-app-gradebook/>`__
 - `Learner Dashboard <https://github.com/openedx/frontend-app-learner-dashboard/>`__
@@ -39,6 +39,14 @@ To check what the current value of `MFE_HOST` is actually set to, run::
 
     tutor config printvalue MFE_HOST
 
+Account
+~~~~~~~
+
+.. image:: https://raw.githubusercontent.com/overhangio/tutor-mfe/release/media/account.png
+    :alt: Account MFE screenshot
+
+An MFE to manage account-specific information for every LMS user. Each user's account page is available at ``http(s)://{{ MFE_HOST }}/account``. For instance, when running locally: https://apps.local.openedx.io/account.
+
 Authn
 ~~~~~
 
@@ -47,13 +55,14 @@ Authn
 
 This is a micro-frontend application responsible for the login, registration and password reset functionality.
 
-Account
-~~~~~~~
+Authoring
+~~~~~~~~~
 
-.. image:: https://raw.githubusercontent.com/overhangio/tutor-mfe/release/media/account.png
-    :alt: Account MFE screenshot
+.. image:: https://raw.githubusercontent.com/overhangio/tutor-mfe/release/media/authoring.png
+    :alt: Course Authoring MFE screenshot
 
-An MFE to manage account-specific information for every LMS user. Each user's account page is available at ``http(s)://{{ MFE_HOST }}/account``. For instance, when running locally: https://apps.local.edly.io/account.
+This MFE is meant for course authors and maintainers. For a given course, it exposes a "Pages & Resources" menu in Studio where one can enable or disable a variety of features, including, for example, the Wiki and Discussions.  Optionally, it allows authors to replace the legacy HTML, Video, and Problem authoring tools with experimental React-based versions, as well as exposing a new proctoring interface that can be enabled if the `edx-exams <https://github.com/edx/edx-exams>`_ service is available.
+
 
 Communications
 ~~~~~~~~~~~~~~
@@ -62,14 +71,6 @@ Communications
     :alt: Communications MFE screenshot
 
 The Communications micro-frontend exposes an interface for course teams to communicate with learners.  It achieves this by allowing instructors to send out emails in bulk, either by scheduling them or on demand.
-
-Course Authoring
-~~~~~~~~~~~~~~~~
-
-.. image:: https://raw.githubusercontent.com/overhangio/tutor-mfe/release/media/course-authoring.png
-    :alt: Course Authoring MFE screenshot
-
-This MFE is meant for course authors and maintainers. For a given course, it exposes a "Pages & Resources" menu in Studio where one can enable or disable a variety of features, including, for example, the Wiki and Discussions.  Optionally, it allows authors to replace the legacy HTML, Video, and Problem authoring tools with experimental React-based versions, as well as exposing a new proctoring interface that can be enabled if the `edx-exams <https://github.com/edx/edx-exams>`_ service is available.
 
 Discussions
 ~~~~~~~~~~~
@@ -85,7 +86,7 @@ Gradebook
 .. image:: https://raw.githubusercontent.com/overhangio/tutor-mfe/release/media/gradebook.png
     :alt: Gradebook MFE screenshot
 
-This instructor-only MFE is for viewing individual and aggregated grade results for a course. To access this MFE, go to a course → Instructor tab → Student Admin → View gradebook. The URL should be: ``http(s)://{{ MFE_HOST }}/gradebook/{{ course ID }}``. When running locally, the gradebook of the demo course is available at: http://apps.local.edly.io/gradebook/course-v1:edX+DemoX+Demo_Course
+This instructor-only MFE is for viewing individual and aggregated grade results for a course. To access this MFE, go to a course → Instructor tab → Student Admin → View gradebook. The URL should be: ``http(s)://{{ MFE_HOST }}/gradebook/{{ course ID }}``. When running locally, the gradebook of the demo course is available at: http://apps.local.openedx.io/gradebook/course-v1:edX+DemoX+Demo_Course
 
 Learner Dashboard
 ~~~~~~~~~~~~~~~~~
@@ -117,7 +118,7 @@ Profile
 .. image:: https://raw.githubusercontent.com/overhangio/tutor-mfe/release/media/profile.png
     :alt: Profile MFE screenshot
 
-Edit and display user-specific profile information. The profile page of every user is visible at ``http(s)://{{ MFE_HOST }}/profile/u/{{ username }}``. For instance, when running locally, the profile page of the "admin" user is: http://apps.local.edly.io/profile/u/admin.
+Edit and display user-specific profile information. The profile page of every user is visible at ``http(s)://{{ MFE_HOST }}/profile/u/{{ username }}``. For instance, when running locally, the profile page of the "admin" user is: http://apps.local.openedx.io/profile/u/admin.
 
 
 MFE management
@@ -335,7 +336,7 @@ Tutor makes it possible to run any MFE in development mode. For instance, to run
 
     tutor dev start profile
 
-Then, access http://apps.local.edly.io:1995/profile/u/YOURUSERNAME
+Then, access http://apps.local.openedx.io:1995/profile/u/YOURUSERNAME
 
 You can also bind-mount your own fork of an MFE. For example::
 

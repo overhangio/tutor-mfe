@@ -1,6 +1,6 @@
 # syntax=docker/dockerfile:1
 # https://hub.docker.com/_/node/tags
-FROM docker.io/node:18.19.0-bullseye-slim AS base
+FROM docker.io/node:20.18.0-bullseye-slim AS base
 
 RUN apt update \
   && apt install -y git \
@@ -12,7 +12,7 @@ RUN apt update \
     python g++ \
     # required for image-webpack-loader (on arm)
     libpng-dev \
-    # required for building node-canvas (on arm, for course-authoring)
+    # required for building node-canvas (on arm, for authoring)
     # https://www.npmjs.com/package/canvas
     libcairo2-dev libpango1.0-dev libjpeg-dev libgif-dev librsvg2-dev
 
