@@ -19,6 +19,17 @@ instructions, because git commits are used to generate release notes:
 
 <!-- scriv-insert-here -->
 
+<a id='changelog-18.1.0'></a>
+## v18.1.0 (2024-12-10)
+
+- 💥[Feature] Rename course-authoring MFE to "authoring". Existing URLs are redirected for backward compatibility. (by @regisb)
+- [Feature] Upgrade to Node 20. (by @arbrandes)
+- [Improvement] Adds support for frontend plugin slot configuration via env.config.jsx. (by @arbrandes)
+- 💥 [Deprecation] Drop support for python 3.8 and set Python 3.9 as the minimum supported python version. (by @hinakhadim)
+- 💥[Improvement] Rename Tutor's two branches (by @DawoudSheraz):
+  * Rename **master** to **release**, as this branch runs the latest official Open edX release tag.
+  * Rename **nightly** to **main**, as this branch runs the Open edX master branches, which are the basis for the next Open edX release.
+
 <a id='changelog-18.0.2'></a>
 ## v18.0.2 (2024-10-29)
 
