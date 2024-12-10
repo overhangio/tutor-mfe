@@ -13,3 +13,5 @@ from tutor.core.hooks import Filter
 MFE_ATTRS_TYPE = t.Dict[t.Literal["repository", "port", "version"], t.Union["str", int]]
 
 MFE_APPS: Filter[dict[str, MFE_ATTRS_TYPE], []] = Filter()
+
+PLUGIN_SLOTS: Filter[list[tuple[str, str, str]], []] = Filter()
