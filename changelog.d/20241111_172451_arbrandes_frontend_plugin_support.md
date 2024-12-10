@@ -1,1 +1,0 @@
-- [Improvement] Adds support for frontend plugin slot configuration via env.config.jsx. (by @arbrandes)
