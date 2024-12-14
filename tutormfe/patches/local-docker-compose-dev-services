@@ -1,10 +1,17 @@
+{%- set unmounted_mfes = [] %}
+{%- for app_name, app in iter_mfes() %}
+   {%- if not iter_mounts(MOUNTS, app_name)|list %}
+       {%- set _ = unmounted_mfes.append((app_name, app)) %}
+   {%- endif %}
+{%- endfor %}
+{% if unmounted_mfes|length > 0 %}
 mfe:
-    ports:
-        {%- for app_name, app in iter_mfes() %}
-        {%- if not iter_mounts(MOUNTS, app_name)|list %}
-        - {{ app["port"] }}:8002 # {{ app_name }}
-        {%- endif %}
-        {%- endfor %}
+   ports:
+       {%- for app_name, app in unmounted_mfes %}
+       - {{ app["port"] }}:8002 # {{ app_name }}
+       {%- endfor %}
+{% endif %}
+
 
 {%- for app_name, app in iter_mfes() %}
 {%- set mounts = iter_mounts(MOUNTS, app_name)|list %}
