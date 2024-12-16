@@ -35,12 +35,13 @@ ACCOUNT_MICROFRONTEND_URL = "http://{{ MFE_HOST }}:{{ get_mfe("account")["port"]
 MFE_CONFIG["ACCOUNT_SETTINGS_URL"] = ACCOUNT_MICROFRONTEND_URL
 {% endif %}
 
-{% if get_mfe("course-authoring") %}
-MFE_CONFIG["COURSE_AUTHORING_MICROFRONTEND_URL"] = "http://{{ MFE_HOST }}:{{ get_mfe("course-authoring")["port"] }}/course-authoring"
+{% if get_mfe("authoring") %}
+MFE_CONFIG["COURSE_AUTHORING_MICROFRONTEND_URL"] = "http://{{ MFE_HOST }}:{{ get_mfe("authoring")["port"] }}/authoring"
 MFE_CONFIG["ENABLE_ASSETS_PAGE"] = "true"
 MFE_CONFIG["ENABLE_HOME_PAGE_COURSE_API_V2"] = "true"
 MFE_CONFIG["ENABLE_PROGRESS_GRAPH_SETTINGS"] = "true"
 MFE_CONFIG["ENABLE_TAGGING_TAXONOMY_PAGES"] = "true"
+MFE_CONFIG["MEILISEARCH_ENABLED"] = "true"
 {% endif %}
 
 {% if get_mfe("discussions") %}

@@ -1,6 +1,6 @@
 variables:
     TUTOR_PLUGIN: mfe
-    TUTOR_IMAGES: mfe authn-dev account-dev communications-dev course-authoring-dev discussions-dev gradebook-dev learner-dashboard-dev learning-dev ora-grading-dev profile-dev
+    TUTOR_IMAGES: mfe account-dev authn-dev authoring-dev communications-dev discussions-dev gradebook-dev learner-dashboard-dev learning-dev ora-grading-dev profile-dev
     TUTOR_PYPI_PACKAGE: tutor-mfe
     GITHUB_REPO: overhangio/tutor-mfe
 
