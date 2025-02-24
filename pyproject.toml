@@ -3,7 +3,7 @@
 
 [project]
 name = "tutor-mfe"
-license = {text = "AGPLv3" }
+license = {text = "AGPL-3.0-only" }
 requires-python = ">=3.9"
 authors = [
     { name = "Edly" },
@@ -50,7 +50,8 @@ Documentation = "https://docs.tutor.edly.io/"
 Code = "https://github.com/overhangio/tutor-mfe"
 Issues = "https://github.com/overhangio/tutor-mfe/issues"
 Changelog = "https://github.com/overhangio/tutor-mfe/blob/release/CHANGELOG.md"
-Community = "https://discuss.openedx.org/tag/tutor"
+Community = "https://discuss.openedx.org/tag/tutor-mfe"
+"Community (Tutor Core)" = "https://discuss.openedx.org/tag/tutor"
 
 # hatch-specific configuration
 [tool.hatch.metadata.hooks.custom]
@@ -67,4 +68,4 @@ include = ["/tutormfe"]
 exclude = ["tests*"]
 
 [tool.hatch.build.targets.wheel]
-packages = ["tutorminio"]
+packages = ["tutormfe"]
