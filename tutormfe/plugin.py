@@ -11,6 +11,7 @@ from tutor import hooks as tutor_hooks
 from tutor.__about__ import __version_suffix__
 from tutor.hooks import priorities
 from tutor.types import Config, get_typed
+from tutor.bindmount import iter_mounts
 
 from .__about__ import __version__
 from .hooks import MFE_APPS, MFE_ATTRS_TYPE, PLUGIN_SLOTS
@@ -90,6 +91,24 @@ def get_mfes() -> dict[str, MFE_ATTRS_TYPE]:
     return MFE_APPS.apply({})
 
 
+class MFEMountData:
+    """Stores categorized mounted and unmounted MFEs."""
+
+    def __init__(self, mounts: list[str]):
+        self.mounted: list[tuple[str, MFE_ATTRS_TYPE, list[str]]] = []
+        self.unmounted: list[tuple[str, MFE_ATTRS_TYPE]] = []
+        self._categorize_mfes(mounts)
+
+    def _categorize_mfes(self, mounts: list[str]) -> None:
+        """Populates mounted and unmounted MFE lists based on mount data."""
+        for app_name, app in iter_mfes():
+            mfe_mounts = list(iter_mounts(mounts, app_name))
+            if mfe_mounts:
+                self.mounted.append((app_name, app, mfe_mounts))
+            else:
+                self.unmounted.append((app_name, app))
+
+
 @tutor_hooks.lru_cache
 def get_plugin_slots(mfe_name: str) -> list[tuple[str, str]]:
     """
@@ -131,6 +150,7 @@ tutor_hooks.Filters.ENV_TEMPLATE_VARIABLES.add_items(
         ("iter_mfes", iter_mfes),
         ("iter_plugin_slots", iter_plugin_slots),
         ("is_mfe_enabled", is_mfe_enabled),
+        ("MFEMountData", MFEMountData),
     ]
 )
 

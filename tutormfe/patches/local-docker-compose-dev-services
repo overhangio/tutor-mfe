@@ -1,8 +1,6 @@
-{%- set unmounted_mfes = [] %}
+{%- set mfe_data = MFEMountData(MOUNTS) %}
 
-{%- for app_name, app in iter_mfes() %}
-{%- set mounts = iter_mounts(MOUNTS, app_name)|list %}
-{%- if mounts %}
+{%- for app_name, app, mounts in mfe_data.mounted %}
 {{ app_name }}: # Work on this MFE for development
     image: "{{ MFE_DOCKER_IMAGE_DEV_PREFIX }}-{{ app_name }}-dev:{{ MFE_VERSION }}"
     ports:
@@ -19,16 +17,13 @@
         - lms
     environment:
         - "PORT={{ app['port'] }}"
-{%- else %}
-{%- set unmounted_mfes = unmounted_mfes.append((app_name, app)) %}
-{%- endif %}
 {%- endfor %}
 
 
-{% if unmounted_mfes|length > 0 %}
+{% if mfe_data.unmounted|length > 0 %}
 mfe:
    ports:
-       {%- for app_name, app in unmounted_mfes %}
+       {%- for app_name, app in mfe_data.unmounted %}
        - {{ app["port"] }}:8002 # {{ app_name }}
        {%- endfor %}
 {% endif %}
