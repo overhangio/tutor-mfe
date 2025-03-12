@@ -64,7 +64,7 @@ build-backend = "hatchling.build"
 [tool.hatch.build.targets.sdist]
 # Disable strict naming, otherwise twine is not able to detect name/version
 strict-naming = false
-include = ["/tutormfe"]
+include = ["/tutormfe", ".hatch_build.py"]
 exclude = ["tests*"]
 
 [tool.hatch.build.targets.wheel]
