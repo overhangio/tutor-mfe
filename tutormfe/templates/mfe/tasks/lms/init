@@ -36,45 +36,49 @@ grep courseware.always_open_auxiliary_sidebar /tmp/lms_waffle_flags.txt || ./man
 {% endif %}
 
 {% if is_mfe_enabled("authoring") %}
-grep contentstore.new_studio_mfe.use_new_advanced_settings_page /tmp/lms_waffle_flags.txt || ./manage.py lms waffle_flag --create --everyone contentstore.new_studio_mfe.use_new_advanced_settings_page
-grep contentstore.new_studio_mfe.use_new_certificates_page /tmp/lms_waffle_flags.txt || ./manage.py lms waffle_flag --create --everyone contentstore.new_studio_mfe.use_new_certificates_page
-grep contentstore.new_studio_mfe.use_new_course_outline_page /tmp/lms_waffle_flags.txt || ./manage.py lms waffle_flag --create --everyone contentstore.new_studio_mfe.use_new_course_outline_page
-grep contentstore.new_studio_mfe.use_new_course_team_page /tmp/lms_waffle_flags.txt || ./manage.py lms waffle_flag --create --everyone contentstore.new_studio_mfe.use_new_course_team_page
-grep contentstore.new_studio_mfe.use_new_custom_pages /tmp/lms_waffle_flags.txt || ./manage.py lms waffle_flag --create --everyone contentstore.new_studio_mfe.use_new_custom_pages
-grep contentstore.new_studio_mfe.use_new_export_page /tmp/lms_waffle_flags.txt || ./manage.py lms waffle_flag --create --everyone contentstore.new_studio_mfe.use_new_export_page
-grep contentstore.new_studio_mfe.use_new_files_uploads_page /tmp/lms_waffle_flags.txt || ./manage.py lms waffle_flag --create --everyone contentstore.new_studio_mfe.use_new_files_uploads_page
-grep contentstore.new_studio_mfe.use_new_grading_page /tmp/lms_waffle_flags.txt || ./manage.py lms waffle_flag --create --everyone contentstore.new_studio_mfe.use_new_grading_page
-grep contentstore.new_studio_mfe.use_new_group_configurations_page /tmp/lms_waffle_flags.txt || ./manage.py lms waffle_flag --create --everyone contentstore.new_studio_mfe.use_new_group_configurations_page
-grep contentstore.new_studio_mfe.use_new_import_page /tmp/lms_waffle_flags.txt || ./manage.py lms waffle_flag --create --everyone contentstore.new_studio_mfe.use_new_import_page
-grep contentstore.new_studio_mfe.use_new_schedule_details_page /tmp/lms_waffle_flags.txt || ./manage.py lms waffle_flag --create --everyone contentstore.new_studio_mfe.use_new_schedule_details_page
-grep contentstore.new_studio_mfe.use_new_textbooks_page /tmp/lms_waffle_flags.txt || ./manage.py lms waffle_flag --create --everyone contentstore.new_studio_mfe.use_new_textbooks_page
-grep contentstore.new_studio_mfe.use_new_updates_page /tmp/lms_waffle_flags.txt || ./manage.py lms waffle_flag --create --everyone contentstore.new_studio_mfe.use_new_updates_page
 grep discussions.pages_and_resources_mfe /tmp/lms_waffle_flags.txt || ./manage.py lms waffle_flag --create --everyone discussions.pages_and_resources_mfe
-grep new_core_editors.use_new_problem_editor /tmp/lms_waffle_flags.txt || ./manage.py lms waffle_flag --create --everyone new_core_editors.use_new_problem_editor
-grep new_core_editors.use_new_text_editor /tmp/lms_waffle_flags.txt || ./manage.py lms waffle_flag --create --everyone new_core_editors.use_new_text_editor
-grep new_core_editors.use_new_video_editor /tmp/lms_waffle_flags.txt || ./manage.py lms waffle_flag --create --everyone new_core_editors.use_new_video_editor
-grep new_studio_mfe.use_new_home_page /tmp/lms_waffle_flags.txt || ./manage.py lms waffle_flag --create --everyone new_studio_mfe.use_new_home_page
 grep new_studio_mfe.use_tagging_taxonomy_list_page /tmp/lms_waffle_flags.txt || ./manage.py lms waffle_flag --create --everyone new_studio_mfe.use_tagging_taxonomy_list_page
-{% else %}
 ./manage.py lms waffle_delete --flags \
-    contentstore.new_studio_mfe.use_new_advanced_settings_page \
-    contentstore.new_studio_mfe.use_new_certificates_page \
-    contentstore.new_studio_mfe.use_new_course_outline_page \
-    contentstore.new_studio_mfe.use_new_course_team_page \
-    contentstore.new_studio_mfe.use_new_custom_pages \
-    contentstore.new_studio_mfe.use_new_export_page \
-    contentstore.new_studio_mfe.use_new_files_uploads_page \
-    contentstore.new_studio_mfe.use_new_grading_page \
-    contentstore.new_studio_mfe.use_new_group_configurations_page \
-    contentstore.new_studio_mfe.use_new_import_page \
-    contentstore.new_studio_mfe.use_new_schedule_details_page \
-    contentstore.new_studio_mfe.use_new_textbooks_page \
-    contentstore.new_studio_mfe.use_new_updates_page \
+    legacy_studio.advanced_settings \
+    legacy_studio.certificates \
+    legacy_studio.course_outline \
+    legacy_studio.course_team \
+    legacy_studio.custom_pages \
+    legacy_studio.export \
+    legacy_studio.files_uploads \
+    legacy_studio.grading \
+    legacy_studio.group_configurations \
+    legacy_studio.import \
+    legacy_studio.schedule_details \
+    legacy_studio.textbooks \
+    legacy_studio.updates \
+    legacy_studio.problem_editor \
+    legacy_studio.text_editor \
+    legacy_studio.video_editor \
+    legacy_studio.logged_out_home \
+    legacy_studio.home
+{% else %}
+grep new_studio_mfe.use_new_home_page /tmp/lms_waffle_flags.txt || ./manage.py lms waffle_flag --create --everyone new_studio_mfe.use_new_home_page
+grep legacy_studio.advanced_settings /tmp/lms_waffle_flags.txt || ./manage.py lms waffle_flag --create --everyone legacy_studio.advanced_settings
+grep legacy_studio.certificates /tmp/lms_waffle_flags.txt || ./manage.py lms waffle_flag --create --everyone legacy_studio.certificates
+grep legacy_studio.course_outline /tmp/lms_waffle_flags.txt || ./manage.py lms waffle_flag --create --everyone legacy_studio.course_outline
+grep legacy_studio.course_team /tmp/lms_waffle_flags.txt || ./manage.py lms waffle_flag --create --everyone legacy_studio.course_team
+grep legacy_studio.custom_pages /tmp/lms_waffle_flags.txt || ./manage.py lms waffle_flag --create --everyone legacy_studio.custom_pages
+grep legacy_studio.export /tmp/lms_waffle_flags.txt || ./manage.py lms waffle_flag --create --everyone legacy_studio.export
+grep legacy_studio.files_uploads /tmp/lms_waffle_flags.txt || ./manage.py lms waffle_flag --create --everyone legacy_studio.files_uploads
+grep legacy_studio.grading /tmp/lms_waffle_flags.txt || ./manage.py lms waffle_flag --create --everyone legacy_studio.grading
+grep legacy_studio.group_configurations /tmp/lms_waffle_flags.txt || ./manage.py lms waffle_flag --create --everyone legacy_studio.group_configurations
+grep legacy_studio.import /tmp/lms_waffle_flags.txt || ./manage.py lms waffle_flag --create --everyone legacy_studio.import
+grep legacy_studio.schedule_details /tmp/lms_waffle_flags.txt || ./manage.py lms waffle_flag --create --everyone legacy_studio.schedule_details
+grep legacy_studio.textbooks /tmp/lms_waffle_flags.txt || ./manage.py lms waffle_flag --create --everyone legacy_studio.textbooks
+grep legacy_studio.updates /tmp/lms_waffle_flags.txt || ./manage.py lms waffle_flag --create --everyone legacy_studio.updates
+grep legacy_studio.problem_editor /tmp/lms_waffle_flags.txt || ./manage.py lms waffle_flag --create --everyone legacy_studio.problem_editor
+grep legacy_studio.text_editor /tmp/lms_waffle_flags.txt || ./manage.py lms waffle_flag --create --everyone legacy_studio.text_editor
+grep legacy_studio.video_editor /tmp/lms_waffle_flags.txt || ./manage.py lms waffle_flag --create --everyone legacy_studio.video_editor
+grep legacy_studio.home /tmp/lms_waffle_flags.txt || ./manage.py lms waffle_flag --create --everyone legacy_studio.home
+grep legacy_studio.logged_out_home /tmp/lms_waffle_flags.txt || ./manage.py lms waffle_flag --create --everyone legacy_studio.logged_out_home
+./manage.py lms waffle_delete --flags \
     discussions.pages_and_resources_mfe \
-    new_core_editors.use_new_problem_editor \
-    new_core_editors.use_new_text_editor \
-    new_core_editors.use_new_video_editor \
-    new_studio_mfe.use_new_home_page \
     new_studio_mfe.use_tagging_taxonomy_list_page
 {% endif %}
 
