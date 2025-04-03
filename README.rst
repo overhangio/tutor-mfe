@@ -1,7 +1,7 @@
 Micro Frontend base plugin for `Tutor <https://docs.tutor.edly.io>`__
 =========================================================================
 
-This plugin makes it possible to easily add micro frontend (MFE) applications on top of an Open edX platform that runs with Tutor. To learn more about MFEs, please check the `official Open edX documentation <https://edx.readthedocs.io/projects/edx-developer-docs/en/latest/developers_guide/micro_frontends_in_open_edx.html>`__.
+This plugin makes it possible to easily add micro frontend (MFE) applications on top of an Open edX platform that runs with Tutor. To learn more about MFEs, please check the `official Open edX documentation <https://openedx.github.io/frontend-platform/>`__.
 
 In addition, this plugin comes with a few MFEs which are enabled by default:
 
@@ -742,7 +742,7 @@ In this case, checkout custom branch from ``v4.11.1`` of header for Learning MFE
     )
 
 
-This Tutor plugin is maintained by Adolfo Brandes from `tCRIL <https://openedx.org>`__. Community support is available from the official `Open edX forum <https://discuss.openedx.org>`__. Do you need help with this plugin? See the `troubleshooting <https://docs.tutor.edly.io/troubleshooting.html>`__ section from the Tutor documentation.
+This Tutor plugin is maintained by Adolfo Brandes from `Axim <https://openedx.atlassian.net/wiki/spaces/COMM/pages/3554082883/Axim+Collaborative>`__. Community support is available from the official `Open edX forum <https://discuss.openedx.org>`__. Do you need help with this plugin? See the `troubleshooting <https://docs.tutor.edly.io/troubleshooting.html>`__ section from the Tutor documentation.
 
 License
 -------
