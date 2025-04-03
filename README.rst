@@ -742,7 +742,7 @@ In this case, checkout custom branch from ``v4.11.1`` of header for Learning MFE
     )
 
 
-This Tutor plugin is maintained by Adolfo Brandes from `tCRIL <https://openedx.org>`__. Community support is available from the official `Open edX forum <https://discuss.openedx.org>`__. Do you need help with this plugin? See the `troubleshooting <https://docs.tutor.edly.io/troubleshooting.html>`__ section from the Tutor documentation.
+This Tutor plugin is maintained by Adolfo Brandes from `Axim <https://openedx.atlassian.net/wiki/spaces/COMM/pages/3554082883/Axim+Collaborative>`__. Community support is available from the official `Open edX forum <https://discuss.openedx.org>`__. Do you need help with this plugin? See the `troubleshooting <https://docs.tutor.edly.io/troubleshooting.html>`__ section from the Tutor documentation.
 
 License
 -------
