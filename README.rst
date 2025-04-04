@@ -478,8 +478,6 @@ This works for custom MFEs, as well. For example, if you added your own MFE name
 
     tutor mounts add /path/to/frontend-app-myapp
 
-Similarly, in production, the "mfe" Docker image will be rebuilt automatically during ``tutor local launch``.
-
 .. note::
 
   Docker tries to run as many build processes in parallel as possible, but this can cause failures in the MFE image build.  If you're running into OOM issues, RAM starvation, or network failures during NPM installs, try the following before restarting::
@@ -489,6 +487,13 @@ Similarly, in production, the "mfe" Docker image will be rebuilt automatically d
       max-parallelism = 1
     EOF
     docker buildx create --use --name=singlecpu --config=./buildkitd.toml
+
+Deploying Changes to Production
+-------------------------------
+
+You will need to rebuild the mfe Docker image with your changes, and then deploy it to production - exactly how depends on whether you are running ``tutor local`` or ``tutor k8s``.
+
+Provided the modified codebase is mounted in the same machine where production deployment happens, run ``tutor images build mfe`` and restart your local deployment via ``tutor local stop && tutor local start -d``.
 
 Uninstall
 ---------
