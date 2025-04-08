@@ -17,8 +17,14 @@ RUN apt update \
     libcairo2-dev libpango1.0-dev libjpeg-dev libgif-dev librsvg2-dev
 
 RUN mkdir -p /openedx/app /openedx/env
+
+# Install shared dependencies in /openedx/node_modules
+WORKDIR /openedx/
+RUN npm install @rsbuild/core @rsbuild/plugin-react @rsbuild/plugin-svgr @rsbuild/plugin-sass
+
+# Install apps in /openedx/app
 WORKDIR /openedx/app
-ENV PATH=/openedx/app/node_modules/.bin:${PATH}
+ENV PATH=/openedx/app/node_modules/.bin:/openedx/node_modules/.bin:${PATH}
 
 {{ patch("mfe-dockerfile-base") }}
 
@@ -77,7 +83,9 @@ CMD ["/bin/bash", "-c", "npm run start --- --config ./webpack.dev-tutor.config.j
 ######## {{ app_name }} (production)
 FROM {{ app_name }}-common AS {{ app_name }}-prod
 ENV NODE_ENV=production
-RUN npm run build
+COPY rsbuild.config.ts /openedx/app/rsbuild.config.ts
+{# Locked cache will prevent concurrent builds of MFE apps, to spare CPU usage #}
+RUN --mount=type=cache,target=/openedx/app/node_modules/.cache,sharing=locked rsbuild build
 {{ patch("mfe-dockerfile-post-npm-build") }}
 {{ patch("mfe-dockerfile-post-npm-build-{}".format(app_name)) }}
 {% endfor %}
