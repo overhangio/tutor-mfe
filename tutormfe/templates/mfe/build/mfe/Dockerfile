@@ -9,7 +9,7 @@ RUN apt update \
     # required for gifsicle, mozjpeg, and optipng (on arm)
     autoconf libtool pkg-config zlib1g-dev \
     # required for node-sass (on arm)
-    python g++ \
+    python3 g++ \
     # required for image-webpack-loader (on arm)
     libpng-dev \
     # required for building node-canvas (on arm, for authoring)
