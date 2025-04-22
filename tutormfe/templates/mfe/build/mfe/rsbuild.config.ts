@@ -31,6 +31,7 @@ const appName = parsedEnv.APP_ID || path.basename(currentDir).replace('frontend-
 const publicPath = parsedEnv.PUBLIC_PATH || '/' + appName + '/';
 const dev = parsedEnv.NODE_ENV === 'development';
 const prod = !dev;
+const isArm64 = (process.arch === 'arm64');
 parsedEnv.APP_ID = appName;
 parsedEnv.PUBLIC_PATH = publicPath;
 parsedEnv.MFE_CONFIG_API_URL = prod ? '/api/mfe_config/v1' : 'http://local.openedx.io:8000/api/mfe_config/v1';
@@ -65,9 +66,11 @@ const config = defineConfig({
         }
     },
     performance: {
-        // We enable caching everywhere, even if it's unnecessary in some places. The
-        // negative impact on performance should be minor.
-        buildCache: true,
+        // We enable caching everywhere except on amd64, even if it's unnecessary in
+        // some places. The negative impact on performance should be minor.
+        // The reason we disable it on arm64 is that build is failing on this platform
+        // https://github.com/web-infra-dev/rspack/issues/10118
+        buildCache: isArm64 ? false : true,
     },
     server: {
         base: publicPath,
