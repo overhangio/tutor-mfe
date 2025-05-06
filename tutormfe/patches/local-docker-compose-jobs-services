@@ -1,0 +1,7 @@
+{%- for app_name, app in iter_mfes() %}
+{%- set mounts = iter_mounts(MOUNTS, app_name)|list %}
+{%- if mounts %}
+{{ app_name }}-job: 
+    image: "{{ MFE_DOCKER_IMAGE }}"
+{%- endif %}
+{%- endfor %}
