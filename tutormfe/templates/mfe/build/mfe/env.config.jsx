@@ -43,7 +43,7 @@ async function setConfig () {
     {%- endfor %}
 
     {{- patch("mfe-env-config-runtime-final") }}
-  } catch (err) { console.error("env.config.jsx failed to apply.", err);}
+  } catch (err) { console.error("env.config.jsx failed to apply: ", err);}
 
   return config;
 }
