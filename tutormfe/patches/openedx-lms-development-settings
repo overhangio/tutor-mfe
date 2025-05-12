@@ -77,6 +77,10 @@ COMMUNICATIONS_MICROFRONTEND_URL = "http://{{ MFE_HOST }}:{{ get_mfe("communicat
 MFE_CONFIG["SCHEDULE_EMAIL_SECTION"] = True
 {% endif %}
 
+{% if get_mfe("catalog") %}
+CATALOG_MICROFRONTEND_URL = "http://{{ MFE_HOST }}:{{ get_mfe("catalog")["port"] }}/courses"
+{% endif %}
+
 # Cors configuration
 {% for app_name, app in iter_mfes() %}
 # {{ app_name }} MFE
