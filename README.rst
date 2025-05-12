@@ -15,6 +15,7 @@ In addition, this plugin comes with a few MFEs which are enabled by default:
 - `Learning <https://github.com/openedx/frontend-app-learning/>`__
 - `ORA Grading <https://github.com/openedx/frontend-app-ora-grading/>`__
 - `Profile <https://github.com/openedx/frontend-app-profile/>`__
+- `Catalog <https://github.com/openedx/frontend-app-catalog/>`__
 
 Instructions for using each of these MFEs are given below.
 
@@ -120,6 +121,14 @@ Profile
 
 Edit and display user-specific profile information. The profile page of every user is visible at ``http(s)://{{ MFE_HOST }}/profile/u/{{ username }}``. For instance, when running locally, the profile page of the "admin" user is: http://apps.local.openedx.io/profile/u/admin.
 
+Catalog
+~~~~~~~~
+
+.. image:: https://raw.githubusercontent.com/overhangio/tutor-mfe/release/media/catalog.png
+    :alt: Catalog MFE screenshot
+
+The Catalog MFE replaces the former Home, Course About and Course catalog pages, which is the main part of the LMS where students start interacting with courses.
+
 
 MFE management
 --------------
@@ -175,7 +184,7 @@ program is used in the ``Dockerfile`` to pull translations from the `openedx/ope
 
 The ``make pull_translations`` command passes the ``ATLAS_OPTIONS`` environment variable to the ``atlas pull`` command. This allows specifying a custom repository or branch to pull translations from.
 
-Translations in the MFE plugin as well as other Tutor plugins can be customized with the following configuration 
+Translations in the MFE plugin as well as other Tutor plugins can be customized with the following configuration
 variables:
 
 - ``ATLAS_REVISION`` (default: ``"main"`` on tutor Main branch and ``"{{ OPENEDX_COMMON_VERSION }}"`` if a named release is used)
