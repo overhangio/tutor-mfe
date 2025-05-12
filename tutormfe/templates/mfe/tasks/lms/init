@@ -100,3 +100,9 @@ grep openresponseassessment.enhanced_staff_grader /tmp/lms_waffle_flags.txt || .
 {% else %}
 ./manage.py lms waffle_delete --flags openresponseassessment.enhanced_staff_grader
 {% endif %}
+
+{% if is_mfe_enabled("catalog") %}
+grep catalog_mfe.enabled /tmp/lms_waffle_flags.txt || ./manage.py lms waffle_flag --create --everyone catalog_mfe.enabled
+{% else %}
+./manage.py lms waffle_delete --flags catalog_mfe.enabled
+{% endif %}
