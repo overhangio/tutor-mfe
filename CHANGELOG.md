@@ -19,6 +19,23 @@ instructions, because git commits are used to generate release notes:
 
 <!-- scriv-insert-here -->
 
+<a id='changelog-20.0.0'></a>
+## v20.0.0 (2025-06-05)
+
+- [Improvement] Migrate build and packaging to hatch/pyproject.toml (by @dawoudsheraz)
+
+- [Bugfix] Fixed syntax error in Docker configuration when all MFEs are mounted by ensuring the `ports:` section is only included if unmounted MFEs exist. (by @ahmed-arb and @hinakhadim)
+
+- [Improvement] Add hatch_build.py in sdist target to fix the installation issues (by @dawoudsheraz)
+
+- [Improvement] Remove unnecessary site-configuration settings and waffle flags for the account and profile MFEs. (by @Danyal-Faheem)
+
+- 💥[Feature] Upgrade to Teak (by @dawoudsheraz)
+
+- [Improvement] Enable the new Studio Unit Page by default. (by @arbrandes)
+
+- [Bugfix] Change ENABLE_UNIT_PAGE to true in MFE_CONFIG for production settings as well. (by @Danyal-Faheem)
+
 <a id='changelog-19.0.0'></a>
 ## v19.0.0 (2024-10-30)
 

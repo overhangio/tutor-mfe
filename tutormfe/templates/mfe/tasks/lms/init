@@ -2,21 +2,9 @@
 ./manage.py lms waffle_flag --list > /tmp/lms_waffle_flags.txt
 
 {% if is_mfe_enabled("account") %}
-grep account.redirect_to_microfrontend /tmp/lms_waffle_flags.txt || ./manage.py lms waffle_flag --create --everyone account.redirect_to_microfrontend
 ./manage.py lms populate_retirement_states
-{% else %}
-./manage.py lms waffle_delete --flags account.redirect_to_microfrontend
 {% endif %}
 
-{% if is_mfe_enabled("profile") %}
-grep learner_profile.redirect_to_microfrontend /tmp/lms_waffle_flags.txt || ./manage.py lms waffle_flag --create --everyone learner_profile.redirect_to_microfrontend
-site-configuration set --domain={{ LMS_HOST }} ENABLE_PROFILE_MICROFRONTEND true
-site-configuration set --domain={{ LMS_HOST }}:8000 ENABLE_PROFILE_MICROFRONTEND true
-{% else %}
-site-configuration unset --domain={{ LMS_HOST }} ENABLE_PROFILE_MICROFRONTEND
-site-configuration unset --domain={{ LMS_HOST }}:8000 ENABLE_PROFILE_MICROFRONTEND
-./manage.py lms waffle_delete --flags learner_profile.redirect_to_microfrontend
-{% endif %}
 
 {% if is_mfe_enabled("learner-dashboard") %}
 grep learner_home_mfe.enabled /tmp/lms_waffle_flags.txt || ./manage.py lms waffle_flag --create --everyone learner_home_mfe.enabled
@@ -48,6 +36,7 @@ grep contentstore.new_studio_mfe.use_new_group_configurations_page /tmp/lms_waff
 grep contentstore.new_studio_mfe.use_new_import_page /tmp/lms_waffle_flags.txt || ./manage.py lms waffle_flag --create --everyone contentstore.new_studio_mfe.use_new_import_page
 grep contentstore.new_studio_mfe.use_new_schedule_details_page /tmp/lms_waffle_flags.txt || ./manage.py lms waffle_flag --create --everyone contentstore.new_studio_mfe.use_new_schedule_details_page
 grep contentstore.new_studio_mfe.use_new_textbooks_page /tmp/lms_waffle_flags.txt || ./manage.py lms waffle_flag --create --everyone contentstore.new_studio_mfe.use_new_textbooks_page
+grep contentstore.new_studio_mfe.use_new_unit_page /tmp/lms_waffle_flags.txt || ./manage.py lms waffle_flag --create --everyone contentstore.new_studio_mfe.use_new_unit_page
 grep contentstore.new_studio_mfe.use_new_updates_page /tmp/lms_waffle_flags.txt || ./manage.py lms waffle_flag --create --everyone contentstore.new_studio_mfe.use_new_updates_page
 grep discussions.pages_and_resources_mfe /tmp/lms_waffle_flags.txt || ./manage.py lms waffle_flag --create --everyone discussions.pages_and_resources_mfe
 grep new_core_editors.use_new_problem_editor /tmp/lms_waffle_flags.txt || ./manage.py lms waffle_flag --create --everyone new_core_editors.use_new_problem_editor
@@ -69,6 +58,7 @@ grep new_studio_mfe.use_tagging_taxonomy_list_page /tmp/lms_waffle_flags.txt || 
     contentstore.new_studio_mfe.use_new_import_page \
     contentstore.new_studio_mfe.use_new_schedule_details_page \
     contentstore.new_studio_mfe.use_new_textbooks_page \
+    contentstore.new_studio_mfe.use_new_unit_page \
     contentstore.new_studio_mfe.use_new_updates_page \
     discussions.pages_and_resources_mfe \
     new_core_editors.use_new_problem_editor \
