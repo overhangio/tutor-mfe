@@ -1,11 +1,11 @@
-{%- for app_name, app in iter_mfes() %}
-{%- set mounts = iter_mounts(MOUNTS, app_name)|list %}
-{%- if mounts %}
-{{ app_name }}-job: 
+# These jobs are required to run the npm install script when mounting MFEs
+{%- set mfe_data = MFEMountData(MOUNTS) %}
+
+{%- for app_name, app, mounts in mfe_data.mounted %}
+{{ app_name }}-job: # Work on this MFE for development
     image: "{{ MFE_DOCKER_IMAGE_DEV_PREFIX }}-{{ app_name }}-dev:{{ MFE_VERSION }}"
     volumes:
         {%- for mount in mounts %}
         - {{ mount }}
         {%- endfor %}
-{%- endif %}
 {%- endfor %}
