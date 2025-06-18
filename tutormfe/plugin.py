@@ -340,15 +340,11 @@ def _check_mfe_host(config: Config) -> None:
 @tutor_hooks.Actions.CONFIG_LOADED.add()
 def _run_jobs_in_mounted_mfes(config: Config) -> None:
     
-    
-    
     mounts = get_typed(config, "MOUNTS", list, [])
+    mfe_mount_data = MFEMountData(mounts)
 
-    if not mounts:
+    if not mfe_mount_data.mounted:
         return None
-
-    pattern = re.compile(rf'{re.escape(REPO_PREFIX)}(\w+)')
-    mounted_mfes = [match.group(1) for mount in mounts if (match := pattern.search(mount))]
 
     mfe_npm_install_file = os.path.join(
         str(
@@ -361,7 +357,7 @@ def _run_jobs_in_mounted_mfes(config: Config) -> None:
         )
     )
 
-    for mounted_mfe in mounted_mfes:
+    for mfe, _, _ in mfe_mount_data.mounted:
         with tutor_hooks.Contexts.app("mfe").enter():
             with open(mfe_npm_install_file, encoding='utf-8') as fi:
-                tutor_hooks.Filters.CLI_DO_INIT_TASKS.add_item((mounted_mfe , fi.read()))
+                tutor_hooks.Filters.CLI_DO_INIT_TASKS.add_item((mfe , fi.read()))
