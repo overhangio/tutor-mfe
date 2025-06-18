@@ -3,10 +3,12 @@
 {%- set mfe_data = MFEMountData(MOUNTS) %}
 
 {%- for app_name, app, mounts in mfe_data.mounted %}
-{{ app_name }}-job: # Work on this MFE for development
+{{ app_name }}-job:
     image: "{{ MFE_DOCKER_IMAGE_DEV_PREFIX }}-{{ app_name }}-dev:{{ MFE_VERSION }}"
     volumes:
         {%- for mount in mounts %}
         - {{ mount }}
         {%- endfor %}
+    environment:
+        - "NODE_ENV=production"
 {%- endfor %}
