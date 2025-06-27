@@ -430,7 +430,63 @@ It's also possible to target a specific MFE's footer. For instance:
 
 Note that here we're assuming you didn't remove the global footer configuration defined by the filter items targeting ``"all"``, so you have to hide ``custom_footer`` instead of ``default_contents``.  If you were to rebuild the MFE image now, the Profile MFE's footer would say "This is the Profile MFE's footer", whereas all the others would still contain the global "This is the footer." message.
 
-For more complex frontend plugins, you should make use of ``mfe-env-config-*`` patches to define your JSX components separately.  For instance, you could create an NPM plugin package, install it via ``mfe-dockerfile-post-npm-install``, import the desired components via ``mfe-env-config-buildtime-imports``, then refer to them with the ``PLUGIN_SLOTS`` filter as described above.  Refer to the `patch catalog <#template-patch-catalog>`_ below for more details.
+For more complex frontend plugins, you should make use of ``mfe-env-config-*`` patches to define your JSX components separately. You can create an NPM plugin package, install it via ``mfe-dockerfile-post-npm-install``, import the desired components via ``mfe-env-config-buildtime-imports``, and refer to them with the ``PLUGIN_SLOTS`` filter.
+
+For instance:
+
+.. code-block:: python
+
+    from tutormfe.hooks import PLUGIN_SLOTS
+    from tutor import hooks
+    
+    hooks.Filters.ENV_PATCHES.add_item(
+        (
+            "mfe-dockerfile-post-npm-install",
+            """
+    # npm package
+    RUN npm install react-loader-spinner
+    """,
+        )
+    )
+    
+    hooks.Filters.ENV_PATCHES.add_item(
+        (
+            "mfe-env-config-buildtime-imports",
+            """
+    import { FidgetSpinner } from 'react-loader-spinner';
+    """,
+        )
+    )
+    
+    PLUGIN_SLOTS.add_items(
+        [
+            (
+                "learner-dashboard",
+                "org.openedx.frontend.learner_dashboard.no_courses_view.v1",
+                """
+                {
+                  op: PLUGIN_OPERATIONS.Hide,
+                  widgetId: 'default_contents',
+                }"""
+            ),
+            (
+                "learner-dashboard",
+                "org.openedx.frontend.learner_dashboard.no_courses_view.v1",
+                """
+                {
+                  op: PLUGIN_OPERATIONS.Insert,
+                  widget: {
+                    id: 'no_courses_fidget_spinner',
+                    type: DIRECT_PLUGIN,
+                    RenderWidget: FidgetSpinner,
+                  },
+                }""",
+            ),
+        ]
+    )
+
+
+Refer to the `patch catalog <#template-patch-catalog>`_ below for more details.
 
 
 Installing from a private npm registry
