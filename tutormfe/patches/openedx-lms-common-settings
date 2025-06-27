@@ -8,6 +8,9 @@ MFE_CONFIG_API_CACHE_TIMEOUT = 1
 {% if get_mfe("authn") %}
 FEATURES['ENABLE_AUTHN_MICROFRONTEND'] = True
 {% endif %}
+{% if get_mfe("catalog") %}
+FEATURES['ENABLE_CATALOG_MICROFRONTEND'] = True
+{% endif %}
 {% if get_mfe("communications") %}
 FEATURES['ENABLE_NEW_BULK_EMAIL_EXPERIENCE'] = True
 {% endif %}

@@ -79,6 +79,10 @@ COMMUNICATIONS_MICROFRONTEND_URL = "{% if ENABLE_HTTPS %}https://{% else %}http:
 MFE_CONFIG["SCHEDULE_EMAIL_SECTION"] = True
 {% endif %}
 
+{% if get_mfe("catalog") %}
+CATALOG_MICROFRONTEND_URL = "{% if ENABLE_HTTPS %}https://{% else %}http://{% endif %}{{ MFE_HOST }}/catalog"
+{% endif %}
+
 LOGIN_REDIRECT_WHITELIST.append("{{ MFE_HOST }}")
 CORS_ORIGIN_WHITELIST.append("{% if ENABLE_HTTPS %}https://{% else %}http://{% endif %}{{ MFE_HOST }}")
 CSRF_TRUSTED_ORIGINS.append("{% if ENABLE_HTTPS %}https://{% else %}http://{% endif %}{{ MFE_HOST }}")
