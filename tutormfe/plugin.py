@@ -32,6 +32,7 @@ config = {
 }
 
 CORE_MFE_APPS: dict[str, MFE_ATTRS_TYPE] = {
+    # TODO restore vanilla repositories
     "authn": {
         "repository": "https://github.com/openedx/frontend-app-authn.git",
         "port": 1999,
@@ -45,7 +46,9 @@ CORE_MFE_APPS: dict[str, MFE_ATTRS_TYPE] = {
         "port": 1997,
     },
     "communications": {
-        "repository": "https://github.com/openedx/frontend-app-communications.git",
+        "repository": "https://github.com/regisb/frontend-app-communications.git",
+        "version": "regisb/rsbuild",
+        # "repository": "https://github.com/openedx/frontend-app-communications.git",
         "port": 1984,
     },
     "discussions": {
@@ -53,11 +56,15 @@ CORE_MFE_APPS: dict[str, MFE_ATTRS_TYPE] = {
         "port": 2002,
     },
     "gradebook": {
-        "repository": "https://github.com/openedx/frontend-app-gradebook.git",
+        "repository": "https://github.com/regisb/frontend-app-gradebook.git",
+        "version": "regisb/rsbuild",
+        # "repository": "https://github.com/openedx/frontend-app-gradebook.git",
         "port": 1994,
     },
     "learner-dashboard": {
-        "repository": "https://github.com/openedx/frontend-app-learner-dashboard.git",
+        "repository": "https://github.com/regisb/frontend-app-learner-dashboard.git",
+        "version": "regisb/rsbuild",
+        # "repository": "https://github.com/openedx/frontend-app-learner-dashboard.git",
         "port": 1996,
     },
     "learning": {
@@ -65,7 +72,9 @@ CORE_MFE_APPS: dict[str, MFE_ATTRS_TYPE] = {
         "port": 2000,
     },
     "ora-grading": {
-        "repository": "https://github.com/openedx/frontend-app-ora-grading.git",
+        "repository": "https://github.com/regisb/frontend-app-ora-grading.git",
+        "version": "regisb/rsbuild",
+        # "repository": "https://github.com/openedx/frontend-app-ora-grading.git",
         "port": 1993,
     },
     "profile": {
