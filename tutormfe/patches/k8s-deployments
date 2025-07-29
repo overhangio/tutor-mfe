@@ -26,3 +26,4 @@ spec:
         - name: config
           configMap:
             name: mfe-caddy-config
+        {{ patch("mfe-k8s-volumes") | indent(8) }}

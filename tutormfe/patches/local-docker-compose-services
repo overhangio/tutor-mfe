@@ -4,5 +4,6 @@ mfe:
     restart: unless-stopped
     volumes:
         - ../plugins/mfe/apps/mfe/Caddyfile:/etc/caddy/Caddyfile:ro
+        {{ patch("mfe-volumes") | indent(8) }}
     depends_on:
         - lms

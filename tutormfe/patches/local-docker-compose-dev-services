@@ -20,9 +20,10 @@
 {%- endfor %}
 
 
-{% if mfe_data.unmounted|length > 0 %}
+{% if mfe_data.unmounted|length > 0 or PARAGON_VERSION is defined %}
 mfe:
    ports:
+       - 8002:8002
        {%- for app_name, app in mfe_data.unmounted %}
        - {{ app["port"] }}:8002 # {{ app_name }}
        {%- endfor %}
