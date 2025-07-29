@@ -762,6 +762,20 @@ Add any configurations for the mfe-caddyfile.
 
 File changed: ``tutormfe/templates/mfe/apps/mfe/Caddyfile``
 
+mfe-volumes
+~~~~~~~~~~~
+
+Add volumes to the mfe service in local Docker Compose deployment.
+
+File changed: ``local/docker-compose.yml``
+
+mfe-k8s-volumes
+~~~~~~~~~~~~~~~
+
+Add volumes to the mfe deployment in Kubernetes.
+
+File changed: ``k8s/deployments.yml``
+
 
 Troubleshooting
 ---------------
