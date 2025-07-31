@@ -20,7 +20,7 @@
 {%- endfor %}
 
 
-{% if mfe_data.unmounted|length > 0 or PARAGON_VERSION is defined %}
+{% if mfe_data.unmounted|length > 0 or MFE_HOST_EXTRA_FILES %}
 mfe:
    ports:
        - 8002:8002
