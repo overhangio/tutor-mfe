@@ -4,4 +4,5 @@
         max_size 2MB
     }
     import proxy "mfe:8002"
+    {{ patch("caddyfile-mfe")|indent(4) }}
 }
