@@ -64,12 +64,13 @@ build-backend = "hatchling.build"
 # Disable strict naming, otherwise twine is not able to detect name/version
 strict-naming = false
 include = ["/tutormfe", ".hatch_build.py"]
-exclude = ["templates", "tests*"]
+exclude = ["tests*"]
 
 [tool.hatch.build.targets.wheel]
 packages = ["tutormfe"]
 
 [tool.ruff]
+exclude = ["templates", "docs/_ext"]
 
 [tool.ruff.lint]
 # E: pycodestyle errors
