@@ -3,7 +3,7 @@
 SRC_DIRS = ./tutormfe
 
 # Warning: These checks are run on every PR.
-test: test-lint test-format test-types  # Run some static checks.
+test: test-lint test-format test-types test-pythonpackage  # Run some static checks.
 
 test-format: ## Run code formatting tests.
 	ruff format --check --diff $(SRC_DIRS)
@@ -13,6 +13,12 @@ test-lint: ## Run code linting tests
 
 test-types: ## Run type checks.
 	mypy --exclude=templates --ignore-missing-imports --implicit-reexport --strict ${SRC_DIRS}
+
+build-pythonpackage: ## Build the "tutor-mfe" python package for upload to pypi
+	python -m build --sdist
+
+test-pythonpackage: build-pythonpackage ## Test that package can be uploaded to pypi
+	twine check dist/tutor_mfe-$(shell make version).tar.gz
 
 format: ## Format code automatically.
 	ruff format ${SRC_DIRS}
@@ -25,6 +31,9 @@ changelog-entry: ## Create a new changelog entry.
 
 changelog: ## Collect changelog entries in the CHANGELOG.md file.
 	scriv collect
+
+version: ## Print the current tutor-mfe version
+	@python -c 'import io, os; about = {}; exec(io.open(os.path.join("tutormfe", "__about__.py"), "rt", encoding="utf-8").read(), about); print(about["__version__"])'
 
 ESCAPE = 
 help: ## Print this help.
