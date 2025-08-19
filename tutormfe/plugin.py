@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import functools
 import os
 import typing as t
 from glob import glob
@@ -9,9 +8,9 @@ import importlib_resources
 from tutor import fmt
 from tutor import hooks as tutor_hooks
 from tutor.__about__ import __version_suffix__
+from tutor.bindmount import iter_mounts
 from tutor.hooks import priorities
 from tutor.types import Config, get_typed
-from tutor.bindmount import iter_mounts
 
 from .__about__ import __version__
 from .hooks import MFE_APPS, MFE_ATTRS_TYPE, PLUGIN_SLOTS
@@ -294,8 +293,9 @@ tutor_hooks.Filters.ENV_TEMPLATE_TARGETS.add_items(
 # Load patches from files
 for path in glob(str(importlib_resources.files("tutormfe") / "patches" / "*")):
     with open(path, encoding="utf-8") as patch_file:
-        # Here we force tutor-mfe lms patches to be loaded first, thus ensuring when operators override
-        # MFE_CONFIG and/or MFE_CONFIG_OVERRIDES, their patches will be loaded after this plugin's
+        # Here we force tutor-mfe lms patches to be loaded first, thus ensuring when
+        # operators override MFE_CONFIG and/or MFE_CONFIG_OVERRIDES, their patches
+        # will be loaded after this plugin's
         patch_name = os.path.basename(path)
         priority = (
             priorities.HIGH
@@ -331,6 +331,8 @@ def _check_mfe_host(config: Config) -> None:
     mfe_host = get_typed(config, "MFE_HOST", str, "")
     if not mfe_host.endswith("." + lms_host):
         fmt.echo_alert(
-            f'Warning: MFE_HOST="{mfe_host}" is not a subdomain of LMS_HOST="{lms_host}". '
-            "This configuration is not typically recommended and may lead to unexpected behavior."
+            f'Warning: MFE_HOST="{mfe_host}" is not a subdomain of '
+            f'LMS_HOST="{lms_host}". '
+            "This configuration is not typically recommended and may lead "
+            "to unexpected behavior."
         )

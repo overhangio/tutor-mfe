@@ -36,8 +36,7 @@ dynamic = ["version"]
 [project.optional-dependencies]
 dev = [
     "tutor[dev]>=20.0.0,<21.0.0",
-    "black",
-    "pylint"
+    "ruff"
 ]
 
 [project.entry-points."tutor.plugin.v1"]
@@ -69,3 +68,19 @@ exclude = ["tests*"]
 
 [tool.hatch.build.targets.wheel]
 packages = ["tutormfe"]
+
+[tool.ruff]
+exclude = ["templates", "docs/_ext"]
+
+[tool.ruff.lint]
+# E: pycodestyle errors
+# I: isort
+# N: pep8-naming
+select = ["E", "I", "N"]
+
+# F401: unused-import
+# F841: unused-variable
+# W292: missing-newline-at-end-of-file
+extend-select = ["F401", "F841", "W292"]
+
+[tool.ruff.format]
