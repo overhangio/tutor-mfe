@@ -758,9 +758,50 @@ File changed: ``tutormfe/templates/mfe/build/mfe/Dockerfile``
 mfe-caddyfile
 ~~~~~~~~~~~~~
 
-Add any configurations for the mfe-caddyfile.
+Add custom configurations to the internal MFE Caddyfile.  
+Patches defined here are rendered **inside** the ``:8002 { ... }`` server block of the MFE container, before the default reverse proxies and route handlers are applied.
+
+Note: This patch modifies the **internal MFE application server** (running in the ``mfe`` container). It is distinct from the ``caddyfile-mfe-proxy`` patch, which updates the **public-facing proxy** Caddyfile under ``apps.LMS_HOST``.
+
+For a complete list of supported directives, consult the Caddy `Directives <https://caddyserver.com/docs/caddyfile/directives>`_ documentation. 
 
 File changed: ``tutormfe/templates/mfe/apps/mfe/Caddyfile``
+
+
+caddyfile-mfe-proxy
+~~~~~~~~~~~~~~~~~~~
+
+Add any custom configurations for the ``caddyfile-mfe-proxy``.  
+Patches defined here are added to ``/.local/share/tutor/env/apps/caddy/Caddyfile`` under the public-facing MFE apps server block (e.g., ``apps.LMS_HOST``).
+
+Note: This patch applies to the proxy handler for all MFEs and does not target any specific MFE. It is functionally distinct from the ``mfe-caddyfile`` patch.
+
+Its usage is functionally equivalent to that of the `caddyfile-lms <https://github.com/overhangio/tutor/blob/release/docs/reference/patches.rst#caddyfile-lms>`_ and `caddyfile-cms <https://github.com/overhangio/tutor/blob/release/docs/reference/patches.rst#caddyfile-cms>`_ patches.
+
+For a complete list of supported directives, consult the Caddy `Directives <https://caddyserver.com/docs/caddyfile/directives>`_ documentation.
+
+Example: The following patch adds a ``respond`` directive so that visitors requesting ``apps.LMS_HOST/robots.txt`` receive a disallow response:
+
+.. code-block:: python
+
+    from tutor import hooks
+
+    hooks.Filters.ENV_PATCHES.add_item(
+        (
+            "caddyfile-mfe-proxy",
+            """
+    # Serve robots.txt
+    respond /robots.txt 200 {
+        body "User-agent: *
+    Disallow: /"
+        close
+    }
+            """
+        )
+    )
+
+File changed: ``tutormfe/patches/caddyfile``
+
 
 
 Troubleshooting
