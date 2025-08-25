@@ -23,7 +23,9 @@
 {% if mfe_data.unmounted|length > 0 or MFE_HOST_EXTRA_FILES %}
 mfe:
    ports:
+{%- if MFE_HOST_EXTRA_FILES %}
        - 8002:8002
+{%- endif %}
        {%- for app_name, app in mfe_data.unmounted %}
        - {{ app["port"] }}:8002 # {{ app_name }}
        {%- endfor %}

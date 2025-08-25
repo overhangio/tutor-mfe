@@ -500,6 +500,8 @@ To enable this functionality, set ``MFE_HOST_EXTRA_FILES`` to ``true``:
 
     tutor config save --set MFE_HOST_EXTRA_FILES=true
 
+When this setting is enabled, the configured volume patches (explained below) will be applied in all environments so that extra files can be served. In development mode it will additionally expose port ``8002`` on the ``mfe`` service, allowing direct access to those files. In production deployments, port mapping is not required since files are served through Caddy.
+
 Then add your static files using volume patches. For local deployments, use the ``mfe-volumes`` patch:
 
 .. code-block:: python
