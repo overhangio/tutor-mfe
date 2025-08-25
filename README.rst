@@ -489,6 +489,71 @@ For instance:
 Refer to the `patch catalog <#template-patch-catalog>`_ below for more details.
 
 
+Hosting extra static files
+~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+The MFE plugin allows other plugins to serve extra static files through the MFE service. This enables hosting custom assets (CSS, images, JavaScript, themes, etc.) directly alongside MFE applications, without rebuilding the core MFE image. Assets are exposed via a dedicated volume, so updates can be deployed dynamically via simple pushes to that volume, speeding up tests and updates without full-image builds.
+
+To enable this functionality, set ``MFE_HOST_EXTRA_FILES`` to ``true``:
+
+.. code-block:: bash
+
+    tutor config save --set MFE_HOST_EXTRA_FILES=true
+
+When this setting is enabled, the configured volume patches (explained below) will be applied in all environments so that extra files can be served. In development mode it will additionally expose port ``8002`` on the ``mfe`` service, allowing direct access to those files. In production deployments, port mapping is not required since files are served through Caddy.
+
+Then add your static files using volume patches. For local deployments, use the ``mfe-volumes`` patch:
+
+.. code-block:: python
+
+    from tutor import hooks
+
+    hooks.Filters.ENV_PATCHES.add_item(
+        (
+            "mfe-volumes",
+            """
+            - /path/to/static/files:/usr/share/caddy/myfiles:ro
+            """
+        )
+    )
+
+For Kubernetes deployments, use the ``mfe-k8s-volumes`` patch:
+
+.. code-block:: python
+
+    hooks.Filters.ENV_PATCHES.add_item(
+        (
+            "mfe-k8s-volumes",
+            """
+            # Add your custom volume definition here. This can be any valid Kubernetes volume type.
+            - name: myfiles-volume
+              configMap:
+                  name: myfiles-configmap
+                  ...
+            """
+        )
+    )
+
+Your static files will be accessible at ``http(s)://{{ MFE_HOST }}/myfiles/``.
+
+For advanced routing configurations, you can use the ``mfe-caddyfile`` patch to define custom Caddy rules for handling your static files:
+
+.. code-block:: python
+
+    hooks.Filters.ENV_PATCHES.add_item(
+        (
+            "mfe-caddyfile",
+            """
+            # Custom routing for static files
+            handle_path /myfiles/* {
+                root * /usr/share/caddy/myfiles
+                file_server
+            }
+            """
+        )
+    )
+
+
 Installing from a private npm registry
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -766,6 +831,20 @@ Note: This patch modifies the **internal MFE application server** (running in th
 For a complete list of supported directives, consult the Caddy `Directives <https://caddyserver.com/docs/caddyfile/directives>`_ documentation. 
 
 File changed: ``tutormfe/templates/mfe/apps/mfe/Caddyfile``
+
+mfe-volumes
+~~~~~~~~~~~
+
+Add volumes to the mfe service in local Docker Compose deployment.
+
+File changed: ``local/docker-compose.yml``
+
+mfe-k8s-volumes
+~~~~~~~~~~~~~~~
+
+Add volumes to the mfe deployment in Kubernetes.
+
+File changed: ``k8s/deployments.yml``
 
 
 caddyfile-mfe-proxy
