@@ -517,21 +517,33 @@ Then add your static files using volume patches. For local deployments, use the 
         )
     )
 
-For Kubernetes deployments, use the ``mfe-k8s-volumes`` patch:
+For Kubernetes deployments, use the ``mfe-k8s-volumes`` patch to define the volumes you need, and mount them using the ``mfe-k8s-volume-mounts`` patch:
+
+For example, to mount a ConfigMap at ``/usr/share/caddy/myfiles`` so it’s served at ``/myfiles/*``:
 
 .. code-block:: python
 
-    hooks.Filters.ENV_PATCHES.add_item(
-        (
-            "mfe-k8s-volumes",
-            """
-            # Add your custom volume definition here. This can be any valid Kubernetes volume type.
-            - name: myfiles-volume
-              configMap:
-                  name: myfiles-configmap
-                  ...
-            """
-        )
+    from tutor import hooks
+
+    hooks.Filters.ENV_PATCHES.add_items(
+        [
+            (
+                "mfe-k8s-volumes",
+                """
+                - name: myfiles-volume
+                  configMap:
+                    name: myfiles-configmap
+                """
+            ),
+            (
+                "mfe-k8s-volume-mounts",
+                """
+                - name: myfiles-volume
+                  mountPath: /usr/share/caddy/myfiles
+                  readOnly: true
+                """
+            ),
+        ]
     )
 
 Your static files will be accessible at ``http(s)://{{ MFE_HOST }}/myfiles/``.
@@ -843,6 +855,14 @@ mfe-k8s-volumes
 ~~~~~~~~~~~~~~~
 
 Add volumes to the mfe deployment in Kubernetes.
+
+File changed: ``k8s/deployments.yml``
+
+
+mfe-k8s-volume-mounts
+~~~~~~~~~~~~~~~~~~~~~
+
+Add volume mounts to the ``mfe`` container in the Kubernetes deployment. Use this together with ``mfe-k8s-volumes`` to attach and mount custom volumes (e.g., ConfigMaps, PVCs) inside the container.
 
 File changed: ``k8s/deployments.yml``
 
