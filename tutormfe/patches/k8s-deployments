@@ -22,6 +22,9 @@ spec:
           volumeMounts:
             - mountPath: /etc/caddy/
               name: config
+          {%- if MFE_HOST_EXTRA_FILES %}
+            {{ patch("mfe-k8s-volume-mounts") | indent(12) }}
+          {%- endif %}
       volumes:
         - name: config
           configMap:
