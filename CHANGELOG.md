@@ -19,6 +19,20 @@ instructions, because git commits are used to generate release notes:
 
 <!-- scriv-insert-here -->
 
+<a id='changelog-20.1.0'></a>
+## v20.1.0 (2025-09-22)
+
+- [Feature] Add `mfe-volumes` and `mfe-k8s-volumes` patches to enable plugins to serve static files through MFE service. (by @andres.giraldo)
+- [Improvement] Ensure MFE container accessibility in dev mode with default port mapping and external file hosting support. (by @andres.giraldo)
+
+- [Improvement] Migrate from pylint and black to ruff. (by @rehmansheikh222)
+- [Improvement] Test python package distribution build when running make test. (by @rehmansheikh222)
+
+- [Feature] Addition of caddyfile-mfe-proxy patch directive.
+  This allows users to add custom content into their Caddy configurations (specifically the MFE apps server block, ie within apps.lms.domain.tld) in an equivalent manner to the [caddyfile-lms patch](https://github.com/overhangio/tutor/blob/release/tutor/templates/apps/caddy/Caddyfile#L59) and [caddyfile-cms patch](https://github.com/overhangio/tutor/blob/release/tutor/templates/apps/caddy/Caddyfile#L76). (by @MuPp3t33r)
+
+- [Feature] Add `mfe-k8s-volume-mounts` patch to mount volumes in the MFE Kubernetes Deployment, complementing `mfe-k8s-volumes`. (by @andres.giraldo)
+
 <a id='changelog-20.0.0'></a>
 ## v20.0.0 (2025-06-05)
 
