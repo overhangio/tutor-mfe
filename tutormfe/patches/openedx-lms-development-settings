@@ -61,7 +61,7 @@ LEARNER_HOME_MICROFRONTEND_URL = "http://{{ MFE_HOST }}:{{ get_mfe("learner-dash
 
 {% if get_mfe("learning") %}
 LEARNING_MICROFRONTEND_URL = "http://{{ MFE_HOST }}:{{ get_mfe("learning")["port"] }}/learning"
-MFE_CONFIG["LEARNING_BASE_URL"] = "http://{{ MFE_HOST }}:{{ get_mfe("learning")["port"] }}"
+MFE_CONFIG["LEARNING_BASE_URL"] = "http://{{ MFE_HOST }}:{{ get_mfe("learning")["port"] }}/learning"
 {% endif %}
 
 {% if get_mfe("ora-grading") %}
