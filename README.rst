@@ -5,6 +5,7 @@ This plugin makes it possible to easily add micro frontend (MFE) applications on
 
 In addition, this plugin comes with a few MFEs which are enabled by default:
 
+- `Admnistrator Console <https://github.com/openedx/frontend-app-admin-console/>`__
 - `Authn <https://github.com/openedx/frontend-app-authn/>`__
 - `Authoring <https://github.com/openedx/frontend-app-authoring/>`__
 - `Account <https://github.com/openedx/frontend-app-account/>`__
@@ -46,6 +47,14 @@ Account
     :alt: Account MFE screenshot
 
 An MFE to manage account-specific information for every LMS user. Each user's account page is available at ``http(s)://{{ MFE_HOST }}/account``. For instance, when running locally: https://apps.local.openedx.io/account.
+
+Administrator Console
+~~~~~~~~~~~~~~~~~~~~~
+
+.. image:: https://raw.githubusercontent.com/overhangio/tutor-mfe/release/media/admin-console.png
+    :alt: Account MFE screenshot
+
+An MFE to manage platform-level settings and administrative tasks. Accessing the libraries team management ``http(s)://{{ MFE_HOST }}/admin-console/authz/libraries/{{ LIBRARY_ID }}``. 
 
 Authn
 ~~~~~
