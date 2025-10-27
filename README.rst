@@ -54,7 +54,7 @@ Administrator Console
 .. image:: https://raw.githubusercontent.com/overhangio/tutor-mfe/release/media/admin-console.png
     :alt: Account MFE screenshot
 
-An MFE to manage platform-level settings and administrative tasks. Accessing the libraries team management ``http(s)://{{ MFE_HOST }}/admin-console/authz/libraries/{{ LIBRARY_ID }}``. 
+An MFE to manage platform-level settings and administrative tasks. To manage library teams, go to ``http(s)://{{ MFE_HOST }}/admin-console/authz/libraries/{{ LIBRARY_ID }}``. 
 
 Authn
 ~~~~~

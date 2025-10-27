@@ -81,7 +81,7 @@ MFE_CONFIG["SCHEDULE_EMAIL_SECTION"] = True
 {% endif %}
 
 {% if get_mfe("admin-console") %}
-ADMIN_CONSOLE_MICROFRONTEND_URL = "{% if ENABLE_HTTPS %}https://{% else %}http://{% endif %}{{ MFE_HOST }}/communications"
+ADMIN_CONSOLE_MICROFRONTEND_URL = "{% if ENABLE_HTTPS %}https://{% else %}http://{% endif %}{{ MFE_HOST }}/admin-console"
 MFE_CONFIG["ADMIN_CONSOLE_URL"] = ADMIN_CONSOLE_MICROFRONTEND_URL
 {% endif %}
 
