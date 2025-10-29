@@ -5,3 +5,9 @@ CORS_ORIGIN_WHITELIST.append("http://{{ MFE_HOST }}:{{ get_mfe('authoring')["por
 LOGIN_REDIRECT_WHITELIST.append("{{ MFE_HOST }}:{{ get_mfe('authoring')["port"] }}")
 CSRF_TRUSTED_ORIGINS.append("http://{{ MFE_HOST }}:{{ get_mfe('authoring')["port"] }}")
 {% endif %}
+
+{% if get_mfe("admin-console") %}
+CORS_ORIGIN_WHITELIST.append("http://{{ MFE_HOST }}:{{ get_mfe("admin-console")["port"] }}")
+LOGIN_REDIRECT_WHITELIST.append("{{ MFE_HOST }}:{{ get_mfe("admin-console")["port"] }}")
+CSRF_TRUSTED_ORIGINS.append("http://{{ MFE_HOST }}:{{ get_mfe("admin-console")["port"] }}")
+{% endif %}
