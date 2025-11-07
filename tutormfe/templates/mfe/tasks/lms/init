@@ -23,51 +23,6 @@ grep courseware.always_open_auxiliary_sidebar /tmp/lms_waffle_flags.txt || ./man
     courseware.always_open_auxiliary_sidebar
 {% endif %}
 
-{% if is_mfe_enabled("authoring") %}
-grep contentstore.new_studio_mfe.use_new_advanced_settings_page /tmp/lms_waffle_flags.txt || ./manage.py lms waffle_flag --create --everyone contentstore.new_studio_mfe.use_new_advanced_settings_page
-grep contentstore.new_studio_mfe.use_new_certificates_page /tmp/lms_waffle_flags.txt || ./manage.py lms waffle_flag --create --everyone contentstore.new_studio_mfe.use_new_certificates_page
-grep contentstore.new_studio_mfe.use_new_course_outline_page /tmp/lms_waffle_flags.txt || ./manage.py lms waffle_flag --create --everyone contentstore.new_studio_mfe.use_new_course_outline_page
-grep contentstore.new_studio_mfe.use_new_course_team_page /tmp/lms_waffle_flags.txt || ./manage.py lms waffle_flag --create --everyone contentstore.new_studio_mfe.use_new_course_team_page
-grep contentstore.new_studio_mfe.use_new_custom_pages /tmp/lms_waffle_flags.txt || ./manage.py lms waffle_flag --create --everyone contentstore.new_studio_mfe.use_new_custom_pages
-grep contentstore.new_studio_mfe.use_new_export_page /tmp/lms_waffle_flags.txt || ./manage.py lms waffle_flag --create --everyone contentstore.new_studio_mfe.use_new_export_page
-grep contentstore.new_studio_mfe.use_new_files_uploads_page /tmp/lms_waffle_flags.txt || ./manage.py lms waffle_flag --create --everyone contentstore.new_studio_mfe.use_new_files_uploads_page
-grep contentstore.new_studio_mfe.use_new_grading_page /tmp/lms_waffle_flags.txt || ./manage.py lms waffle_flag --create --everyone contentstore.new_studio_mfe.use_new_grading_page
-grep contentstore.new_studio_mfe.use_new_group_configurations_page /tmp/lms_waffle_flags.txt || ./manage.py lms waffle_flag --create --everyone contentstore.new_studio_mfe.use_new_group_configurations_page
-grep contentstore.new_studio_mfe.use_new_import_page /tmp/lms_waffle_flags.txt || ./manage.py lms waffle_flag --create --everyone contentstore.new_studio_mfe.use_new_import_page
-grep contentstore.new_studio_mfe.use_new_schedule_details_page /tmp/lms_waffle_flags.txt || ./manage.py lms waffle_flag --create --everyone contentstore.new_studio_mfe.use_new_schedule_details_page
-grep contentstore.new_studio_mfe.use_new_textbooks_page /tmp/lms_waffle_flags.txt || ./manage.py lms waffle_flag --create --everyone contentstore.new_studio_mfe.use_new_textbooks_page
-grep contentstore.new_studio_mfe.use_new_unit_page /tmp/lms_waffle_flags.txt || ./manage.py lms waffle_flag --create --everyone contentstore.new_studio_mfe.use_new_unit_page
-grep contentstore.new_studio_mfe.use_new_updates_page /tmp/lms_waffle_flags.txt || ./manage.py lms waffle_flag --create --everyone contentstore.new_studio_mfe.use_new_updates_page
-grep discussions.pages_and_resources_mfe /tmp/lms_waffle_flags.txt || ./manage.py lms waffle_flag --create --everyone discussions.pages_and_resources_mfe
-grep new_core_editors.use_new_problem_editor /tmp/lms_waffle_flags.txt || ./manage.py lms waffle_flag --create --everyone new_core_editors.use_new_problem_editor
-grep new_core_editors.use_new_text_editor /tmp/lms_waffle_flags.txt || ./manage.py lms waffle_flag --create --everyone new_core_editors.use_new_text_editor
-grep new_core_editors.use_new_video_editor /tmp/lms_waffle_flags.txt || ./manage.py lms waffle_flag --create --everyone new_core_editors.use_new_video_editor
-grep new_studio_mfe.use_new_home_page /tmp/lms_waffle_flags.txt || ./manage.py lms waffle_flag --create --everyone new_studio_mfe.use_new_home_page
-grep new_studio_mfe.use_tagging_taxonomy_list_page /tmp/lms_waffle_flags.txt || ./manage.py lms waffle_flag --create --everyone new_studio_mfe.use_tagging_taxonomy_list_page
-{% else %}
-./manage.py lms waffle_delete --flags \
-    contentstore.new_studio_mfe.use_new_advanced_settings_page \
-    contentstore.new_studio_mfe.use_new_certificates_page \
-    contentstore.new_studio_mfe.use_new_course_outline_page \
-    contentstore.new_studio_mfe.use_new_course_team_page \
-    contentstore.new_studio_mfe.use_new_custom_pages \
-    contentstore.new_studio_mfe.use_new_export_page \
-    contentstore.new_studio_mfe.use_new_files_uploads_page \
-    contentstore.new_studio_mfe.use_new_grading_page \
-    contentstore.new_studio_mfe.use_new_group_configurations_page \
-    contentstore.new_studio_mfe.use_new_import_page \
-    contentstore.new_studio_mfe.use_new_schedule_details_page \
-    contentstore.new_studio_mfe.use_new_textbooks_page \
-    contentstore.new_studio_mfe.use_new_unit_page \
-    contentstore.new_studio_mfe.use_new_updates_page \
-    discussions.pages_and_resources_mfe \
-    new_core_editors.use_new_problem_editor \
-    new_core_editors.use_new_text_editor \
-    new_core_editors.use_new_video_editor \
-    new_studio_mfe.use_new_home_page \
-    new_studio_mfe.use_tagging_taxonomy_list_page
-{% endif %}
-
 {% if is_mfe_enabled("discussions") %}
 grep discussions.enable_discussions_mfe  /tmp/lms_waffle_flags.txt || ./manage.py lms waffle_flag --create --everyone discussions.enable_discussions_mfe
 grep discussions.enable_learners_tab_in_discussions_mfe  /tmp/lms_waffle_flags.txt || ./manage.py lms waffle_flag --create --everyone discussions.enable_learners_tab_in_discussions_mfe
