@@ -60,6 +60,11 @@ path = ".hatch_build.py"
 requires = ["hatchling"]
 build-backend = "hatchling.build"
 
+[dependency-groups]
+dev = [
+    "ruff>=0.14.0",
+]
+
 [tool.hatch.build.targets.sdist]
 # Disable strict naming, otherwise twine is not able to detect name/version
 strict-naming = false
