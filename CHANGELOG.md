@@ -19,6 +19,19 @@ instructions, because git commits are used to generate release notes:
 
 <!-- scriv-insert-here -->
 
+<a id='changelog-21.0.0'></a>
+## v21.0.0 (2026-01-16)
+
+- [Bugfix] Update `LEARNING_BASE_URL` to include '/learning' at the end (by @zameel7)
+
+- 💥[Feature] Upgrade to Ulmo (by @ahmed-arb)
+
+- [Improvement] Add admin-console to the core list of microfrontends. (by @dcoa)
+
+- [Improvement] Upgrade to Node 24. (by @arbrandes)
+
+- [Deprecation] The flag `ENABLE_LEGACY_LIBRARY_MIGRATOR` is deleted in patches.
+
 <a id='changelog-20.1.0'></a>
 ## v20.1.0 (2025-09-22)
 
