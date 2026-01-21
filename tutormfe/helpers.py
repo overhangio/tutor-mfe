@@ -1,12 +1,36 @@
 import os
-
 from dataclasses import dataclass, field
 from enum import Enum
 from typing import Literal
 
-from tutor import hooks
+from tutor import hooks as tutor_hooks
+from tutor.bindmount import iter_mounts, parse_mount
 
 from .hooks import PLUGIN_SLOTS
+
+MFE_PLUGIN_MAP: dict[str, str] = {}
+
+def mfe_plugin_mounts(mounts: list[str], app_name: str = "") -> list[dict[str, str]]:
+    module_map = []
+    if app_name:
+        _mounts = list(iter_mounts(mounts, app_name))
+    else:
+        _mounts = mounts
+
+    for mount in _mounts:
+        parsed = parse_mount(mount)[0]
+        if parsed[1] in MFE_PLUGIN_MAP:
+            module_map.append({
+                "module_name": MFE_PLUGIN_MAP[parsed[1]],
+                "mounted_path": parsed[2],
+            })
+    return module_map
+
+tutor_hooks.Filters.ENV_TEMPLATE_VARIABLES.add_items(
+    [
+        ("mfe_plugin_mounts", mfe_plugin_mounts),
+    ]
+)
 
 
 class SlotOp(str, Enum):
@@ -114,7 +138,7 @@ class FrontendPlugin:
         # as that requires runtime definitions and results silent failures - harder to
         # debug.
         patch = "mfe-dockerfile-post-npm-install"
-        hooks.Filters.ENV_PATCHES.add_item((patch, f"RUN npm install {package}"))
+        tutor_hooks.Filters.ENV_PATCHES.add_item((patch, f"RUN npm install {package}"))
 
     def _patch_mfe_buildtime_imports(self) -> None:
         """
@@ -124,7 +148,7 @@ class FrontendPlugin:
         """
         components = ", ".join(set(s.component for s in self.slots if s.component))
 
-        hooks.Filters.ENV_PATCHES.add_item(
+        tutor_hooks.Filters.ENV_PATCHES.add_item(
             (
                 "mfe-env-config-buildtime-imports",
                 f"""
@@ -175,8 +199,10 @@ import {{ {components} }} from '{self.package}';
 
     def _add_plugin_slot_configs(self) -> None:
         """Adds all the necessary plugin slot configurations."""
+
         # {mfe: {slot_id: [configs...]}}
         slot_configs: dict[str, dict[str, list[str]]] = {}
+        counter = 1
         for slot in self.slots:
             # Support for specifying multiple mfes in a single slot config
             mfes = slot.mfe
@@ -192,21 +218,27 @@ import {{ {components} }} from '{self.package}';
 
         for mfe in slot_configs:
             for slot_id in slot_configs[mfe]:
+
                 PLUGIN_SLOTS.add_item(
                     (mfe, slot_id, ",".join(slot_configs[mfe][slot_id]))
                 )
+                counter += 1
 
-    def _setup_dev_mounts(self):
+    def _add_local_module_mounts(self):
         """Setup the necessary mounts for developing the plugin"""
         if not self.local_path:
             return
 
         if not os.path.exists(self.local_path):
-            raise ValueError(f"Plugin repo doesn't exist in local_path={self.local_path}")
+            raise ValueError(
+                f"Plugin repo doesn't exist in local_path={self.local_path}"
+            )
+
+        MFE_PLUGIN_MAP[self.local_path.rstrip("/")] = self.package
 
     def register(self) -> None:
         """Generates Registers the necessary patches."""
         self._patch_npm_install()
         self._patch_mfe_buildtime_imports()
+        self._add_local_module_mounts()
         self._add_plugin_slot_configs()
-        self._setup_dev_mounts()
