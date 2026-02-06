@@ -9,6 +9,12 @@
     tty: true
     volumes:
         - ../plugins/mfe/apps/mfe/webpack.dev-tutor.config.js:/openedx/app/webpack.dev-tutor.config.js:ro
+        - ../plugins/mfe/build/mfe/env.config.jsx:/openedx/app/env.config.jsx:ro
+        {%- if mfe_plugin_mounts is defined %}
+        {%- if mfe_plugin_mounts(MOUNTS) %}
+        - ../plugins/mfe/apps/mfe/module.config.js:/openedx/app/module.config.js:ro
+        {%- endif %}
+        {%- endif %}
         {%- for mount in mounts %}
         - {{ mount }}
         {%- endfor %}
