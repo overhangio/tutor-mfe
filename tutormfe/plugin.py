@@ -5,7 +5,7 @@ import typing as t
 from glob import glob
 
 import importlib_resources
-from tutor import fmt
+from tutor import fmt, config as tutor_config
 from tutor import hooks as tutor_hooks
 from tutor.__about__ import __version_suffix__
 from tutor.bindmount import iter_mounts
@@ -13,7 +13,7 @@ from tutor.hooks import priorities
 from tutor.types import Config, get_typed
 
 from .__about__ import __version__
-from .hooks import MFE_APPS, MFE_ATTRS_TYPE, PLUGIN_SLOTS
+from .hooks import MFE_APPS, MFE_ATTRS_TYPE, FRONTEND_BASE_APPS, FRONTEND_APPS, FRONTEND_TEMPLATE_SITE_ATTRS_TYPE, PLUGIN_SLOTS
 
 # Handle version suffix in main mode, just like tutor core
 if __version_suffix__:
@@ -95,6 +95,14 @@ def get_mfes() -> dict[str, MFE_ATTRS_TYPE]:
     return MFE_APPS.apply({})
 
 
+@tutor_hooks.lru_cache
+def get_frontend_apps() -> dict[str, FRONTEND_TEMPLATE_SITE_ATTRS_TYPE]:
+    """
+    This function is cached for performance.
+    """
+    return FRONTEND_APPS.apply({})
+
+
 class MFEMountData:
     """Stores categorized mounted and unmounted MFEs."""
 
@@ -129,6 +137,14 @@ def iter_mfes() -> t.Iterable[tuple[str, MFE_ATTRS_TYPE]]:
     """
     yield from get_mfes().items()
 
+def iter_frontent_apps() -> t.Iterable[tuple[str, FRONTEND_TEMPLATE_SITE_ATTRS_TYPE]]:
+    """
+    Yield:
+
+        (name, dict)
+    """
+    yield from get_frontend_apps().items()
+
 
 def iter_plugin_slots(mfe_name: str) -> t.Iterable[tuple[str, str]]:
     """
@@ -142,6 +158,9 @@ def iter_plugin_slots(mfe_name: str) -> t.Iterable[tuple[str, str]]:
 def is_mfe_enabled(mfe_name: str) -> bool:
     return mfe_name in get_mfes()
 
+def is_frontend_app_enabled(app_name: str) -> bool:
+    return app_name in get_frontend_apps()
+
 
 def get_mfe(mfe_name: str) -> t.Union[MFE_ATTRS_TYPE, t.Any]:
     return get_mfes().get(mfe_name, {})
@@ -152,8 +171,10 @@ tutor_hooks.Filters.ENV_TEMPLATE_VARIABLES.add_items(
     [
         ("get_mfe", get_mfe),
         ("iter_mfes", iter_mfes),
+        ("iter_frontend_apps", iter_frontent_apps),
         ("iter_plugin_slots", iter_plugin_slots),
         ("is_mfe_enabled", is_mfe_enabled),
+        ("is_frontend_app_enabled", is_frontend_app_enabled),
         ("MFEMountData", MFEMountData),
     ]
 )
@@ -217,6 +238,7 @@ with open(
     tutor_hooks.Filters.CLI_DO_INIT_TASKS.add_item(("lms", task_file.read()))
 
 REPO_PREFIX = "frontend-app-"
+FRONTEND_TEMPLATE_SITE_REPO = "frontend-template-site"
 
 
 @tutor_hooks.Filters.COMPOSE_MOUNTS.add()

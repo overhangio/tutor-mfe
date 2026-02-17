@@ -32,7 +32,13 @@
     }
     handle @mfe_{{ app_name }} {
         uri strip_prefix /{{ app_name }}
+        {%- if is_frontend_app_enabled(app_name) %}
+        # {{ app_name }} - using frontend-apps approach
+        root * /openedx/dist/frontend-template-site
+        {%- else %}
+        # {{ app_name }} - using traditional MFE approach
         root * /openedx/dist/{{ app_name }}
+        {%- endif %}
         try_files /{path} /index.html
         file_server
     }
