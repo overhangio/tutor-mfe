@@ -76,6 +76,11 @@ CORE_MFE_APPS: dict[str, MFE_ATTRS_TYPE] = {
         "repository": "https://github.com/openedx/frontend-app-profile.git",
         "port": 1995,
     },
+    "template-site": {
+        "repository": "https://github.com/WGU-Open-edX/frontend-template-site.git",
+        "port": 8080,
+        "frontend_base_app": True,  # Mark this app as a frontend base app maybe (?)
+    } 
 }
 
 
@@ -238,7 +243,8 @@ with open(
     tutor_hooks.Filters.CLI_DO_INIT_TASKS.add_item(("lms", task_file.read()))
 
 REPO_PREFIX = "frontend-app-"
-FRONTEND_TEMPLATE_SITE_REPO = "frontend-template-site"
+# TODO: for now leave this and then find better semantic namings
+FRONTEND_TEMPLATE_SITE_PREFIX = "frontend-"
 
 
 @tutor_hooks.Filters.COMPOSE_MOUNTS.add()
@@ -251,12 +257,12 @@ def _mount_frontend_apps(
     in dev mode, because in production, all MFEs are built and hosted on the
     singular 'mfe' service container.
     """
-    if path_basename.startswith(REPO_PREFIX):
+    if path_basename.startswith(REPO_PREFIX) or path_basename.startswith(FRONTEND_TEMPLATE_SITE_PREFIX):
         # Assumption:
         # For each repo named frontend-app-APPNAME, there is an associated
         # docker-compose service named APPNAME. If this assumption is broken,
         # then Tutor will try to mount the repo in a service that doesn't exist.
-        app_name = path_basename[len(REPO_PREFIX) :]
+        app_name = path_basename[len(REPO_PREFIX) :] if path_basename.startswith(REPO_PREFIX) else path_basename[len(FRONTEND_TEMPLATE_SITE_PREFIX) :]
         volumes += [(app_name, "/openedx/app")]
     return volumes
 
@@ -266,9 +272,9 @@ def _mount_frontend_apps_on_build(
     mounts: list[tuple[str, str]], host_path: str
 ) -> list[tuple[str, str]]:
     path_basename = os.path.basename(host_path)
-    if path_basename.startswith(REPO_PREFIX):
+    if path_basename.startswith(REPO_PREFIX) or path_basename.startswith(FRONTEND_TEMPLATE_SITE_PREFIX):
         # Bind-mount repo at build-time, both for prod and dev images
-        app_name = path_basename[len(REPO_PREFIX) :]
+        app_name = path_basename[len(REPO_PREFIX) :] if path_basename.startswith(REPO_PREFIX) else path_basename[len(FRONTEND_TEMPLATE_SITE_PREFIX) :]
         mounts.append(("mfe", f"{app_name}-src"))
         mounts.append((f"{app_name}-dev", f"{app_name}-src"))
     return mounts

@@ -50,8 +50,9 @@ RUN --mount=type=cache,target=/root/.npm,sharing=shared npm clean-install --no-a
 {{ patch("mfe-dockerfile-post-npm-install-{}".format(app_name)) }}
 COPY --from={{ app_name }}-src / /openedx/app
 
+{% if app_name != "template-site" %}
 RUN make OPENEDX_ATLAS_PULL=true ATLAS_OPTIONS="--repository={{ ATLAS_REPOSITORY }} --revision={{ ATLAS_REVISION }} {{ ATLAS_OPTIONS }}" pull_translations
-
+{% endif %}
 EXPOSE {{ app['port'] }}
 
 # Configuration needed at build time
