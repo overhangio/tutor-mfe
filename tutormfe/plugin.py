@@ -142,13 +142,28 @@ def iter_mfes() -> t.Iterable[tuple[str, MFE_ATTRS_TYPE]]:
     """
     yield from get_mfes().items()
 
-def iter_frontent_apps() -> t.Iterable[tuple[str, FRONTEND_TEMPLATE_SITE_ATTRS_TYPE]]:
+# Iter throgh all mfes and adds the unique frontend apps,
+# so we can have a list of all the things that are unique that needs
+# to be added to Caddyfile, for example instructor dashboard that was 
+# created as frontend-base app but didn't exist as a MFE before
+# so it returns the whole mfes list plus the unique frontend apps that are not in the mfe list
+def iter_frontend_apps() -> t.Iterable[tuple[str, FRONTEND_TEMPLATE_SITE_ATTRS_TYPE]]:
     """
     Yield:
 
         (name, dict)
     """
-    yield from get_frontend_apps().items()
+    mfes = get_mfes()
+    frontend_apps = get_frontend_apps()
+    
+    # First yield all MFEs
+    for name, attrs in mfes.items():
+        yield (name, attrs)
+    
+    # Then yield frontend apps that are not already MFEs
+    for name, attrs in frontend_apps.items():
+        if name not in mfes:
+            yield (name, attrs)
 
 
 def iter_plugin_slots(mfe_name: str) -> t.Iterable[tuple[str, str]]:
@@ -176,7 +191,7 @@ tutor_hooks.Filters.ENV_TEMPLATE_VARIABLES.add_items(
     [
         ("get_mfe", get_mfe),
         ("iter_mfes", iter_mfes),
-        ("iter_frontend_apps", iter_frontent_apps),
+        ("iter_frontend_apps", iter_frontend_apps),
         ("iter_plugin_slots", iter_plugin_slots),
         ("is_mfe_enabled", is_mfe_enabled),
         ("is_frontend_app_enabled", is_frontend_app_enabled),
