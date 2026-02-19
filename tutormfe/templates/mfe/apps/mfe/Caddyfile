@@ -30,7 +30,6 @@
     {% endif %}
 
     {% for app_name, app in iter_mfes() %}
-    {% if app_name != "template-site" %}
     @mfe_{{ app_name }} {
         path /{{ app_name }} /{{ app_name }}/*
     }
@@ -46,17 +45,6 @@
         try_files /{path} /index.html
         file_server
     }
-    {# TODO: Temporal while better rules are in place #}
-    {% else %}
-    @mfe_{{ app_name }} {
-        path / /*
-    }
-    handle @mfe_{{ app_name }} {
-        root * /openedx/dist/template-site
-        try_files /{path} /index.html
-        file_server
-    }
-    {% endif %}
 
     {% endfor %}
 }
