@@ -1,3 +1,0 @@
-# Copy packs directory before npm install for template-site
-# This is needed because template-site has local file dependencies in its package.json
-COPY --from=template-site-src /packs /openedx/app/packs
