@@ -15,9 +15,7 @@ FRONTEND_TEMPLATE_SITE_ATTRS_TYPE = t.Dict[t.Literal["repository", "version"], t
 
 MFE_APPS: Filter[dict[str, MFE_ATTRS_TYPE], []] = Filter()
 
-# This will hold the frontent-template-site like repos (ideally one)
-FRONTEND_BASE_APPS: Filter[dict[str, FRONTEND_TEMPLATE_SITE_ATTRS_TYPE], []] = Filter()
-# This will hold the list of which apps are "enabled" so we can switch between mfe and frontend-base ones
+# TODO: This will hold the list of which apps are "enabled" so we can switch between mfe and frontend-base ones
 FRONTEND_APPS: Filter[dict[str, FRONTEND_TEMPLATE_SITE_ATTRS_TYPE], []] = Filter()
 
 PLUGIN_SLOTS: Filter[list[tuple[str, str, str]], []] = Filter()

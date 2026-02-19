@@ -13,7 +13,7 @@ from tutor.hooks import priorities
 from tutor.types import Config, get_typed
 
 from .__about__ import __version__
-from .hooks import MFE_APPS, MFE_ATTRS_TYPE, FRONTEND_BASE_APPS, FRONTEND_APPS, FRONTEND_TEMPLATE_SITE_ATTRS_TYPE, PLUGIN_SLOTS
+from .hooks import MFE_APPS, MFE_ATTRS_TYPE, FRONTEND_APPS, FRONTEND_TEMPLATE_SITE_ATTRS_TYPE, PLUGIN_SLOTS
 
 # Handle version suffix in main mode, just like tutor core
 if __version_suffix__:
@@ -78,8 +78,8 @@ CORE_MFE_APPS: dict[str, MFE_ATTRS_TYPE] = {
     },
     "template-site": {
         "repository": "https://github.com/WGU-Open-edX/frontend-template-site.git",
+        "version": "initial",
         "port": 8080,
-        "frontend_base_app": True,  # Mark this app as a frontend base app maybe (?)
     } 
 }
 
