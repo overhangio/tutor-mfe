@@ -1,6 +1,3 @@
-{
-    debug
-}
 :8002 {
     log {
         output stdout
