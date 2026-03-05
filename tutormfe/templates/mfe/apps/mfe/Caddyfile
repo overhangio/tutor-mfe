@@ -26,7 +26,7 @@
     redir @authoring /authoring/{re.authoring.1} permanent
     {% endif %}
 
-    {% for app_name, app in iter_frontend_apps() %}
+    {% for app_name, app in iter_unique_apps() %}
     @mfe_{{ app_name }} {
         path /{{ app_name }} /{{ app_name }}/*
     }

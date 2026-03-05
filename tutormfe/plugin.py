@@ -76,11 +76,11 @@ CORE_MFE_APPS: dict[str, MFE_ATTRS_TYPE] = {
         "repository": "https://github.com/openedx/frontend-app-profile.git",
         "port": 1995,
     },
-    "template-site": {
-        "repository": "https://github.com/WGU-Open-edX/frontend-template-site.git",
-        "version": "initial",
-        "port": 8080,
-    } 
+    # "template-site": {
+    #     "repository": "https://github.com/WGU-Open-edX/frontend-template-site.git",
+    #     "version": "initial",
+    #     "port": 8080,
+    # } 
 }
 
 
@@ -100,13 +100,45 @@ def get_mfes() -> dict[str, MFE_ATTRS_TYPE]:
     return MFE_APPS.apply({})
 
 
+# List will need
+## Apps that are only frontend-apps
+## Apps that are only MFEs
+## Apps with unique ones (all old mfes + instruct)
+## 1 and 2 with 1 having something like a different identifier
+
+
 @tutor_hooks.lru_cache
-def get_frontend_apps() -> dict[str, FRONTEND_TEMPLATE_SITE_ATTRS_TYPE]:
+def get_frontend_apps(apps_to_build: bool = False) -> dict[str, FRONTEND_TEMPLATE_SITE_ATTRS_TYPE]:
     """
     This function is cached for performance.
     """
-    return FRONTEND_APPS.apply({})
+    all_frontend_apps = FRONTEND_APPS.apply({})
+    parsed_apps: dict[str, FRONTEND_TEMPLATE_SITE_ATTRS_TYPE] = {}
+    for name, attrs in all_frontend_apps.items():
+        parsed_apps[f"frontend-app-{name}"] = attrs
+    if not apps_to_build:
+        return parsed_apps
+    
+    apps_to_return = {name: attrs for name, attrs in parsed_apps.items() if "repository" in attrs}
+    # If apps_to_build is True, then we only want to return the frontend apps that have a repository
+    return apps_to_return
 
+
+@tutor_hooks.lru_cache
+def get_all_apps() -> dict[str, t.Union[MFE_ATTRS_TYPE, FRONTEND_TEMPLATE_SITE_ATTRS_TYPE]]:
+    """
+    This function is cached for performance.
+    """
+    # IMPORTANT: Make a copy to avoid mutating the cached result from get_frontend_apps()
+    all_apps = get_frontend_apps(apps_to_build=True).copy()
+    mfes = get_mfes()
+    all_apps.update(mfes)
+    
+    # ensure frontend-template-site is the last one on the all_apps dict
+    if "template-site" in all_apps:
+        all_apps["template-site"] = all_apps.pop("template-site")
+
+    return all_apps
 
 class MFEMountData:
     """Stores categorized mounted and unmounted MFEs."""
@@ -147,7 +179,7 @@ def iter_mfes() -> t.Iterable[tuple[str, MFE_ATTRS_TYPE]]:
 # to be added to Caddyfile, for example instructor dashboard that was 
 # created as frontend-base app but didn't exist as a MFE before
 # so it returns the whole mfes list plus the unique frontend apps that are not in the mfe list
-def iter_frontend_apps() -> t.Iterable[tuple[str, FRONTEND_TEMPLATE_SITE_ATTRS_TYPE]]:
+def iter_unique_apps() -> t.Iterable[tuple[str, FRONTEND_TEMPLATE_SITE_ATTRS_TYPE]]:
     """
     Yield:
 
@@ -165,6 +197,27 @@ def iter_frontend_apps() -> t.Iterable[tuple[str, FRONTEND_TEMPLATE_SITE_ATTRS_T
         if name not in mfes:
             yield (name, attrs)
 
+# Iters through all apps that will be built
+def iter_all_apps() -> t.Iterable[tuple[str, t.Union[MFE_ATTRS_TYPE, FRONTEND_TEMPLATE_SITE_ATTRS_TYPE]]]:
+    """
+    Yield:
+
+        (name, dict)
+    """
+    all_apps = get_all_apps()
+    for name, attrs in all_apps.items():
+        yield (name, attrs)
+
+def iter_frontend_apps_to_build() -> t.Iterable[tuple[str, FRONTEND_TEMPLATE_SITE_ATTRS_TYPE]]:
+    """
+    Yield:
+
+        (name, dict)
+    """
+    frontend_apps = get_frontend_apps(apps_to_build=True)
+    for name, attrs in frontend_apps.items():
+        yield (name, attrs)
+
 
 def iter_plugin_slots(mfe_name: str) -> t.Iterable[tuple[str, str]]:
     """
@@ -181,6 +234,8 @@ def is_mfe_enabled(mfe_name: str) -> bool:
 def is_frontend_app_enabled(app_name: str) -> bool:
     return app_name in get_frontend_apps()
 
+def is_frontend_app_to_build(app_name: str) -> bool:
+    return app_name in get_frontend_apps(apps_to_build=True)
 
 def get_mfe(mfe_name: str) -> t.Union[MFE_ATTRS_TYPE, t.Any]:
     return get_mfes().get(mfe_name, {})
@@ -191,10 +246,13 @@ tutor_hooks.Filters.ENV_TEMPLATE_VARIABLES.add_items(
     [
         ("get_mfe", get_mfe),
         ("iter_mfes", iter_mfes),
-        ("iter_frontend_apps", iter_frontend_apps),
+        ("iter_unique_apps", iter_unique_apps),
+        ("iter_all_apps", iter_all_apps),
+        ("iter_frontend_apps_to_build", iter_frontend_apps_to_build),
         ("iter_plugin_slots", iter_plugin_slots),
         ("is_mfe_enabled", is_mfe_enabled),
         ("is_frontend_app_enabled", is_frontend_app_enabled),
+        ("is_frontend_app_to_build", is_frontend_app_to_build),
         ("MFEMountData", MFEMountData),
     ]
 )
