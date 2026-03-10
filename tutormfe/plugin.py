@@ -115,17 +115,16 @@ def get_frontend_apps(apps_to_build: bool = False) -> dict[str, FRONTEND_TEMPLAT
     all_frontend_apps = FRONTEND_APPS.apply({})
 
     if not apps_to_build:
-        return {}
+        return all_frontend_apps
 
     # When returning apps to build we only return the ones that have a repository defined
     # (those are the ones to be built) and we prefix the name
     # with "frontend-app-" to avoid conflicts with MFE names
-    apps_to_return = {
+    return {
         f"frontend-app-{name}": attrs 
         for name, attrs in all_frontend_apps.items() 
         if "repository" in attrs
     }
-    return apps_to_return
 
 
 @tutor_hooks.lru_cache
