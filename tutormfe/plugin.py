@@ -113,14 +113,18 @@ def get_frontend_apps(apps_to_build: bool = False) -> dict[str, FRONTEND_TEMPLAT
     This function is cached for performance.
     """
     all_frontend_apps = FRONTEND_APPS.apply({})
-    parsed_apps: dict[str, FRONTEND_TEMPLATE_SITE_ATTRS_TYPE] = {}
-    for name, attrs in all_frontend_apps.items():
-        parsed_apps[f"frontend-app-{name}"] = attrs
+
     if not apps_to_build:
-        return parsed_apps
-    
-    apps_to_return = {name: attrs for name, attrs in parsed_apps.items() if "repository" in attrs}
-    # If apps_to_build is True, then we only want to return the frontend apps that have a repository
+        return {}
+
+    # When returning apps to build we only return the ones that have a repository defined
+    # (those are the ones to be built) and we prefix the name
+    # with "frontend-app-" to avoid conflicts with MFE names
+    apps_to_return = {
+        f"frontend-app-{name}": attrs 
+        for name, attrs in all_frontend_apps.items() 
+        if "repository" in attrs
+    }
     return apps_to_return
 
 
@@ -133,7 +137,7 @@ def get_all_apps() -> dict[str, t.Union[MFE_ATTRS_TYPE, FRONTEND_TEMPLATE_SITE_A
     all_apps = get_frontend_apps(apps_to_build=True).copy()
     mfes = get_mfes()
     all_apps.update(mfes)
-    
+
     # ensure frontend-template-site is the last one on the all_apps dict
     if "template-site" in all_apps:
         all_apps["template-site"] = all_apps.pop("template-site")

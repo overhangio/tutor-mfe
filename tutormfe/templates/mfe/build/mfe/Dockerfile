@@ -51,7 +51,8 @@ RUN --mount=type=cache,target=/root/.npm,sharing=shared npm clean-install --no-a
 COPY --from={{ app_name }}-src / /openedx/app
 
 # While we figure out how translations will be managed  in template site
-{% if app_name != "template-site" %}
+# if it's either template-site or starts with frontend-app, we skip pulling translations
+{% if app_name != "template-site" and not app_name.startswith("frontend-app") %}
 RUN make OPENEDX_ATLAS_PULL=true ATLAS_OPTIONS="--repository={{ ATLAS_REPOSITORY }} --revision={{ ATLAS_REVISION }} {{ ATLAS_OPTIONS }}" pull_translations
 {% endif %}
 
@@ -68,7 +69,7 @@ COPY env.config.jsx /openedx/app
 {{ patch("mfe-dockerfile-pre-npm-build-{}".format(app_name)) }}
 
 {% if is_frontend_app_to_build(app_name) %}
-RUN TGZ_FILE=$(npm pack) && mv "$TGZ_FILE" {{app_name}}.tgz
+RUN npm pack && mv *.tgz {{app_name}}.tgz
 {% else %}
 EXPOSE {{ app['port'] }}
 {% endif %}
