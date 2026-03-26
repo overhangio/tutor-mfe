@@ -13,7 +13,14 @@ from tutor.hooks import priorities
 from tutor.types import Config, get_typed
 
 from .__about__ import __version__
-from .hooks import MFE_APPS, MFE_ATTRS_TYPE, FRONTEND_APPS, FRONTEND_TEMPLATE_SITE_ATTRS_TYPE, PLUGIN_SLOTS
+from .hooks import (
+    FRONTEND_SITES,
+    MFE_APPS,
+    MFE_ATTRS_TYPE,
+    FRONTEND_APPS,
+    FRONTEND_APP_ATTRS_TYPE,
+    PLUGIN_SLOTS,
+)
 
 # Handle version suffix in main mode, just like tutor core
 if __version_suffix__:
@@ -76,11 +83,13 @@ CORE_MFE_APPS: dict[str, MFE_ATTRS_TYPE] = {
         "repository": "https://github.com/openedx/frontend-app-profile.git",
         "port": 1995,
     },
-    # "template-site": {
-    #     "repository": "https://github.com/WGU-Open-edX/frontend-template-site.git",
-    #     "version": "initial",
-    #     "port": 8080,
-    # } 
+}
+
+CORE_FRONTEND_SITES: dict[str, MFE_ATTRS_TYPE] = {
+    "default": {
+        "repository": "local",
+        "port": 8080,
+    },
 }
 
 
@@ -90,6 +99,14 @@ CORE_MFE_APPS: dict[str, MFE_ATTRS_TYPE] = {
 def _add_core_mfe_apps(apps: dict[str, MFE_ATTRS_TYPE]) -> dict[str, MFE_ATTRS_TYPE]:
     apps.update(CORE_MFE_APPS)
     return apps
+
+
+@FRONTEND_SITES.add(priority=tutor_hooks.priorities.HIGH)
+def _add_core_frontend_sites(
+    sites: dict[str, MFE_ATTRS_TYPE],
+) -> dict[str, MFE_ATTRS_TYPE]:
+    sites.update(CORE_FRONTEND_SITES)
+    return sites
 
 
 @tutor_hooks.lru_cache
@@ -108,40 +125,20 @@ def get_mfes() -> dict[str, MFE_ATTRS_TYPE]:
 
 
 @tutor_hooks.lru_cache
-def get_frontend_apps(apps_to_build: bool = False) -> dict[str, FRONTEND_TEMPLATE_SITE_ATTRS_TYPE]:
+def get_frontend_apps() -> dict[str, FRONTEND_APP_ATTRS_TYPE]:
     """
     This function is cached for performance.
     """
-    all_frontend_apps = FRONTEND_APPS.apply({})
-
-    if not apps_to_build:
-        return all_frontend_apps
-
-    # When returning apps to build we only return the ones that have a repository defined
-    # (those are the ones to be built) and we prefix the name
-    # with "frontend-app-" to avoid conflicts with MFE names
-    return {
-        f"frontend-app-{name}": attrs 
-        for name, attrs in all_frontend_apps.items() 
-        if "repository" in attrs
-    }
+    return FRONTEND_APPS.apply({})
 
 
 @tutor_hooks.lru_cache
-def get_all_apps() -> dict[str, t.Union[MFE_ATTRS_TYPE, FRONTEND_TEMPLATE_SITE_ATTRS_TYPE]]:
+def get_frontend_sites() -> dict[str, FRONTEND_APP_ATTRS_TYPE]:
     """
     This function is cached for performance.
     """
-    # IMPORTANT: Make a copy to avoid mutating the cached result from get_frontend_apps()
-    all_apps = get_frontend_apps(apps_to_build=True).copy()
-    mfes = get_mfes()
-    all_apps.update(mfes)
+    return FRONTEND_SITES.apply({})
 
-    # ensure frontend-template-site is the last one on the all_apps dict
-    if "template-site" in all_apps:
-        all_apps["template-site"] = all_apps.pop("template-site")
-
-    return all_apps
 
 class MFEMountData:
     """Stores categorized mounted and unmounted MFEs."""
@@ -177,12 +174,30 @@ def iter_mfes() -> t.Iterable[tuple[str, MFE_ATTRS_TYPE]]:
     """
     yield from get_mfes().items()
 
-# Iter throgh all mfes and adds the unique frontend apps,
-# so we can have a list of all the things that are unique that needs
-# to be added to Caddyfile, for example instructor dashboard that was 
-# created as frontend-base app but didn't exist as a MFE before
-# so it returns the whole mfes list plus the unique frontend apps that are not in the mfe list
-def iter_unique_apps() -> t.Iterable[tuple[str, FRONTEND_TEMPLATE_SITE_ATTRS_TYPE]]:
+
+def iter_frontend_apps() -> t.Iterable[tuple[str, FRONTEND_APP_ATTRS_TYPE]]:
+    """
+    Yield:
+
+        (name, dict)
+    """
+    frontend_apps = get_frontend_apps()
+    for name, attrs in frontend_apps.items():
+        yield (name, attrs)
+
+
+def iter_frontend_sites() -> t.Iterable[tuple[str, FRONTEND_APP_ATTRS_TYPE]]:
+    """
+    Yield:
+
+        (name, dict)
+    """
+    frontend_sites = get_frontend_sites()
+    for name, attrs in frontend_sites.items():
+        yield (name, attrs)
+
+
+def iter_paths() -> t.Iterable[tuple[str, FRONTEND_APP_ATTRS_TYPE]]:
     """
     Yield:
 
@@ -190,36 +205,15 @@ def iter_unique_apps() -> t.Iterable[tuple[str, FRONTEND_TEMPLATE_SITE_ATTRS_TYP
     """
     mfes = get_mfes()
     frontend_apps = get_frontend_apps()
-    
+
     # First yield all MFEs
     for name, attrs in mfes.items():
         yield (name, attrs)
-    
+
     # Then yield frontend apps that are not already MFEs
     for name, attrs in frontend_apps.items():
         if name not in mfes:
             yield (name, attrs)
-
-# Iters through all apps that will be built
-def iter_all_apps() -> t.Iterable[tuple[str, t.Union[MFE_ATTRS_TYPE, FRONTEND_TEMPLATE_SITE_ATTRS_TYPE]]]:
-    """
-    Yield:
-
-        (name, dict)
-    """
-    all_apps = get_all_apps()
-    for name, attrs in all_apps.items():
-        yield (name, attrs)
-
-def iter_frontend_apps_to_build() -> t.Iterable[tuple[str, FRONTEND_TEMPLATE_SITE_ATTRS_TYPE]]:
-    """
-    Yield:
-
-        (name, dict)
-    """
-    frontend_apps = get_frontend_apps(apps_to_build=True)
-    for name, attrs in frontend_apps.items():
-        yield (name, attrs)
 
 
 def iter_plugin_slots(mfe_name: str) -> t.Iterable[tuple[str, str]]:
@@ -234,11 +228,14 @@ def iter_plugin_slots(mfe_name: str) -> t.Iterable[tuple[str, str]]:
 def is_mfe_enabled(mfe_name: str) -> bool:
     return mfe_name in get_mfes()
 
-def is_frontend_app_enabled(app_name: str) -> bool:
+
+def is_frontend_app(app_name: str) -> bool:
     return app_name in get_frontend_apps()
+
 
 def is_frontend_app_to_build(app_name: str) -> bool:
     return app_name in get_frontend_apps(apps_to_build=True)
+
 
 def get_mfe(mfe_name: str) -> t.Union[MFE_ATTRS_TYPE, t.Any]:
     return get_mfes().get(mfe_name, {})
@@ -249,12 +246,12 @@ tutor_hooks.Filters.ENV_TEMPLATE_VARIABLES.add_items(
     [
         ("get_mfe", get_mfe),
         ("iter_mfes", iter_mfes),
-        ("iter_unique_apps", iter_unique_apps),
-        ("iter_all_apps", iter_all_apps),
-        ("iter_frontend_apps_to_build", iter_frontend_apps_to_build),
+        ("iter_paths", iter_paths),
+        ("iter_frontend_apps", iter_frontend_apps),
+        ("iter_frontend_sites", iter_frontend_sites),
         ("iter_plugin_slots", iter_plugin_slots),
         ("is_mfe_enabled", is_mfe_enabled),
-        ("is_frontend_app_enabled", is_frontend_app_enabled),
+        ("is_frontend_app", is_frontend_app),
         ("is_frontend_app_to_build", is_frontend_app_to_build),
         ("MFEMountData", MFEMountData),
     ]
@@ -319,8 +316,8 @@ with open(
     tutor_hooks.Filters.CLI_DO_INIT_TASKS.add_item(("lms", task_file.read()))
 
 REPO_PREFIX = "frontend-app-"
-# TODO: for now leave this and then find better semantic namings
-FRONTEND_TEMPLATE_SITE_PREFIX = "frontend-"
+FRONTEND_SITE_PREFIX = "frontend-site-"
+# TODO: figure out the whole mount thing not only for sites but also for the possible apps under it
 
 
 @tutor_hooks.Filters.COMPOSE_MOUNTS.add()
@@ -333,12 +330,18 @@ def _mount_frontend_apps(
     in dev mode, because in production, all MFEs are built and hosted on the
     singular 'mfe' service container.
     """
-    if path_basename.startswith(REPO_PREFIX) or path_basename.startswith(FRONTEND_TEMPLATE_SITE_PREFIX):
+    if path_basename.startswith(REPO_PREFIX) or path_basename.startswith(
+        FRONTEND_SITE_PREFIX
+    ):
         # Assumption:
         # For each repo named frontend-app-APPNAME, there is an associated
         # docker-compose service named APPNAME. If this assumption is broken,
         # then Tutor will try to mount the repo in a service that doesn't exist.
-        app_name = path_basename[len(REPO_PREFIX) :] if path_basename.startswith(REPO_PREFIX) else path_basename[len(FRONTEND_TEMPLATE_SITE_PREFIX) :]
+        app_name = (
+            path_basename[len(REPO_PREFIX) :]
+            if path_basename.startswith(REPO_PREFIX)
+            else path_basename[len(FRONTEND_SITE_PREFIX) :]
+        )
         volumes += [(app_name, "/openedx/app")]
     return volumes
 
@@ -348,9 +351,15 @@ def _mount_frontend_apps_on_build(
     mounts: list[tuple[str, str]], host_path: str
 ) -> list[tuple[str, str]]:
     path_basename = os.path.basename(host_path)
-    if path_basename.startswith(REPO_PREFIX) or path_basename.startswith(FRONTEND_TEMPLATE_SITE_PREFIX):
+    if path_basename.startswith(REPO_PREFIX) or path_basename.startswith(
+        FRONTEND_SITE_PREFIX
+    ):
         # Bind-mount repo at build-time, both for prod and dev images
-        app_name = path_basename[len(REPO_PREFIX) :] if path_basename.startswith(REPO_PREFIX) else path_basename[len(FRONTEND_TEMPLATE_SITE_PREFIX) :]
+        app_name = (
+            path_basename[len(REPO_PREFIX) :]
+            if path_basename.startswith(REPO_PREFIX)
+            else path_basename[len(FRONTEND_SITE_PREFIX) :]
+        )
         mounts.append(("mfe", f"{app_name}-src"))
         mounts.append((f"{app_name}-dev", f"{app_name}-src"))
     return mounts

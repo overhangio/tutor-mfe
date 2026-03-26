@@ -10,17 +10,16 @@ import typing as t
 
 from tutor.core.hooks import Filter
 
-MFE_ATTRS_TYPE = t.Dict[
-    t.Literal["repository", "port", "version"], t.Union["str", int]
-]
-FRONTEND_TEMPLATE_SITE_ATTRS_TYPE = t.Dict[
-    t.Literal["repository", "version"], t.Union["str", int]
+MFE_ATTRS_TYPE = t.Dict[t.Literal["repository", "port", "version"], t.Union["str", int]]
+FRONTEND_APP_ATTRS_TYPE = t.Dict[
+    t.Literal["repository", "version", "site"], t.Union["str", int]
 ]
 
 MFE_APPS: Filter[dict[str, MFE_ATTRS_TYPE], []] = Filter()
 
-# TODO: This will hold the list of which apps are "enabled" so we can switch between mfe
-# and frontend-base ones
-FRONTEND_APPS: Filter[dict[str, FRONTEND_TEMPLATE_SITE_ATTRS_TYPE], []] = Filter()
+# This holds which apps are enabled and if they will build from a custom repo
+FRONTEND_APPS: Filter[dict[str, FRONTEND_APP_ATTRS_TYPE], []] = Filter()
+# This holds all the possible frontend-sites which by default it's the internal one.
+FRONTEND_SITES: Filter[dict[str, FRONTEND_APP_ATTRS_TYPE], []] = Filter()
 
 PLUGIN_SLOTS: Filter[list[tuple[str, str, str]], []] = Filter()

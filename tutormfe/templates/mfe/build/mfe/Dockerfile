@@ -22,7 +22,7 @@ ENV PATH=/openedx/app/node_modules/.bin:${PATH}
 
 {{ patch("mfe-dockerfile-base") }}
 
-{% for app_name, app in iter_all_apps() %}
+{% for app_name, app in iter_mfes() %}
 ####################### {{ app_name }} MFE
 ######## {{ app_name }} (git)
 FROM base AS {{ app_name }}-git
@@ -50,12 +50,6 @@ RUN --mount=type=cache,target=/root/.npm,sharing=shared npm clean-install --no-a
 {{ patch("mfe-dockerfile-post-npm-install-{}".format(app_name)) }}
 COPY --from={{ app_name }}-src / /openedx/app
 
-# While we figure out how translations will be managed  in template site
-# if it's either template-site or starts with frontend-app, we skip pulling translations
-{% if app_name != "template-site" and not app_name.startswith("frontend-app") %}
-RUN make OPENEDX_ATLAS_PULL=true ATLAS_OPTIONS="--repository={{ ATLAS_REPOSITORY }} --revision={{ ATLAS_REVISION }} {{ ATLAS_OPTIONS }}" pull_translations
-{% endif %}
-
 # Configuration needed at build time
 ENV APP_ID={{ app_name }}
 ENV PUBLIC_PATH='/{{ app_name }}/'
@@ -68,11 +62,7 @@ COPY env.config.jsx /openedx/app
 {{ patch("mfe-dockerfile-pre-npm-build") }}
 {{ patch("mfe-dockerfile-pre-npm-build-{}".format(app_name)) }}
 
-{% if is_frontend_app_to_build(app_name) %}
-RUN npm pack && mv *.tgz {{app_name}}.tgz
-{% else %}
 EXPOSE {{ app['port'] }}
-{% endif %}
 
 ######## {{ app_name }} (dev)
 FROM {{ app_name }}-common AS {{ app_name }}-dev
@@ -85,19 +75,37 @@ CMD ["/bin/bash", "-c", "npm run start --- --config ./webpack.dev-tutor.config.j
 ######## {{ app_name }} (production)
 FROM {{ app_name }}-common AS {{ app_name }}-prod
 
-{% if app_name == "template-site" %}
-    RUN mkdir -p /openedx/app/pack
-  {%- for app_name, app in iter_frontend_apps_to_build() %}
-    COPY --from={{ app_name }}-common /openedx/app/{{app_name}}.tgz /openedx/app/pack/
-    RUN npm install /openedx/app/pack/{{app_name}}.tgz --no-audit --no-fund
-  {% endfor %}
-  RUN npm ci
-{% endif %}
-
 ENV NODE_ENV=production
 RUN npm run build
 {{ patch("mfe-dockerfile-post-npm-build") }}
 {{ patch("mfe-dockerfile-post-npm-build-{}".format(app_name)) }}
+{% endfor %}
+
+
+{%- for app_name, app in iter_frontend_sites() %}
+######## build of site-{{ app_name }}
+FROM base AS site-{{ app_name }}-common
+WORKDIR /openedx/app
+
+{% if app.get("repository") and app["repository"] == "local" %}
+COPY frontend-site/ /openedx/app
+{% else %}
+RUN git clone --depth 1 --branch {{ app.get("version", MFE_COMMON_VERSION) }} {{ app["repository"] }} .
+{% endif %}
+
+WORKDIR /openedx/app/packages
+# Git clone all frontend apps that should be built
+RUN git clone --depth 1 --branch workspaces-dev https://github.com/arbrandes/frontend-base.git
+{% for app_name, app in iter_frontend_apps() %}
+{% if app.get("repository") %}
+RUN git clone --depth 1 --branch {{ app.get("version", MFE_COMMON_VERSION) }} {{ app["repository"] }} frontend-app-{{ app_name }}
+{% endif %}
+{% endfor %}
+
+WORKDIR /openedx/app
+RUN npm install --no-audit --no-fund
+RUN npm run build:packages
+RUN PUBLIC_PATH="/site-{{ app.get("site", "default") }}/" npm run build
 {% endfor %}
 
 ####### final production image with all static assets
@@ -108,6 +116,10 @@ RUN mkdir -p /openedx/dist
 # Copy static assets
 {% for app_name, app in iter_mfes() %}
 COPY --from={{ app_name }}-prod /openedx/app/dist /openedx/dist/{{ app_name }}
+{% endfor %}
+
+{% for app_name, app in iter_frontend_sites() %}
+COPY --from=site-{{ app_name }}-common /openedx/app/dist /openedx/dist/site-{{ app_name }}
 {% endfor %}
 
 {{ patch("mfe-dockerfile-production-final") }}

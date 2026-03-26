@@ -1,0 +1,6 @@
+@use '@openedx/frontend-base/shell/app.scss' as shell;
+{%- for app_name, app_attrs in iter_frontend_apps() %}
+{%- set camel_case_name = app_name.split('-') | map('title') | list %}
+{%- set camel_case_name = camel_case_name[0].lower() + (camel_case_name[1:] | join('')) %}
+@use '@openedx/frontend-app-{{ app_name }}/app.scss' as {{ camel_case_name }};
+{%- endfor %}

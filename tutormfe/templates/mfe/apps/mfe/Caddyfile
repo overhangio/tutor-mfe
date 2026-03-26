@@ -26,15 +26,15 @@
     redir @authoring /authoring/{re.authoring.1} permanent
     {% endif %}
 
-    {% for app_name, app in iter_unique_apps() %}
+    {% for app_name, app in iter_paths() %}
     @mfe_{{ app_name }} {
         path /{{ app_name }} /{{ app_name }}/*
     }
     handle @mfe_{{ app_name }} {
         uri strip_prefix /{{ app_name }}
-        {%- if is_frontend_app_enabled(app_name) %}
+        {%- if is_frontend_app(app_name) %}
         # {{ app_name }} - using frontend-apps approach
-        root * /openedx/dist/template-site
+        root * /openedx/dist/site-{{ app.get("site", "default") }}
         {%- else %}
         # {{ app_name }} - using traditional MFE approach
         root * /openedx/dist/{{ app_name }}
@@ -42,6 +42,17 @@
         try_files /{path} /index.html
         file_server
     }
+    {% endfor %}
 
+    {% for app_name, app in iter_frontend_sites() %}
+    @site_{{ app_name }} {
+        path /site-{{ app_name }} /site-{{ app_name }}/*
+    }
+    handle @site_{{ app_name }} {
+        uri strip_prefix /site-{{ app_name }}
+        root * /openedx/dist/site-{{ app_name }}
+        try_files /{path} /index.html
+        file_server
+    }
     {% endfor %}
 }

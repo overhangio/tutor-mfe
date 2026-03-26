@@ -91,5 +91,11 @@ LOGIN_REDIRECT_WHITELIST.append("{{ MFE_HOST }}:{{ app["port"] }}")
 CSRF_TRUSTED_ORIGINS.append("http://{{ MFE_HOST }}:{{ app["port"] }}")
 {% endfor %}
 
+{% for app_name, app in iter_frontend_sites() %}
+CORS_ORIGIN_WHITELIST.append("http://{{ MFE_HOST }}:{{ app["port"] }}")
+LOGIN_REDIRECT_WHITELIST.append("{{ MFE_HOST }}:{{ app["port"] }}")
+CSRF_TRUSTED_ORIGINS.append("http://{{ MFE_HOST }}:{{ app["port"] }}")
+{% endfor %}
+
 {{ patch("mfe-lms-common-settings") }}
 {{ patch("mfe-lms-development-settings") }}

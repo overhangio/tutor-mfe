@@ -1,0 +1,54 @@
+{
+  "name": "@openedx/frontend-template-site",
+  "version": "1.0.0",
+  "description": "Frontend site template",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/openedx/frontend-template-site.git"
+  },
+  "workspaces": [
+    "packages/*"
+  ],
+  "browserslist": [
+    "extends @edx/browserslist-config"
+  ],
+  "sideEffects": [
+    "*.css",
+    "*.scss"
+  ],
+  "scripts": {
+    "build": "openedx build",
+    "build:packages": "make build-packages",
+    "clean:packages": "make clean-packages",
+    "dev": "PORT=8080 openedx dev",
+    "dev:site": "make dev-site",
+    "dev:packages": "make dev-packages",
+    "clean": "make clean",
+    "serve": "openedx serve"
+  },
+  "author": "Open edX",
+  "license": "AGPL-3.0",
+  "homepage": "https://github.com/openedx/frontend-template-site#readme",
+  "bugs": {
+    "url": "https://github.com/openedx/frontend-template-site/issues"
+  },
+  "dependencies": {
+    "@edx/brand": "npm:@openedx/brand-openedx@^1.2.3",
+{%- for app_name, app_attrs in iter_frontend_apps() %}
+    "@openedx/frontend-app-{{ app_name }}": "^1.0.0",
+{%- endfor %}
+    "@openedx/frontend-base": "^1.0.0-alpha.14"
+  },
+  "devDependencies": {
+    "@edx/browserslist-config": "^1.5.0",
+    "turbo": "^2.8.16"
+  },
+  "peerDependencies": {
+    "@openedx/paragon": "^23",
+    "@tanstack/react-query": "^5",
+    "react": "^18",
+    "react-dom": "^18",
+    "react-router": "^6",
+    "react-router-dom": "^6"
+  }
+}
