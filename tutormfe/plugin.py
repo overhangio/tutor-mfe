@@ -117,13 +117,6 @@ def get_mfes() -> dict[str, MFE_ATTRS_TYPE]:
     return MFE_APPS.apply({})
 
 
-# List will need
-## Apps that are only frontend-apps
-## Apps that are only MFEs
-## Apps with unique ones (all old mfes + instruct)
-## 1 and 2 with 1 having something like a different identifier
-
-
 @tutor_hooks.lru_cache
 def get_frontend_apps() -> dict[str, FRONTEND_APP_ATTRS_TYPE]:
     """
@@ -233,10 +226,6 @@ def is_frontend_app(app_name: str) -> bool:
     return app_name in get_frontend_apps()
 
 
-def is_frontend_app_to_build(app_name: str) -> bool:
-    return app_name in get_frontend_apps(apps_to_build=True)
-
-
 def get_mfe(mfe_name: str) -> t.Union[MFE_ATTRS_TYPE, t.Any]:
     return get_mfes().get(mfe_name, {})
 
@@ -252,7 +241,6 @@ tutor_hooks.Filters.ENV_TEMPLATE_VARIABLES.add_items(
         ("iter_plugin_slots", iter_plugin_slots),
         ("is_mfe_enabled", is_mfe_enabled),
         ("is_frontend_app", is_frontend_app),
-        ("is_frontend_app_to_build", is_frontend_app_to_build),
         ("MFEMountData", MFEMountData),
     ]
 )

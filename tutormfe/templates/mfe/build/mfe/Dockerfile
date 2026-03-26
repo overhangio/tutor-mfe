@@ -50,6 +50,10 @@ RUN --mount=type=cache,target=/root/.npm,sharing=shared npm clean-install --no-a
 {{ patch("mfe-dockerfile-post-npm-install-{}".format(app_name)) }}
 COPY --from={{ app_name }}-src / /openedx/app
 
+RUN make OPENEDX_ATLAS_PULL=true ATLAS_OPTIONS="--repository={{ ATLAS_REPOSITORY }} --revision={{ ATLAS_REVISION }} {{ ATLAS_OPTIONS }}" pull_translations
+
+EXPOSE {{ app['port'] }}
+
 # Configuration needed at build time
 ENV APP_ID={{ app_name }}
 ENV PUBLIC_PATH='/{{ app_name }}/'
@@ -62,8 +66,6 @@ COPY env.config.jsx /openedx/app
 {{ patch("mfe-dockerfile-pre-npm-build") }}
 {{ patch("mfe-dockerfile-pre-npm-build-{}".format(app_name)) }}
 
-EXPOSE {{ app['port'] }}
-
 ######## {{ app_name }} (dev)
 FROM {{ app_name }}-common AS {{ app_name }}-dev
 ENV NODE_ENV=development
@@ -74,7 +76,6 @@ CMD ["/bin/bash", "-c", "npm run start --- --config ./webpack.dev-tutor.config.j
 {%- for app_name, app in iter_mfes() %}
 ######## {{ app_name }} (production)
 FROM {{ app_name }}-common AS {{ app_name }}-prod
-
 ENV NODE_ENV=production
 RUN npm run build
 {{ patch("mfe-dockerfile-post-npm-build") }}
