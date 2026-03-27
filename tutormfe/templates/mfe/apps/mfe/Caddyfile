@@ -51,7 +51,8 @@
     handle @site_{{ app_name }} {
         uri strip_prefix /site-{{ app_name }}
         root * /openedx/dist/site-{{ app_name }}
-        try_files /{path} /index.html
+        # no index.html because we want to focus on assets in these ones
+        try_files /{path}
         file_server
     }
     {% endfor %}
