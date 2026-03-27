@@ -5,7 +5,7 @@ import typing as t
 from glob import glob
 
 import importlib_resources
-from tutor import fmt, config as tutor_config
+from tutor import fmt
 from tutor import hooks as tutor_hooks
 from tutor.__about__ import __version_suffix__
 from tutor.bindmount import iter_mounts
@@ -20,6 +20,7 @@ from .hooks import (
     FRONTEND_APPS,
     FRONTEND_APP_ATTRS_TYPE,
     PLUGIN_SLOTS,
+    SITE_ATTRS_TYPE,
 )
 
 # Handle version suffix in main mode, just like tutor core
@@ -85,7 +86,7 @@ CORE_MFE_APPS: dict[str, MFE_ATTRS_TYPE] = {
     },
 }
 
-CORE_FRONTEND_SITES: dict[str, MFE_ATTRS_TYPE] = {
+CORE_FRONTEND_SITES: dict[str, SITE_ATTRS_TYPE] = {
     "default": {
         "repository": "local",
         "port": 8080,

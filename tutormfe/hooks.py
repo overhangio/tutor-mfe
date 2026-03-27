@@ -11,8 +11,16 @@ import typing as t
 from tutor.core.hooks import Filter
 
 MFE_ATTRS_TYPE = t.Dict[t.Literal["repository", "port", "version"], t.Union["str", int]]
+
+# Extended MFE type that includes externalRoutes
+SITE_ATTRS_TYPE = t.Dict[
+    t.Literal["repository", "port", "version"],
+    t.Union[str, int],
+]
+
 FRONTEND_APP_ATTRS_TYPE = t.Dict[
-    t.Literal["repository", "version", "site"], t.Union["str", int]
+    t.Literal["repository", "version", "site", "appEntryPoints", "appId"],
+    t.Union["str", int, dict],
 ]
 
 MFE_APPS: Filter[dict[str, MFE_ATTRS_TYPE], []] = Filter()

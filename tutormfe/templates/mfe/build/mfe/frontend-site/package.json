@@ -1,7 +1,7 @@
 {
   "name": "@openedx/frontend-template-site",
   "version": "1.0.0",
-  "description": "Frontend site template",
+  "description": "Tutor rontend site",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/openedx/frontend-template-site.git"
@@ -35,7 +35,7 @@
   "dependencies": {
     "@edx/brand": "npm:@openedx/brand-openedx@^1.2.3",
 {%- for app_name, app_attrs in iter_frontend_apps() %}
-    "@openedx/frontend-app-{{ app_name }}": "^1.0.0-alpha || 0.0.0-dev",
+    "{{ app_attrs.get('entryPoints', {}).get('packageName', app_name) }}": "{{ app_attrs.get('entryPoints', {}).get('packageVersion', '^1.0.0-alpha || 0.0.0-dev') }}",
 {%- endfor %}
     "@openedx/frontend-base": "^1.0.0-alpha || 0.0.0-dev"
   },

@@ -1,8 +1,9 @@
 import { EnvironmentTypes, SiteConfig, footerApp, headerApp, shellApp } from '@openedx/frontend-base';
 {%- for app_name, app_attrs in iter_frontend_apps() %}
-{%- set camel_case_name = app_name.split('-') | map('title') | list %}
-{%- set camel_case_name = camel_case_name[0].lower() + (camel_case_name[1:] | join('')) %}
-import { {{ camel_case_name }}App } from '@openedx/frontend-app-{{ app_name }}';
+{%- set components = app_attrs.get('appEntryPoints', {}).get('components', []) %}
+{% if components %}
+import { {{ components | join(', ') }} } from '{{ app_attrs.get('appEntryPoints', {}).get('packageName', app_name) }}';
+{% endif %}
 {%- endfor %}
 import homeApp from './src/homeApp';
 
@@ -23,9 +24,10 @@ const siteConfig: SiteConfig = {
     headerApp,
     footerApp,
 {%- for app_name, app_attrs in iter_frontend_apps() %}
-{%- set camel_case_name = app_name.split('-') | map('title') | list %}
-{%- set camel_case_name = camel_case_name[0].lower() + (camel_case_name[1:] | join('')) %}
-    {{ camel_case_name }}App,
+{%- set components = app_attrs.get('appEntryPoints', {}).get('components', []) %}
+{%- if components %}
+    {{ components | join(',') }},
+{%- endif %}
 {%- endfor %}
     homeApp,
   ],
