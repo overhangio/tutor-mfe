@@ -96,7 +96,6 @@ RUN git clone --depth 1 --branch {{ app.get("version", MFE_COMMON_VERSION) }} {{
 
 WORKDIR /openedx/app/packages
 # Git clone all frontend apps that should be built
-RUN git clone --depth 1 --branch workspaces-dev https://github.com/arbrandes/frontend-base.git
 {% for app_name, app in iter_frontend_apps() %}
 {% if app.get("repository") %}
 RUN git clone --depth 1 --branch {{ app.get("version", MFE_COMMON_VERSION) }} {{ app["repository"] }} frontend-app-{{ app_name }}
@@ -104,7 +103,8 @@ RUN git clone --depth 1 --branch {{ app.get("version", MFE_COMMON_VERSION) }} {{
 {% endfor %}
 
 WORKDIR /openedx/app
-RUN npm install --no-audit --no-fund
+ARG NPM_REGISTRY={{ NPM_REGISTRY }}
+RUN --mount=type=cache,target=/root/.npm-sites,sharing=shared npm install --no-audit --no-fund --registry=$NPM_REGISTRY
 RUN npm run build:packages
 RUN PUBLIC_PATH="/site-{{ app.get("site", "default") }}/" npm run build
 {% endfor %}
