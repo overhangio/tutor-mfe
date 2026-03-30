@@ -1,11 +1,5 @@
 {
-  "name": "@openedx/frontend-template-site",
   "version": "1.0.0",
-  "description": "Tutor rontend site",
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/openedx/frontend-template-site.git"
-  },
   "workspaces": [
     "packages/*"
   ],
@@ -26,16 +20,13 @@
     "clean": "make clean",
     "serve": "openedx serve"
   },
-  "author": "Open edX",
-  "license": "AGPL-3.0",
-  "homepage": "https://github.com/openedx/frontend-template-site#readme",
-  "bugs": {
-    "url": "https://github.com/openedx/frontend-template-site/issues"
-  },
   "dependencies": {
     "@edx/brand": "npm:@openedx/brand-openedx@^1.2.3",
 {%- for app_name, app_attrs in iter_frontend_apps() %}
-    "{{ app_attrs.get('entryPoints', {}).get('packageName', app_name) }}": "{{ app_attrs.get('entryPoints', {}).get('packageVersion', '^1.0.0-alpha || 0.0.0-dev') }}",
+{%- set entry_points = app_attrs.get('appEntryPoints', {}).get('packageName', False) %}
+{%- if entry_points %}
+    "{{ app_attrs.get('appEntryPoints', {}).get('packageName', app_name) }}": "{{ app_attrs.get('appEntryPoints', {}).get('packageVersion', '^1.0.0-alpha || 0.0.0-dev') }}",
+{%- endif %}
 {%- endfor %}
     "@openedx/frontend-base": "^1.0.0-alpha || 0.0.0-dev"
   },

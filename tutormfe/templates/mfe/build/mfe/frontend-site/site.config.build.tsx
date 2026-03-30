@@ -1,9 +1,9 @@
 import { EnvironmentTypes, SiteConfig, footerApp, headerApp, shellApp } from '@openedx/frontend-base';
 {%- for app_name, app_attrs in iter_frontend_apps() %}
 {%- set components = app_attrs.get('appEntryPoints', {}).get('components', []) %}
-{% if components %}
+{%- if components %}
 import { {{ components | join(', ') }} } from '{{ app_attrs.get('appEntryPoints', {}).get('packageName', app_name) }}';
-{% endif %}
+{%- endif %}
 {%- endfor %}
 import homeApp from './src/homeApp';
 

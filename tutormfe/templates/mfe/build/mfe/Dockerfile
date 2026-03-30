@@ -83,31 +83,36 @@ RUN npm run build
 {% endfor %}
 
 
-{%- for app_name, app in iter_frontend_sites() %}
-######## build of site-{{ app_name }}
-FROM base AS site-{{ app_name }}-common
+{%- for site_name, app in iter_frontend_sites() %}
+######## build of site-{{ site_name }}
+FROM base AS site-{{ site_name }}-common
 WORKDIR /openedx/app
 
-{% if app.get("repository") and app["repository"] == "local" %}
+# Either use site-local or the configured repository
+{%- if app.get("repository") and app["repository"] == "local" %}
 COPY frontend-site/ /openedx/app
-{% else %}
+{%- else %}
 RUN git clone --depth 1 --branch {{ app.get("version", MFE_COMMON_VERSION) }} {{ app["repository"] }} .
-{% endif %}
+{%- endif %}
 
 WORKDIR /openedx/app/packages
 # Git clone all frontend apps that should be built
-{% for app_name, app in iter_frontend_apps() %}
-{% if app.get("repository") %}
+{%- set ns = namespace(repos_exists=0) %}
+{%- for app_name, app in iter_frontend_apps() %}
+{%- if app.get("repository") %}
 RUN git clone --depth 1 --branch {{ app.get("version", MFE_COMMON_VERSION) }} {{ app["repository"] }} frontend-app-{{ app_name }}
-{% endif %}
-{% endfor %}
+{%- set ns.repos_exists = 1 %}
+{%- endif %}
+{%- endfor %}
 
 WORKDIR /openedx/app
 ARG NPM_REGISTRY={{ NPM_REGISTRY }}
 RUN --mount=type=cache,target=/root/.npm-sites,sharing=shared npm install --no-audit --no-fund --registry=$NPM_REGISTRY
+{%- if ns.repos_exists %}
 RUN npm run build:packages
+{%- endif %}
 RUN PUBLIC_PATH="/site-{{ app.get("site", "default") }}/" npm run build
-{% endfor %}
+{%- endfor %}
 
 ####### final production image with all static assets
 FROM {{ MFE_CADDY_DOCKER_IMAGE }} AS production
@@ -119,8 +124,8 @@ RUN mkdir -p /openedx/dist
 COPY --from={{ app_name }}-prod /openedx/app/dist /openedx/dist/{{ app_name }}
 {% endfor %}
 
-{% for app_name, app in iter_frontend_sites() %}
-COPY --from=site-{{ app_name }}-common /openedx/app/dist /openedx/dist/site-{{ app_name }}
+{% for site_name, app in iter_frontend_sites() %}
+COPY --from=site-{{ site_name }}-common /openedx/app/dist /openedx/dist/site-{{ site_name }}
 {% endfor %}
 
 {{ patch("mfe-dockerfile-production-final") }}
