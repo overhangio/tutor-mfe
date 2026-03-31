@@ -10,9 +10,10 @@ import homeApp from './src/homeApp';
 
 import './src/site.scss';
 
+{%- set defaultSite = get_frontend_sites().get('default', {}) %}
 const siteConfig: SiteConfig = {
-  siteId: 'frontend-template-site',
-  siteName: 'Frontend Template Site',
+  siteId: {{defaultSite.get('siteConfig', {}).get('siteId', '"tutor-frontend-site"') | tojson }},
+  siteName: {{defaultSite.get('siteConfig', {}).get('siteName', '"Frontend Template Site"') | tojson }},
   baseUrl: '{{ "https" if ENABLE_HTTPS else "http" }}://{{ MFE_HOST }}:8080',
   lmsBaseUrl: '{{ "https" if ENABLE_HTTPS else "http" }}://{{ LMS_HOST }}:8000',
   loginUrl: '{{ "https" if ENABLE_HTTPS else "http" }}://{{ LMS_HOST }}:8000/login',
@@ -32,21 +33,15 @@ const siteConfig: SiteConfig = {
     homeApp,
   ],
   externalRoutes: [
+    {%- for route in defaultSite.get('siteConfig', {}).get('externalRoutes', []) %}
     {
-      role: 'org.openedx.frontend.role.profile',
-      url: '{{ "https" if ENABLE_HTTPS else "http" }}://{{ MFE_HOST }}/profile/'
+      role: '{{ route.role }}',
+      url: '{{ 'https' if ENABLE_HTTPS else 'http' }}://{{ MFE_HOST }}{{ route.url }}',
     },
-    {
-      role: 'org.openedx.frontend.role.account',
-      url: '{{ "https" if ENABLE_HTTPS else "http" }}://{{ MFE_HOST }}/account/'
-    },
-    {
-      role: 'org.openedx.frontend.role.logout',
-      url: '{{ "https" if ENABLE_HTTPS else "http" }}://{{ LMS_HOST }}/logout'
-    },
+    {%- endfor %}
   ],
 
-  accessTokenCookieName: 'edx-jwt-cookie-header-payload',
+  accessTokenCookieName: {{ defaultSite.get('siteConfig', {}).get('accessTokenCookieName', '"edx-jwt-cookie-header-payload"') | tojson }},
 };
 
 export default siteConfig;

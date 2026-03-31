@@ -14,8 +14,8 @@ MFE_ATTRS_TYPE = t.Dict[t.Literal["repository", "port", "version"], t.Union["str
 
 # Extended MFE type that includes externalRoutes
 SITE_ATTRS_TYPE = t.Dict[
-    t.Literal["repository", "port", "version"],
-    t.Union[str, int],
+    t.Literal["repository", "port", "version", "siteConfig"],
+    t.Union[str, int, dict],
 ]
 
 FRONTEND_APP_ATTRS_TYPE = t.Dict[

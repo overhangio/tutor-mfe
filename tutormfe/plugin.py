@@ -90,6 +90,26 @@ CORE_FRONTEND_SITES: dict[str, SITE_ATTRS_TYPE] = {
     "default": {
         "repository": "local",
         "port": 8080,
+        "siteConfig": {
+            "siteId": "tutor-frontend-site",
+            "siteName": "Frontend Template Site",
+            "accessTokenCookieName": "edx-jwt-cookie-header-payload",
+            "redirectRoleId": "org.openedx.frontend.role.dashboard",
+            "externalRoutes": [
+                {
+                    "role": "org.openedx.frontend.role.profile",
+                    "url": ":1995/profile/",
+                },
+                {
+                    "role": "org.openedx.frontend.role.account",
+                    "url": ":1997/account/",
+                },
+                {
+                    "role": "org.openedx.frontend.role.logout",
+                    "url": ":8000/logout",
+                },
+            ],
+        },
     },
 }
 
@@ -224,6 +244,9 @@ def is_mfe_enabled(mfe_name: str) -> bool:
 
 
 def is_frontend_app(app_name: str) -> bool:
+    """
+    Returns True if the given app_name corresponds to a configured frontend app.
+    """
     return app_name in get_frontend_apps()
 
 
@@ -239,6 +262,7 @@ tutor_hooks.Filters.ENV_TEMPLATE_VARIABLES.add_items(
         ("iter_paths", iter_paths),
         ("iter_frontend_apps", iter_frontend_apps),
         ("iter_frontend_sites", iter_frontend_sites),
+        ("get_frontend_sites", get_frontend_sites),
         ("iter_plugin_slots", iter_plugin_slots),
         ("is_mfe_enabled", is_mfe_enabled),
         ("is_frontend_app", is_frontend_app),
@@ -305,8 +329,6 @@ with open(
     tutor_hooks.Filters.CLI_DO_INIT_TASKS.add_item(("lms", task_file.read()))
 
 REPO_PREFIX = "frontend-app-"
-FRONTEND_SITE_PREFIX = "frontend-site-"
-# TODO: figure out the whole mount thing not only for sites but also for the possible apps under it
 
 
 @tutor_hooks.Filters.COMPOSE_MOUNTS.add()
@@ -319,18 +341,12 @@ def _mount_frontend_apps(
     in dev mode, because in production, all MFEs are built and hosted on the
     singular 'mfe' service container.
     """
-    if path_basename.startswith(REPO_PREFIX) or path_basename.startswith(
-        FRONTEND_SITE_PREFIX
-    ):
+    if path_basename.startswith(REPO_PREFIX):
         # Assumption:
         # For each repo named frontend-app-APPNAME, there is an associated
         # docker-compose service named APPNAME. If this assumption is broken,
         # then Tutor will try to mount the repo in a service that doesn't exist.
-        app_name = (
-            path_basename[len(REPO_PREFIX) :]
-            if path_basename.startswith(REPO_PREFIX)
-            else path_basename[len(FRONTEND_SITE_PREFIX) :]
-        )
+        app_name = path_basename[len(REPO_PREFIX) :]
         volumes += [(app_name, "/openedx/app")]
     return volumes
 
@@ -340,15 +356,9 @@ def _mount_frontend_apps_on_build(
     mounts: list[tuple[str, str]], host_path: str
 ) -> list[tuple[str, str]]:
     path_basename = os.path.basename(host_path)
-    if path_basename.startswith(REPO_PREFIX) or path_basename.startswith(
-        FRONTEND_SITE_PREFIX
-    ):
+    if path_basename.startswith(REPO_PREFIX):
         # Bind-mount repo at build-time, both for prod and dev images
-        app_name = (
-            path_basename[len(REPO_PREFIX) :]
-            if path_basename.startswith(REPO_PREFIX)
-            else path_basename[len(FRONTEND_SITE_PREFIX) :]
-        )
+        app_name = path_basename[len(REPO_PREFIX) :]
         mounts.append(("mfe", f"{app_name}-src"))
         mounts.append((f"{app_name}-dev", f"{app_name}-src"))
     return mounts
