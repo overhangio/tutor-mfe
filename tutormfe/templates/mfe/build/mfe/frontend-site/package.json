@@ -33,11 +33,11 @@
     "@openedx/frontend-base": "{{ defaultSite.get('siteConfig', {}).get('frontendBaseVersion', '^1.0.0-alpha || 0.0.0-dev') }}"
   },
   "devDependencies": {
-    "@edx/browserslist-config": "^1.5.0",
+    "@edx/browserslist-config": "latest",
     "turbo": "^2.8.16"
   },
   "peerDependencies": {
-    "@openedx/paragon": "^23",
+    "@openedx/paragon": "{{ defaultSite.get('siteConfig', {}).get('paragonVersion', '^23') }}",
     "@tanstack/react-query": "^5",
     "react": "^18",
     "react-dom": "^18",
