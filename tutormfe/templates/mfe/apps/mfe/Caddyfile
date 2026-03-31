@@ -52,13 +52,13 @@
     {%- endif %}
     {% endfor %}
 
-    {% for app_name, app in iter_frontend_sites() %}
-    @site_{{ app_name }} {
-        path /site-{{ app_name }} /site-{{ app_name }}/*
+    {% for site_name, app in iter_frontend_sites() %}
+    @site_{{ site_name }} {
+        path /site-{{ site_name }} /site-{{ site_name }}/*
     }
-    handle @site_{{ app_name }} {
-        uri strip_prefix /site-{{ app_name }}
-        root * /openedx/dist/site-{{ app_name }}
+    handle @site_{{ site_name }} {
+        uri strip_prefix /site-{{ site_name }}
+        root * /openedx/dist/site-{{ site_name }}
         # no index.html because we want to focus on assets in these ones
         try_files /{path}
         file_server
