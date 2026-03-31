@@ -1,15 +1,19 @@
 import { EnvironmentTypes, SiteConfig, footerApp, headerApp, shellApp } from '@openedx/frontend-base';
 {%- for app_name, app_attrs in iter_frontend_apps() %}
-{%- set camel_case_name = app_name.split('-') | map('title') | list %}
-{%- set camel_case_name = camel_case_name[0].lower() + (camel_case_name[1:] | join('')) %}
-import { {{ camel_case_name }}App } from '@openedx/frontend-app-{{ app_name }}';
+{%- set components = app_attrs.get('appEntryPoints', {}).get('components', []) %}
+{%- if components %}
+import { {{ components | join(', ') }} } from '{{ app_attrs.get('appEntryPoints', {}).get('packageName', app_name) }}';
+{%- endif %}
 {%- endfor %}
+import homeApp from './src/homeApp';
+
 
 import './src/site.scss';
 
+{%- set defaultSite = get_frontend_sites().get('default', {}) %}
 const siteConfig: SiteConfig = {
-  siteId: 'frontend-template-site',
-  siteName: 'Frontend Template Site',
+  siteId: {{defaultSite.get('siteConfig', {}).get('siteId', '"tutor-frontend-site"') | tojson }},
+  siteName: {{defaultSite.get('siteConfig', {}).get('siteName', '"Frontend Template Site"') | tojson }},
   baseUrl: '{{ "https" if ENABLE_HTTPS else "http" }}://{{ MFE_HOST }}:8080',
   lmsBaseUrl: '{{ "https" if ENABLE_HTTPS else "http" }}://{{ LMS_HOST }}:8000',
   loginUrl: '{{ "https" if ENABLE_HTTPS else "http" }}://{{ LMS_HOST }}:8000/login',
@@ -21,27 +25,23 @@ const siteConfig: SiteConfig = {
     headerApp,
     footerApp,
 {%- for app_name, app_attrs in iter_frontend_apps() %}
-{%- set camel_case_name = app_name.split('-') | map('title') | list %}
-{%- set camel_case_name = camel_case_name[0].lower() + (camel_case_name[1:] | join('')) %}
-    {{ camel_case_name }}App,
+{%- set components = app_attrs.get('appEntryPoints', {}).get('components', []) %}
+{%- if components %}
+    {{ components | join(',') }},
+{%- endif %}
 {%- endfor %}
+    homeApp,
   ],
   externalRoutes: [
+    {%- for route in defaultSite.get('siteConfig', {}).get('externalRoutes', []) %}
     {
-      role: 'org.openedx.frontend.role.profile',
-      url: '{{ "https" if ENABLE_HTTPS else "http" }}://{{ MFE_HOST }}:1995/profile/'
+      role: '{{ route.role }}',
+      url: '{{ 'https' if ENABLE_HTTPS else 'http' }}://{{ MFE_HOST }}{{ route.url }}',
     },
-    {
-      role: 'org.openedx.frontend.role.account',
-      url: '{{ "https" if ENABLE_HTTPS else "http" }}://{{ MFE_HOST }}:1997/account/'
-    },
-    {
-      role: 'org.openedx.frontend.role.logout',
-      url: '{{ "https" if ENABLE_HTTPS else "http" }}://{{ LMS_HOST }}:8000/logout'
-    },
+    {%- endfor %}
   ],
 
-  accessTokenCookieName: 'edx-jwt-cookie-header-payload',
+  accessTokenCookieName: {{ defaultSite.get('siteConfig', {}).get('accessTokenCookieName', '"edx-jwt-cookie-header-payload"') | tojson }},
 };
 
 export default siteConfig;
