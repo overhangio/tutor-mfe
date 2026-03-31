@@ -1,3 +1,4 @@
+{%- set defaultSite = get_frontend_sites().get('default', {}) %}
 {
   "version": "1.0.0",
   "workspaces": [
@@ -21,14 +22,15 @@
     "serve": "openedx serve"
   },
   "dependencies": {
-    "@edx/brand": "npm:@openedx/brand-openedx@^1.2.3",
+    "@edx/brand": "npm:@openedx/brand-openedx@latest",
 {%- for app_name, app_attrs in iter_frontend_apps() %}
 {%- set entry_points = app_attrs.get('appEntryPoints', {}).get('packageName', False) %}
 {%- if entry_points %}
     "{{ app_attrs.get('appEntryPoints', {}).get('packageName', app_name) }}": "{{ app_attrs.get('appEntryPoints', {}).get('packageVersion', '^1.0.0-alpha || 0.0.0-dev') }}",
 {%- endif %}
 {%- endfor %}
-    "@openedx/frontend-base": "^1.0.0-alpha || 0.0.0-dev"
+{#- This allows version config and alias config  #}
+    "@openedx/frontend-base": "{{ defaultSite.get('siteConfig', {}).get('frontendBaseVersion', '^1.0.0-alpha || 0.0.0-dev') }}"
   },
   "devDependencies": {
     "@edx/browserslist-config": "^1.5.0",

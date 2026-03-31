@@ -95,6 +95,7 @@ CORE_FRONTEND_SITES: dict[str, SITE_ATTRS_TYPE] = {
             "siteName": "Frontend Template Site",
             "accessTokenCookieName": "edx-jwt-cookie-header-payload",
             "redirectRoleId": "org.openedx.frontend.role.dashboard",
+            "frontendBaseVersion": "^1.0.0-alpha",
             "externalRoutes": [
                 {
                     "role": "org.openedx.frontend.role.profile",
