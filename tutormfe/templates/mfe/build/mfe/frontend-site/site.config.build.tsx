@@ -6,6 +6,7 @@ import { {{ components | join(', ') }} } from '{{ app_attrs.get('appEntryPoints'
 {%- endif %}
 {%- endfor %}
 import homeApp from './src/homeApp';
+import slotsApp from './src/slotsApp';
 
 
 import './src/site.scss';
@@ -13,7 +14,7 @@ import './src/site.scss';
 {%- set defaultSite = get_frontend_sites().get('default', {}) %}
 const siteConfig: SiteConfig = {
   siteId: {{defaultSite.get('siteConfig', {}).get('siteId', '"tutor-frontend-site"') | tojson }},
-  siteName: {{defaultSite.get('siteConfig', {}).get('siteName', '"Frontend Template Site"') | tojson }},
+  siteName: {{defaultSite.get('siteConfig', {}).get('siteName', '"Frontend site"') | tojson }},
   baseUrl: '{{ "https" if ENABLE_HTTPS else "http" }}://{{ MFE_HOST }}:8080',
   lmsBaseUrl: '{{ "https" if ENABLE_HTTPS else "http" }}://{{ LMS_HOST }}:8000',
   loginUrl: '{{ "https" if ENABLE_HTTPS else "http" }}://{{ LMS_HOST }}:8000/login',
@@ -31,6 +32,7 @@ const siteConfig: SiteConfig = {
 {%- endif %}
 {%- endfor %}
     homeApp,
+    slotsApp,
   ],
   externalRoutes: [
     {%- for route in defaultSite.get('siteConfig', {}).get('externalRoutes', []) %}

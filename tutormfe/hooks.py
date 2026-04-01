@@ -31,3 +31,5 @@ FRONTEND_APPS: Filter[dict[str, FRONTEND_APP_ATTRS_TYPE], []] = Filter()
 FRONTEND_SITES: Filter[dict[str, FRONTEND_APP_ATTRS_TYPE], []] = Filter()
 
 PLUGIN_SLOTS: Filter[list[tuple[str, str, str]], []] = Filter()
+
+FRONTEND_SLOTS: Filter[list[tuple[str, str]], []] = Filter()

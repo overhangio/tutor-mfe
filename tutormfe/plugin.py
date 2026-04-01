@@ -20,6 +20,7 @@ from .hooks import (
     FRONTEND_APPS,
     FRONTEND_APP_ATTRS_TYPE,
     PLUGIN_SLOTS,
+    FRONTEND_SLOTS,
     SITE_ATTRS_TYPE,
 )
 
@@ -182,6 +183,14 @@ def get_plugin_slots(mfe_name: str) -> list[tuple[str, str]]:
     return [i[-2:] for i in PLUGIN_SLOTS.iterate() if i[0] == mfe_name]
 
 
+@tutor_hooks.lru_cache
+def get_frontend_slots() -> list[tuple[str, str]]:
+    """
+    This function is cached for performance.
+    """
+    return FRONTEND_SLOTS.apply([])
+
+
 def iter_mfes() -> t.Iterable[tuple[str, MFE_ATTRS_TYPE]]:
     """
     Yield:
@@ -241,6 +250,15 @@ def iter_plugin_slots(mfe_name: str) -> t.Iterable[tuple[str, str]]:
     yield from get_plugin_slots(mfe_name)
 
 
+def iter_frontend_slots() -> t.Iterable[tuple[str, str]]:
+    """
+    Yield:
+
+        (slot_name, plugin_config)
+    """
+    yield from get_frontend_slots()
+
+
 def is_mfe_enabled(mfe_name: str) -> bool:
     return mfe_name in get_mfes()
 
@@ -266,6 +284,7 @@ tutor_hooks.Filters.ENV_TEMPLATE_VARIABLES.add_items(
         ("iter_frontend_sites", iter_frontend_sites),
         ("get_frontend_sites", get_frontend_sites),
         ("iter_plugin_slots", iter_plugin_slots),
+        ("iter_frontend_slots", iter_frontend_slots),
         ("is_mfe_enabled", is_mfe_enabled),
         ("is_frontend_app", is_frontend_app),
         ("MFEMountData", MFEMountData),
