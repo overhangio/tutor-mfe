@@ -84,20 +84,27 @@ RUN npm run build
 
 
 {%- for site_name, app in iter_frontend_sites() %}
-######## build of site-{{ site_name }}
-FROM base AS site-{{ site_name }}-common
+######## build of site-{{ site_name }}-git
+FROM base AS site-{{ site_name }}-git
 WORKDIR /openedx/site
 
 # Either use site-local or the configured repository
 {%- if app.get("repository") and app["repository"] == "local" %}
 COPY frontend-site/ /openedx/site
 {%- else %}
-RUN git clone --depth 1 --branch {{ app.get("version", MFE_COMMON_VERSION) }} {{ app["repository"] }} .
+ADD --keep-git-dir=true {{ app["repository"] }}#{{ app.get("version", MFE_COMMON_VERSION) }} .
 {%- endif %}
+{%- endfor %}
 
-WORKDIR /openedx/site/packages
-# Git clone all frontend apps that should be built
+
 {%- set ns = namespace(repos_exists=0) %}
+{% for site_name, app in iter_frontend_sites() %}
+######## build of site-{{ site_name }}-src
+FROM base AS site-{{ site_name }}-src
+WORKDIR /openedx/site/packages
+
+# Git clone all frontend apps that should be built
+
 {%- for app_name, app in iter_frontend_apps() %}
 {%- if app.get("repository") %}
 RUN git clone --depth 1 --branch {{ app.get("version", MFE_COMMON_VERSION) }} {{ app["repository"] }} frontend-app-{{ app_name }}
@@ -106,13 +113,31 @@ RUN git clone --depth 1 --branch {{ app.get("version", MFE_COMMON_VERSION) }} {{
 {%- endfor %}
 
 WORKDIR /openedx/site
+
+COPY --from=site-{{ site_name }}-git /openedx/site/package.json /openedx/site
+
 ARG NPM_REGISTRY={{ NPM_REGISTRY }}
+{# This one we need to optimize, so the copy doesn't trigger a new npm install when it's not required #}
 RUN --mount=type=cache,target=/root/.npm-sites,sharing=shared npm install --no-audit --no-fund --registry=$NPM_REGISTRY
+
+
+{%- endfor %}
+
+
+{%- for site_name, app in iter_frontend_sites() %}
+######## build of site-{{ site_name }}-common
+FROM base AS site-{{ site_name }}-common
+WORKDIR /openedx/site
+
+COPY --from=site-{{ site_name }}-git /openedx/site/ /openedx/site
+COPY --from=site-{{ site_name }}-src /openedx/site /openedx/site
+
 {%- if ns.repos_exists %}
 RUN npm run build:packages
 {%- endif %}
 RUN PUBLIC_PATH="/site-{{ app.get("site", "default") }}/" npm run build
 {%- endfor %}
+
 
 ####### final production image with all static assets
 FROM {{ MFE_CADDY_DOCKER_IMAGE }} AS production
