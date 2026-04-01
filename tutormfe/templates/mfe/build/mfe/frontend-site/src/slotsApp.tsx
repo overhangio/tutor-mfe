@@ -2,8 +2,6 @@ import { App, WidgetOperationTypes } from '@openedx/frontend-base';
 
 {{- patch("frontend-slots-env-config-buildtime-imports") }}
 
-{{- patch("frontend-slots-env-config-buildtime-definitions") }}
-
 const slotsApp: App = {
   appId: 'slots',
   slots: [

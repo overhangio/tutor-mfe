@@ -117,9 +117,12 @@ WORKDIR /openedx/site
 COPY --from=site-{{ site_name }}-git /openedx/site/package.json /openedx/site
 
 ARG NPM_REGISTRY={{ NPM_REGISTRY }}
+{{ patch("frontend-site-dockerfile-pre-npm-install") }}
+
 {# This one we need to optimize, so the copy doesn't trigger a new npm install when it's not required #}
 RUN --mount=type=cache,target=/root/.npm-sites,sharing=shared npm install --no-audit --no-fund --registry=$NPM_REGISTRY
 
+{{ patch("frontend-site-dockerfile-post-npm-install") }}
 
 {%- endfor %}
 
@@ -135,7 +138,11 @@ COPY --from=site-{{ site_name }}-src /openedx/site /openedx/site
 {%- if ns.repos_exists %}
 RUN npm run build:packages
 {%- endif %}
+
+{{ patch("frontend-site-dockerfile-pre-npm-build") }}
 RUN PUBLIC_PATH="/site-{{ app.get("site", "default") }}/" npm run build
+{{ patch("frontend-site-dockerfile-post-npm-build") }}
+
 {%- endfor %}
 
 
