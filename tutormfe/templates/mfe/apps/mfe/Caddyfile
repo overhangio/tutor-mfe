@@ -26,7 +26,20 @@
     redir @authoring /authoring/{re.authoring.1} permanent
     {% endif %}
 
-    {% for app_name, app in iter_mfes() %}
+    {% for app_name, app in iter_paths() %}
+
+    {%- if is_frontend_app(app_name) %}
+    @app_{{ app_name }} {
+        path /{{ app_name }} /{{ app_name }}/*
+    }
+    handle @app_{{ app_name }} {
+        uri strip_prefix /{{ app_name }}
+        root * /openedx/dist/site-{{ app.get("site", "default") }}
+        try_files /{path} /index.html
+        file_server
+    }
+    {%- else %}
+
     @mfe_{{ app_name }} {
         path /{{ app_name }} /{{ app_name }}/*
     }
@@ -34,6 +47,24 @@
         uri strip_prefix /{{ app_name }}
         root * /openedx/dist/{{ app_name }}
         try_files /{path} /index.html
+        file_server
+    }
+    {%- endif %}
+    {% endfor %}
+
+    # Handle frontend sites, which are meant to serve only static assets, without an index.html.
+    # When fetched from the proper url handle they'll be returned with a index.html,
+    # but if someone tries to access them directly (like the chunk links or general assets)
+    # they'll get the files directy from this block
+    {% for site_name, app in iter_frontend_sites() %}
+    @site_{{ site_name }} {
+        path /site-{{ site_name }} /site-{{ site_name }}/*
+    }
+    handle @site_{{ site_name }} {
+        uri strip_prefix /site-{{ site_name }}
+        root * /openedx/dist/site-{{ site_name }}
+        # no index.html because we want to focus on assets in these ones
+        try_files /{path}
         file_server
     }
     {% endfor %}
