@@ -1,7 +1,7 @@
 import { App, getUrlByRouteRole } from '@openedx/frontend-base';
 import { redirect } from 'react-router';
 
-{%- set defaultSite = get_frontend_sites().get('default', {}) %}
+{%- set defaultSite = get_frontend_site('default') %}
 const homeApp: App = {
   appId: 'home',
   routes: [{

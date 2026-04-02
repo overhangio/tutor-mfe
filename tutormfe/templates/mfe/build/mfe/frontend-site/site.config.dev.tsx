@@ -10,7 +10,7 @@ import homeApp from './src/homeApp';
 
 import './src/site.scss';
 
-{%- set defaultSite = get_frontend_sites().get('default', {}) %}
+{%- set defaultSite = get_frontend_site('default') %}
 const siteConfig: SiteConfig = {
   siteId: {{defaultSite.get('siteConfig', {}).get('siteId', '"tutor-frontend-site"') | tojson }},
   siteName: {{defaultSite.get('siteConfig', {}).get('siteName', '"Frontend Template Site"') | tojson }},

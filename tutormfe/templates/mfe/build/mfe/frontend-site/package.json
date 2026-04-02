@@ -1,4 +1,4 @@
-{%- set defaultSite = get_frontend_sites().get('default', {}) %}
+{%- set defaultSite = get_frontend_site('default') %}
 {
   "version": "1.0.0",
   "workspaces": [

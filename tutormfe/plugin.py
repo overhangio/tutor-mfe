@@ -274,6 +274,20 @@ def get_mfe(mfe_name: str) -> t.Union[MFE_ATTRS_TYPE, t.Any]:
     return get_mfes().get(mfe_name, {})
 
 
+def get_frontend_site(site_name: str) -> t.Union[SITE_ATTRS_TYPE, t.Any]:
+    """
+    Returns the attributes of a configured frontend site.
+    """
+    return get_frontend_sites().get(site_name, {})
+
+
+def get_frontend_app(app_name: str) -> t.Union[FRONTEND_APP_ATTRS_TYPE, t.Any]:
+    """
+    Returns the attributes of a configured frontend app.
+    """
+    return get_frontend_apps().get(app_name, {})
+
+
 # Make the mfe functions available within templates
 tutor_hooks.Filters.ENV_TEMPLATE_VARIABLES.add_items(
     [
@@ -282,7 +296,8 @@ tutor_hooks.Filters.ENV_TEMPLATE_VARIABLES.add_items(
         ("iter_paths", iter_paths),
         ("iter_frontend_apps", iter_frontend_apps),
         ("iter_frontend_sites", iter_frontend_sites),
-        ("get_frontend_sites", get_frontend_sites),
+        ("get_frontend_site", get_frontend_site),
+        ("get_frontend_app", get_frontend_app),
         ("iter_plugin_slots", iter_plugin_slots),
         ("iter_frontend_slots", iter_frontend_slots),
         ("is_mfe_enabled", is_mfe_enabled),
