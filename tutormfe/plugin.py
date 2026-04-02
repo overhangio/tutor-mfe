@@ -21,7 +21,7 @@ from .hooks import (
     FRONTEND_APP_ATTRS_TYPE,
     PLUGIN_SLOTS,
     FRONTEND_SLOTS,
-    SITE_ATTRS_TYPE,
+    FRONTEND_SITE_ATTRS_TYPE,
 )
 
 # Handle version suffix in main mode, just like tutor core
@@ -91,7 +91,7 @@ CORE_MFE_APPS: dict[str, MFE_ATTRS_TYPE] = {
     },
 }
 
-CORE_FRONTEND_SITES: dict[str, SITE_ATTRS_TYPE] = {
+CORE_FRONTEND_SITES: dict[str, FRONTEND_SITE_ATTRS_TYPE] = {
     "default": {
         "repository": "local",
         "port": 8080,
@@ -131,8 +131,8 @@ def _add_core_mfe_apps(apps: dict[str, MFE_ATTRS_TYPE]) -> dict[str, MFE_ATTRS_T
 
 @FRONTEND_SITES.add(priority=tutor_hooks.priorities.HIGH)
 def _add_core_frontend_sites(
-    sites: dict[str, MFE_ATTRS_TYPE],
-) -> dict[str, MFE_ATTRS_TYPE]:
+    sites: dict[str, FRONTEND_SITE_ATTRS_TYPE],
+) -> dict[str, FRONTEND_SITE_ATTRS_TYPE]:
     sites.update(CORE_FRONTEND_SITES)
     return sites
 
@@ -154,7 +154,7 @@ def get_frontend_apps() -> dict[str, FRONTEND_APP_ATTRS_TYPE]:
 
 
 @tutor_hooks.lru_cache
-def get_frontend_sites() -> dict[str, FRONTEND_APP_ATTRS_TYPE]:
+def get_frontend_sites() -> dict[str, FRONTEND_SITE_ATTRS_TYPE]:
     """
     This function is cached for performance.
     """
@@ -215,7 +215,7 @@ def iter_frontend_apps() -> t.Iterable[tuple[str, FRONTEND_APP_ATTRS_TYPE]]:
         yield (name, attrs)
 
 
-def iter_frontend_sites() -> t.Iterable[tuple[str, FRONTEND_APP_ATTRS_TYPE]]:
+def iter_frontend_sites() -> t.Iterable[tuple[str, FRONTEND_SITE_ATTRS_TYPE]]:
     """
     Yield:
 
@@ -278,7 +278,7 @@ def get_mfe(mfe_name: str) -> t.Union[MFE_ATTRS_TYPE, t.Any]:
     return get_mfes().get(mfe_name, {})
 
 
-def get_frontend_site(site_name: str) -> t.Union[SITE_ATTRS_TYPE, t.Any]:
+def get_frontend_site(site_name: str) -> t.Union[FRONTEND_SITE_ATTRS_TYPE, t.Any]:
     """
     Returns the attributes of a configured frontend site.
     """
