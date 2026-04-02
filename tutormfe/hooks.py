@@ -28,7 +28,7 @@ MFE_APPS: Filter[dict[str, MFE_ATTRS_TYPE], []] = Filter()
 # This holds which apps are enabled and if they will build from a custom repo
 FRONTEND_APPS: Filter[dict[str, FRONTEND_APP_ATTRS_TYPE], []] = Filter()
 # This holds all the possible frontend-sites which by default it's the internal one.
-FRONTEND_SITES: Filter[dict[str, FRONTEND_APP_ATTRS_TYPE], []] = Filter()
+FRONTEND_SITES: Filter[dict[str, SITE_ATTRS_TYPE], []] = Filter()
 
 PLUGIN_SLOTS: Filter[list[tuple[str, str, str]], []] = Filter()
 

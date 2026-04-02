@@ -83,51 +83,47 @@ RUN npm run build
 {% endfor %}
 
 
-{%- for site_name, app in iter_frontend_sites() %}
+{%- for site_name, site in iter_frontend_sites() %}
 ######## build of site-{{ site_name }}-git
 FROM base AS site-{{ site_name }}-git
 WORKDIR /openedx/site
 
 # Either use site-local or the configured repository
-{%- if app.get("repository") and app["repository"] == "local" %}
+{%- if site.get("repository") and site["repository"] == "local" %}
 COPY frontend-site/ /openedx/site
 {%- else %}
-ADD --keep-git-dir=true {{ app["repository"] }}#{{ app.get("version", MFE_COMMON_VERSION) }} .
+ADD --keep-git-dir=true {{ site["repository"] }}#{{ site.get("version", MFE_COMMON_VERSION) }} .
 {%- endif %}
 {%- endfor %}
 
 
 {%- set ns = namespace(repos_exists=0) %}
-{% for site_name, app in iter_frontend_sites() %}
+{% for site_name, site in iter_frontend_sites() %}
 ######## build of site-{{ site_name }}-src
 FROM base AS site-{{ site_name }}-src
-WORKDIR /openedx/site/packages
 
+{%- if site.get("repository") and site["repository"] == "local" %}
 # Git clone all frontend apps that should be built
-
+WORKDIR /openedx/site/packages
 {%- for app_name, app in iter_frontend_apps() %}
 {%- if app.get("repository") %}
 RUN git clone --depth 1 --branch {{ app.get("version", MFE_COMMON_VERSION) }} {{ app["repository"] }} frontend-app-{{ app_name }}
 {%- set ns.repos_exists = 1 %}
 {%- endif %}
 {%- endfor %}
-
+{%- endif %}
 WORKDIR /openedx/site
 
 COPY --from=site-{{ site_name }}-git /openedx/site/package.json /openedx/site
 
 ARG NPM_REGISTRY={{ NPM_REGISTRY }}
 {{ patch("frontend-site-dockerfile-pre-npm-install") }}
-
-{# This one we need to optimize, so the copy doesn't trigger a new npm install when it's not required #}
 RUN --mount=type=cache,target=/root/.npm-sites,sharing=shared npm install --no-audit --no-fund --registry=$NPM_REGISTRY
-
 {{ patch("frontend-site-dockerfile-post-npm-install") }}
-
 {%- endfor %}
 
 
-{%- for site_name, app in iter_frontend_sites() %}
+{%- for site_name, site in iter_frontend_sites() %}
 ######## build of site-{{ site_name }}-common
 FROM base AS site-{{ site_name }}-common
 WORKDIR /openedx/site
@@ -140,7 +136,7 @@ RUN npm run build:packages
 {%- endif %}
 
 {{ patch("frontend-site-dockerfile-pre-npm-build") }}
-RUN PUBLIC_PATH="/site-{{ app.get("site", "default") }}/" npm run build
+RUN PUBLIC_PATH="/site-{{ site.get("site", "default") }}/" npm run build
 {{ patch("frontend-site-dockerfile-post-npm-build") }}
 
 {%- endfor %}
@@ -156,7 +152,7 @@ RUN mkdir -p /openedx/dist
 COPY --from={{ app_name }}-prod /openedx/app/dist /openedx/dist/{{ app_name }}
 {% endfor %}
 
-{% for site_name, app in iter_frontend_sites() %}
+{%- for site_name, site in iter_frontend_sites() %}
 COPY --from=site-{{ site_name }}-common /openedx/site/dist /openedx/dist/site-{{ site_name }}
 {% endfor %}
 
