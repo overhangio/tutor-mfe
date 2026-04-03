@@ -82,6 +82,66 @@ RUN npm run build
 {{ patch("mfe-dockerfile-post-npm-build-{}".format(app_name)) }}
 {% endfor %}
 
+
+{%- for site_name, site in iter_frontend_sites() %}
+######## build of site-{{ site_name }}-git
+FROM base AS site-{{ site_name }}-git
+WORKDIR /openedx/site
+
+# Either use site-local or the configured repository
+{%- if site.get("repository") and site["repository"] == "local" %}
+COPY frontend-site/ /openedx/site
+{%- else %}
+ADD --keep-git-dir=true {{ site["repository"] }}#{{ site.get("version", MFE_COMMON_VERSION) }} .
+{%- endif %}
+{%- endfor %}
+
+
+{%- set ns = namespace(repos_exists=0) %}
+{% for site_name, site in iter_frontend_sites() %}
+######## build of site-{{ site_name }}-src
+FROM base AS site-{{ site_name }}-src
+
+{%- if site.get("repository") and site["repository"] == "local" %}
+# Git clone all frontend apps that should be built
+WORKDIR /openedx/site/packages
+{%- for app_name, app in iter_frontend_apps() %}
+{%- if app.get("repository") %}
+RUN git clone --depth 1 --branch {{ app.get("version", MFE_COMMON_VERSION) }} {{ app["repository"] }} frontend-app-{{ app_name }}
+{%- set ns.repos_exists = 1 %}
+{%- endif %}
+{%- endfor %}
+{%- endif %}
+WORKDIR /openedx/site
+
+COPY --from=site-{{ site_name }}-git /openedx/site/package.json /openedx/site
+
+ARG NPM_REGISTRY={{ NPM_REGISTRY }}
+{{ patch("frontend-site-dockerfile-pre-npm-install") }}
+RUN --mount=type=cache,target=/root/.npm-sites,sharing=shared npm install --no-audit --no-fund --registry=$NPM_REGISTRY
+{{ patch("frontend-site-dockerfile-post-npm-install") }}
+{%- endfor %}
+
+
+{%- for site_name, site in iter_frontend_sites() %}
+######## build of site-{{ site_name }}-common
+FROM base AS site-{{ site_name }}-common
+WORKDIR /openedx/site
+
+COPY --from=site-{{ site_name }}-git /openedx/site/ /openedx/site
+COPY --from=site-{{ site_name }}-src /openedx/site /openedx/site
+
+{%- if ns.repos_exists %}
+RUN npm run build:packages
+{%- endif %}
+
+{{ patch("frontend-site-dockerfile-pre-npm-build") }}
+RUN PUBLIC_PATH="/site-{{ site.get("site", "default") }}/" npm run build
+{{ patch("frontend-site-dockerfile-post-npm-build") }}
+
+{%- endfor %}
+
+
 ####### final production image with all static assets
 FROM {{ MFE_CADDY_DOCKER_IMAGE }} AS production
 
@@ -90,6 +150,10 @@ RUN mkdir -p /openedx/dist
 # Copy static assets
 {% for app_name, app in iter_mfes() %}
 COPY --from={{ app_name }}-prod /openedx/app/dist /openedx/dist/{{ app_name }}
+{% endfor %}
+
+{%- for site_name, site in iter_frontend_sites() %}
+COPY --from=site-{{ site_name }}-common /openedx/site/dist /openedx/dist/site-{{ site_name }}
 {% endfor %}
 
 {{ patch("mfe-dockerfile-production-final") }}

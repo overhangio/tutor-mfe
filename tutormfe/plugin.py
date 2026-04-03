@@ -13,7 +13,16 @@ from tutor.hooks import priorities
 from tutor.types import Config, get_typed
 
 from .__about__ import __version__
-from .hooks import MFE_APPS, MFE_ATTRS_TYPE, PLUGIN_SLOTS
+from .hooks import (
+    FRONTEND_SITES,
+    MFE_APPS,
+    MFE_ATTRS_TYPE,
+    FRONTEND_APPS,
+    FRONTEND_APP_ATTRS_TYPE,
+    PLUGIN_SLOTS,
+    FRONTEND_SLOTS,
+    FRONTEND_SITE_ATTRS_TYPE,
+)
 
 # Handle version suffix in main mode, just like tutor core
 if __version_suffix__:
@@ -82,6 +91,35 @@ CORE_MFE_APPS: dict[str, MFE_ATTRS_TYPE] = {
     },
 }
 
+CORE_FRONTEND_SITES: dict[str, FRONTEND_SITE_ATTRS_TYPE] = {
+    "default": {
+        "repository": "local",
+        "port": 8080,
+        "siteConfig": {
+            "siteId": "tutor-frontend-site",
+            "siteName": "Frontend Template Site",
+            "accessTokenCookieName": "edx-jwt-cookie-header-payload",
+            "redirectRoleId": "org.openedx.frontend.role.dashboard",
+            "frontendBaseVersion": "^1.0.0-alpha",
+            "paragonVersion": "^23",
+            "externalRoutes": [
+                {
+                    "role": "org.openedx.frontend.role.profile",
+                    "url": ":1995/profile/",
+                },
+                {
+                    "role": "org.openedx.frontend.role.account",
+                    "url": ":1997/account/",
+                },
+                {
+                    "role": "org.openedx.frontend.role.logout",
+                    "url": ":8000/logout",
+                },
+            ],
+        },
+    },
+}
+
 
 # The core MFEs are added with a high priority, such that other users can override or
 # remove them.
@@ -91,12 +129,36 @@ def _add_core_mfe_apps(apps: dict[str, MFE_ATTRS_TYPE]) -> dict[str, MFE_ATTRS_T
     return apps
 
 
+@FRONTEND_SITES.add(priority=tutor_hooks.priorities.HIGH)
+def _add_core_frontend_sites(
+    sites: dict[str, FRONTEND_SITE_ATTRS_TYPE],
+) -> dict[str, FRONTEND_SITE_ATTRS_TYPE]:
+    sites.update(CORE_FRONTEND_SITES)
+    return sites
+
+
 @tutor_hooks.lru_cache
 def get_mfes() -> dict[str, MFE_ATTRS_TYPE]:
     """
     This function is cached for performance.
     """
     return MFE_APPS.apply({})
+
+
+@tutor_hooks.lru_cache
+def get_frontend_apps() -> dict[str, FRONTEND_APP_ATTRS_TYPE]:
+    """
+    This function is cached for performance.
+    """
+    return FRONTEND_APPS.apply({})
+
+
+@tutor_hooks.lru_cache
+def get_frontend_sites() -> dict[str, FRONTEND_SITE_ATTRS_TYPE]:
+    """
+    This function is cached for performance.
+    """
+    return FRONTEND_SITES.apply({})
 
 
 class MFEMountData:
@@ -125,6 +187,14 @@ def get_plugin_slots(mfe_name: str) -> list[tuple[str, str]]:
     return [i[-2:] for i in PLUGIN_SLOTS.iterate() if i[0] == mfe_name]
 
 
+@tutor_hooks.lru_cache
+def get_frontend_slots() -> list[tuple[str, str]]:
+    """
+    This function is cached for performance.
+    """
+    return FRONTEND_SLOTS.apply([])
+
+
 def iter_mfes() -> t.Iterable[tuple[str, MFE_ATTRS_TYPE]]:
     """
     Yield:
@@ -132,6 +202,47 @@ def iter_mfes() -> t.Iterable[tuple[str, MFE_ATTRS_TYPE]]:
         (name, dict)
     """
     yield from get_mfes().items()
+
+
+def iter_frontend_apps() -> t.Iterable[tuple[str, FRONTEND_APP_ATTRS_TYPE]]:
+    """
+    Yield:
+
+        (name, dict)
+    """
+    frontend_apps = get_frontend_apps()
+    for name, attrs in frontend_apps.items():
+        yield (name, attrs)
+
+
+def iter_frontend_sites() -> t.Iterable[tuple[str, FRONTEND_SITE_ATTRS_TYPE]]:
+    """
+    Yield:
+
+        (name, dict)
+    """
+    frontend_sites = get_frontend_sites()
+    for name, attrs in frontend_sites.items():
+        yield (name, attrs)
+
+
+def iter_paths() -> t.Iterable[tuple[str, FRONTEND_APP_ATTRS_TYPE]]:
+    """
+    Yield:
+
+        (name, dict)
+    """
+    mfes = get_mfes()
+    frontend_apps = get_frontend_apps()
+
+    # First yield all MFEs
+    for name, attrs in mfes.items():
+        yield (name, attrs)
+
+    # Then yield frontend apps that are not already MFEs
+    for name, attrs in frontend_apps.items():
+        if name not in mfes:
+            yield (name, attrs)
 
 
 def iter_plugin_slots(mfe_name: str) -> t.Iterable[tuple[str, str]]:
@@ -143,12 +254,42 @@ def iter_plugin_slots(mfe_name: str) -> t.Iterable[tuple[str, str]]:
     yield from get_plugin_slots(mfe_name)
 
 
+def iter_frontend_slots() -> t.Iterable[tuple[str, str]]:
+    """
+    Yield:
+
+        (slot_name, plugin_config)
+    """
+    yield from get_frontend_slots()
+
+
 def is_mfe_enabled(mfe_name: str) -> bool:
     return mfe_name in get_mfes()
 
 
+def is_frontend_app(app_name: str) -> bool:
+    """
+    Returns True if the given app_name corresponds to a configured frontend app.
+    """
+    return app_name in get_frontend_apps()
+
+
 def get_mfe(mfe_name: str) -> t.Union[MFE_ATTRS_TYPE, t.Any]:
     return get_mfes().get(mfe_name, {})
+
+
+def get_frontend_site(site_name: str) -> t.Union[FRONTEND_SITE_ATTRS_TYPE, t.Any]:
+    """
+    Returns the attributes of a configured frontend site.
+    """
+    return get_frontend_sites().get(site_name, {})
+
+
+def get_frontend_app(app_name: str) -> t.Union[FRONTEND_APP_ATTRS_TYPE, t.Any]:
+    """
+    Returns the attributes of a configured frontend app.
+    """
+    return get_frontend_apps().get(app_name, {})
 
 
 # Make the mfe functions available within templates
@@ -156,8 +297,15 @@ tutor_hooks.Filters.ENV_TEMPLATE_VARIABLES.add_items(
     [
         ("get_mfe", get_mfe),
         ("iter_mfes", iter_mfes),
+        ("iter_paths", iter_paths),
+        ("iter_frontend_apps", iter_frontend_apps),
+        ("iter_frontend_sites", iter_frontend_sites),
+        ("get_frontend_site", get_frontend_site),
+        ("get_frontend_app", get_frontend_app),
         ("iter_plugin_slots", iter_plugin_slots),
+        ("iter_frontend_slots", iter_frontend_slots),
         ("is_mfe_enabled", is_mfe_enabled),
+        ("is_frontend_app", is_frontend_app),
         ("MFEMountData", MFEMountData),
     ]
 )

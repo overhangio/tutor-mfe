@@ -1,0 +1,6 @@
+@use '@openedx/frontend-base/shell/app.scss' as shell;
+{%- for app_name, app_attrs in iter_frontend_apps() %}
+{%- for styleName in app_attrs.get('appEntryPoints', {}).get('styles', []) %}
+@use '{{ app_attrs.get('appEntryPoints', {}).get('packageName', 'style.scss') }}/{{ styleName }}' as {{ app_name }};
+{%- endfor %}
+{%- endfor %}
