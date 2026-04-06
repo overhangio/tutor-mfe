@@ -14,58 +14,47 @@
 
     {{ patch("mfe-caddyfile") | indent(4) }}
 
-    reverse_proxy /api/mfe_config/v1* lms:8000 {
-        # We need to specify the host header, otherwise it will be rejected with 400
-        # from the lms.
-        header_up Host {{ LMS_HOST }}
+    @mfe_config {
+        path /api/mfe_config/*
+    }
+    handle @mfe_config {
+        reverse_proxy lms:8000 {
+            header_up Host {{ LMS_HOST }}
+        }
+    }
+
+    @frontend_site_config {
+        path /api/frontend_site_config/*
+    }
+    handle @frontend_site_config {
+        reverse_proxy lms:8000 {
+            header_up Host {{ LMS_HOST }}
+        }
     }
 
     {% if is_mfe_enabled("authoring") %}
     # redirect /course-authoring to /authoring, for backward compatibility
-    @authoring path_regexp authoring /course-authoring/(.*)
-    redir @authoring /authoring/{re.authoring.1} permanent
+    @course-authoring path_regexp course_authoring /course-authoring/(.*)
+    redir @course-authoring /authoring/{re.course_authoring.1} permanent
     {% endif %}
 
-    {% for app_name, app in iter_paths() %}
-
-    {%- if is_frontend_app(app_name) %}
-    @app_{{ app_name }} {
-        path /{{ app_name }} /{{ app_name }}/*
+    {% for legacy_path in iter_legacy_paths() %}
+    @{{ legacy_path }} {
+        path /{{ legacy_path }} /{{ legacy_path }}/*
     }
-    handle @app_{{ app_name }} {
-        uri strip_prefix /{{ app_name }}
-        root * /openedx/dist/site-{{ app.get("site", "default") }}
+    handle @{{ legacy_path }} {
+        uri strip_prefix /{{ legacy_path }}
+        root * /openedx/dist/{{ legacy_path }}
         try_files /{path} /index.html
         file_server
     }
-    {%- else %}
+    {% endfor %}
 
-    @mfe_{{ app_name }} {
-        path /{{ app_name }} /{{ app_name }}/*
-    }
-    handle @mfe_{{ app_name }} {
-        uri strip_prefix /{{ app_name }}
-        root * /openedx/dist/{{ app_name }}
+    {% if get_frontend_apps() %}
+    handle {
+        root * /openedx/dist/site
         try_files /{path} /index.html
         file_server
     }
-    {%- endif %}
-    {% endfor %}
-
-    # Handle frontend sites, which are meant to serve only static assets, without an index.html.
-    # When fetched from the proper url handle they'll be returned with a index.html,
-    # but if someone tries to access them directly (like the chunk links or general assets)
-    # they'll get the files directy from this block
-    {% for site_name, app in iter_frontend_sites() %}
-    @site_{{ site_name }} {
-        path /site-{{ site_name }} /site-{{ site_name }}/*
-    }
-    handle @site_{{ site_name }} {
-        uri strip_prefix /site-{{ site_name }}
-        root * /openedx/dist/site-{{ site_name }}
-        # no index.html because we want to focus on assets in these ones
-        try_files /{path}
-        file_server
-    }
-    {% endfor %}
+    {% endif %}
 }

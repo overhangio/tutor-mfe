@@ -23,16 +23,33 @@ MFE_CONFIG = {
     "ACCESS_TOKEN_COOKIE_NAME": "edx-jwt-cookie-header-payload",
 }
 
+FRONTEND_SITE_CONFIG = {
+    "baseUrl": "http://{{ MFE_HOST }}:{{ MFE_SITE_PORT }}",
+    "lmsBaseUrl": "http://{{ LMS_HOST }}:8000",
+    "loginUrl": "http://{{ LMS_HOST }}:8000/login",
+    "logoutUrl": "http://{{ LMS_HOST }}:8000/logout",
+    "externalRoutes": [
+        {"role": "org.openedx.frontend.role.logout", "url": "http://{{ LMS_HOST }}:8000/logout"},
+    ],
+    "commonAppConfig": {},
+}
+
 # MFE-specific settings
-{% if get_mfe("authn") %}
-AUTHN_MICROFRONTEND_URL = "http://{{ MFE_HOST }}:{{ get_mfe("authn")["port"] }}/authn"
+{% if get_mfe("authn") or is_frontend_app_enabled("authn") %}
 AUTHN_MICROFRONTEND_DOMAIN  = "{{ MFE_HOST }}/authn"
 MFE_CONFIG["DISABLE_ENTERPRISE_LOGIN"] = True
+FRONTEND_SITE_CONFIG["commonAppConfig"]["DISABLE_ENTERPRISE_LOGIN"] = True
+{% if is_frontend_app_enabled("authn") %}
+AUTHN_MICROFRONTEND_URL = "http://{{ MFE_HOST }}:{{ MFE_SITE_PORT }}/authn"
+{% else %}
+AUTHN_MICROFRONTEND_URL = "http://{{ MFE_HOST }}:{{ get_mfe("authn")["port"] }}/authn"
+{% endif %}
 {% endif %}
 
 {% if get_mfe("account") %}
 ACCOUNT_MICROFRONTEND_URL = "http://{{ MFE_HOST }}:{{ get_mfe("account")["port"] }}/account/"
 MFE_CONFIG["ACCOUNT_SETTINGS_URL"] = ACCOUNT_MICROFRONTEND_URL
+FRONTEND_SITE_CONFIG["externalRoutes"].append({"role": "org.openedx.frontend.role.account", "url": "http://{{ MFE_HOST }}:{{ get_mfe("account")["port"] }}/account/"})
 {% endif %}
 
 {% if get_mfe("authoring") %}
@@ -55,7 +72,9 @@ DISCUSSIONS_MFE_FEEDBACK_URL = None
 WRITABLE_GRADEBOOK_URL = "http://{{ MFE_HOST }}:{{ get_mfe("gradebook")["port"] }}/gradebook"
 {% endif %}
 
-{% if get_mfe("learner-dashboard") %}
+{% if is_frontend_app_enabled("learner-dashboard") %}
+LEARNER_HOME_MICROFRONTEND_URL = "http://{{ MFE_HOST }}:{{ MFE_SITE_PORT }}/learner-dashboard"
+{% elif get_mfe("learner-dashboard") %}
 LEARNER_HOME_MICROFRONTEND_URL = "http://{{ MFE_HOST }}:{{ get_mfe("learner-dashboard")["port"] }}/learner-dashboard/"
 {% endif %}
 
@@ -71,6 +90,7 @@ ORA_GRADING_MICROFRONTEND_URL = "http://{{ MFE_HOST }}:{{ get_mfe("ora-grading")
 {% if get_mfe("profile") %}
 PROFILE_MICROFRONTEND_URL = "http://{{ MFE_HOST }}:{{ get_mfe("profile")["port"] }}/profile/u/"
 MFE_CONFIG["ACCOUNT_PROFILE_URL"] = "http://{{ MFE_HOST }}:{{ get_mfe("profile")["port"] }}/profile"
+FRONTEND_SITE_CONFIG["externalRoutes"].append({"role": "org.openedx.frontend.role.profile", "url": "http://{{ MFE_HOST }}:{{ get_mfe("profile")["port"] }}/profile/"})
 {% endif %}
 
 {% if get_mfe("communications") %}
@@ -87,18 +107,6 @@ MFE_CONFIG["ADMIN_CONSOLE_URL"] = ADMIN_CONSOLE_MICROFRONTEND_URL
 CATALOG_MICROFRONTEND_URL = "http://{{ MFE_HOST }}:{{ get_mfe("catalog")["port"] }}/catalog"
 {% endif %}
 
-{% if is_frontend_app("authn") %}
-{% set app = get_frontend_app("authn") %}
-{% set site = get_frontend_site(app.get("site", "default")) %}
-AUTHN_MICROFRONTEND_URL = "http://{{ MFE_HOST }}:{{ site["port"] }}/authn"
-{% endif %}
-
-{% if is_frontend_app("learner-dashboard") %}
-{% set app = get_frontend_app("learner-dashboard") %}
-{% set site = get_frontend_site(app.get("site", "default")) %}
-LEARNER_HOME_MICROFRONTEND_URL = "http://{{ MFE_HOST }}:{{ site["port"] }}/learner-dashboard"
-{% endif %}
-
 # Cors configuration
 {% for app_name, app in iter_mfes() %}
 # {{ app_name }} MFE
@@ -107,11 +115,11 @@ LOGIN_REDIRECT_WHITELIST.append("{{ MFE_HOST }}:{{ app["port"] }}")
 CSRF_TRUSTED_ORIGINS.append("http://{{ MFE_HOST }}:{{ app["port"] }}")
 {% endfor %}
 
-{% for app_name, app in iter_frontend_sites() %}
-CORS_ORIGIN_WHITELIST.append("http://{{ MFE_HOST }}:{{ app["port"] }}")
-LOGIN_REDIRECT_WHITELIST.append("{{ MFE_HOST }}:{{ app["port"] }}")
-CSRF_TRUSTED_ORIGINS.append("http://{{ MFE_HOST }}:{{ app["port"] }}")
-{% endfor %}
+{% if get_frontend_apps() %}
+CORS_ORIGIN_WHITELIST.append("http://{{ MFE_HOST }}:{{ MFE_SITE_PORT }}")
+LOGIN_REDIRECT_WHITELIST.append("{{ MFE_HOST }}:{{ MFE_SITE_PORT }}")
+CSRF_TRUSTED_ORIGINS.append("http://{{ MFE_HOST }}:{{ MFE_SITE_PORT }}")
+{% endif %}
 
 {{ patch("mfe-lms-common-settings") }}
 {{ patch("mfe-lms-development-settings") }}

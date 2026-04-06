@@ -1,6 +1,6 @@
 # syntax=docker/dockerfile:1
 # https://hub.docker.com/_/node/tags
-FROM docker.io/node:24.11.0-bullseye-slim AS base
+FROM docker.io/node:24.14.1-bullseye-slim AS base
 
 RUN apt update \
   && apt install -y git \
@@ -22,41 +22,41 @@ ENV PATH=/openedx/app/node_modules/.bin:${PATH}
 
 {{ patch("mfe-dockerfile-base") }}
 
-{% for app_name, app in iter_mfes() %}
-####################### {{ app_name }} MFE
-######## {{ app_name }} (git)
-FROM base AS {{ app_name }}-git
+{% for mfe_name, mfe in iter_mfes() %}
+####################### {{ mfe_name }} MFE
+######## {{ mfe_name }} (git)
+FROM base AS {{ mfe_name }}-git
 {#- Invalidate the build cache if a change is detected upstream #}
-ADD --keep-git-dir=true {{ app["repository"] }}#{{ app.get("version", MFE_COMMON_VERSION) }} .
+ADD --keep-git-dir=true {{ mfe["repository"] }}#{{ mfe.get("version", MFE_COMMON_VERSION) }} .
 
-######## {{ app_name }} (src)
+######## {{ mfe_name }} (src)
 # Empty layer with just the repo at the root, for build-time bind-mounts
-FROM scratch AS {{ app_name }}-src
-COPY --from={{ app_name }}-git /openedx/app /
+FROM scratch AS {{ mfe_name }}-src
+COPY --from={{ mfe_name }}-git /openedx/app /
 
-######## {{ app_name }} (common)
-FROM base AS {{ app_name }}-common
-COPY --from={{ app_name }}-src /package.json /openedx/app/package.json
-COPY --from={{ app_name }}-src /package-lock.json /openedx/app/package-lock.json
+######## {{ mfe_name }} (common)
+FROM base AS {{ mfe_name }}-common
+COPY --from={{ mfe_name }}-src /package.json /openedx/app/package.json
+COPY --from={{ mfe_name }}-src /package-lock.json /openedx/app/package-lock.json
 ARG NPM_REGISTRY={{ NPM_REGISTRY }}
 {{ patch("mfe-dockerfile-pre-npm-install") }}
-{{ patch("mfe-dockerfile-pre-npm-install-{}".format(app_name)) }}
+{{ patch("mfe-dockerfile-pre-npm-install-{}".format(mfe_name)) }}
 {#- Required for building optipng on M1 #}
 ENV CPPFLAGS=-DPNG_ARM_NEON_OPT=0
 {#- We define this environment variable to bypass an issue with the installation of pact https://github.com/pact-foundation/pact-js-core/issues/264 #}
 ENV PACT_SKIP_BINARY_INSTALL=true
 RUN --mount=type=cache,target=/root/.npm,sharing=shared npm clean-install --no-audit --no-fund --registry=$NPM_REGISTRY
 {{ patch("mfe-dockerfile-post-npm-install") }}
-{{ patch("mfe-dockerfile-post-npm-install-{}".format(app_name)) }}
-COPY --from={{ app_name }}-src / /openedx/app
+{{ patch("mfe-dockerfile-post-npm-install-{}".format(mfe_name)) }}
+COPY --from={{ mfe_name }}-src / /openedx/app
 
 RUN make OPENEDX_ATLAS_PULL=true ATLAS_OPTIONS="--repository={{ ATLAS_REPOSITORY }} --revision={{ ATLAS_REVISION }} {{ ATLAS_OPTIONS }}" pull_translations
 
-EXPOSE {{ app['port'] }}
+EXPOSE {{ mfe['port'] }}
 
 # Configuration needed at build time
-ENV APP_ID={{ app_name }}
-ENV PUBLIC_PATH='/{{ app_name }}/'
+ENV APP_ID={{ mfe_name }}
+ENV PUBLIC_PATH='/{{ mfe_name }}/'
 # We could in theory point the mfe_config API directly to the LMS. But for that we would
 # have to code the LMS url into the mfe image, and this configuration is user-dependent.
 # So we point to a relative url that will be a proxy for the LMS.
@@ -64,83 +64,87 @@ ENV MFE_CONFIG_API_URL=/api/mfe_config/v1
 ARG ENABLE_NEW_RELIC=false
 COPY env.config.jsx /openedx/app
 {{ patch("mfe-dockerfile-pre-npm-build") }}
-{{ patch("mfe-dockerfile-pre-npm-build-{}".format(app_name)) }}
+{{ patch("mfe-dockerfile-pre-npm-build-{}".format(mfe_name)) }}
 
-######## {{ app_name }} (dev)
-FROM {{ app_name }}-common AS {{ app_name }}-dev
+######## {{ mfe_name }} (dev)
+FROM {{ mfe_name }}-common AS {{ mfe_name }}-dev
 ENV NODE_ENV=development
 CMD ["/bin/bash", "-c", "npm run start --- --config ./webpack.dev-tutor.config.js"]
 {% endfor %}
 
 # Production images are last to accelerate dev image building
-{%- for app_name, app in iter_mfes() %}
-######## {{ app_name }} (production)
-FROM {{ app_name }}-common AS {{ app_name }}-prod
+{%- for mfe_name, mfe in iter_mfes() %}
+######## {{ mfe_name }} (production)
+FROM {{ mfe_name }}-common AS {{ mfe_name }}-prod
 ENV NODE_ENV=production
 RUN npm run build
 {{ patch("mfe-dockerfile-post-npm-build") }}
-{{ patch("mfe-dockerfile-post-npm-build-{}".format(app_name)) }}
+{{ patch("mfe-dockerfile-post-npm-build-{}".format(mfe_name)) }}
 {% endfor %}
 
-
-{%- for site_name, site in iter_frontend_sites() %}
-######## build of site-{{ site_name }}-git
-FROM base AS site-{{ site_name }}-git
-WORKDIR /openedx/site
-
-# Either use site-local or the configured repository
-{%- if site.get("repository") and site["repository"] == "local" %}
-COPY frontend-site/ /openedx/site
-{%- else %}
-ADD --keep-git-dir=true {{ site["repository"] }}#{{ site.get("version", MFE_COMMON_VERSION) }} .
-{%- endif %}
-{%- endfor %}
-
-
-{%- set ns = namespace(repos_exists=0) %}
-{% for site_name, site in iter_frontend_sites() %}
-######## build of site-{{ site_name }}-src
-FROM base AS site-{{ site_name }}-src
-
-{%- if site.get("repository") and site["repository"] == "local" %}
-# Git clone all frontend apps that should be built
-WORKDIR /openedx/site/packages
 {%- for app_name, app in iter_frontend_apps() %}
+######## frontend-app-{{ app_name }} (repo)
+FROM base AS frontend-app-{{ app_name }}-repo
+WORKDIR /openedx/site/packages/frontend-app-{{ app_name }}
 {%- if app.get("repository") %}
-RUN git clone --depth 1 --branch {{ app.get("version", MFE_COMMON_VERSION) }} {{ app["repository"] }} frontend-app-{{ app_name }}
-{%- set ns.repos_exists = 1 %}
+ADD --keep-git-dir=true {{ app["repository"] }}{% if app.get("branch") %}#{{ app["branch"] }}{% endif %} .
 {%- endif %}
-{%- endfor %}
-{%- endif %}
+
+######## frontend-app-{{ app_name }} (src)
+FROM scratch AS frontend-app-{{ app_name }}-src
+COPY --from=frontend-app-{{ app_name }}-repo /openedx/site/packages/frontend-app-{{ app_name }} /
+{% endfor %}
+
+# No need to build the frontend site if there are no frontend apps.
+{%- if get_frontend_apps() %}
+####################### site
+######## site (repo)
+FROM base AS site-repo
 WORKDIR /openedx/site
 
-COPY --from=site-{{ site_name }}-git /openedx/site/package.json /openedx/site
+{%- if MFE_SITE_REPOSITORY %}
+ADD --keep-git-dir=true {{ MFE_SITE_REPOSITORY }}#{{ MFE_SITE_VERSION }} .
+{%- else %}
+COPY site/ .
+{%- endif %}
+
+######## site (src)
+FROM scratch AS site-src
+COPY --from=site-repo /openedx/site /
+
+######## site (common)
+FROM base AS site-common
+WORKDIR /openedx/site
+
+# Copy frontend app packages into the workspace.
+{%- for app_name, app in iter_frontend_apps() %}
+COPY --from=frontend-app-{{ app_name }}-src / /openedx/site/packages/frontend-app-{{ app_name }}
+{%- endfor %}
+
+# Copy only package.json first so that npm install is cached independently of source changes
+COPY --from=site-src /package.json .
 
 ARG NPM_REGISTRY={{ NPM_REGISTRY }}
-{{ patch("frontend-site-dockerfile-pre-npm-install") }}
+{{ patch("mfe-dockerfile-pre-npm-install-site") }}
 RUN --mount=type=cache,target=/root/.npm-sites,sharing=shared npm install --no-audit --no-fund --registry=$NPM_REGISTRY
-{{ patch("frontend-site-dockerfile-post-npm-install") }}
-{%- endfor %}
+{{ patch("mfe-dockerfile-post-npm-install-site") }}
 
+# Copy the full source; done after npm install so that source changes don't invalidate the install cache
+COPY --from=site-src / .
 
-{%- for site_name, site in iter_frontend_sites() %}
-######## build of site-{{ site_name }}-common
-FROM base AS site-{{ site_name }}-common
-WORKDIR /openedx/site
+######## mfe (dev)
+FROM site-common AS mfe-dev
+ENV NODE_ENV=development
+EXPOSE {{ MFE_SITE_PORT }}
+CMD ["/bin/bash", "-c", "npm run dev:packages"]
 
-COPY --from=site-{{ site_name }}-git /openedx/site/ /openedx/site
-COPY --from=site-{{ site_name }}-src /openedx/site /openedx/site
-
-{%- if ns.repos_exists %}
+######## site (production)
+FROM site-common AS site-prod
+{{ patch("mfe-dockerfile-pre-npm-build-site") }}
 RUN npm run build:packages
+RUN npm run build
+{{ patch("mfe-dockerfile-post-npm-build-site") }}
 {%- endif %}
-
-{{ patch("frontend-site-dockerfile-pre-npm-build") }}
-RUN PUBLIC_PATH="/site-{{ site.get("site", "default") }}/" npm run build
-{{ patch("frontend-site-dockerfile-post-npm-build") }}
-
-{%- endfor %}
-
 
 ####### final production image with all static assets
 FROM {{ MFE_CADDY_DOCKER_IMAGE }} AS production
@@ -152,8 +156,8 @@ RUN mkdir -p /openedx/dist
 COPY --from={{ app_name }}-prod /openedx/app/dist /openedx/dist/{{ app_name }}
 {% endfor %}
 
-{%- for site_name, site in iter_frontend_sites() %}
-COPY --from=site-{{ site_name }}-common /openedx/site/dist /openedx/dist/site-{{ site_name }}
-{% endfor %}
+{%- if get_frontend_apps() %}
+COPY --from=site-prod /openedx/site/dist /openedx/dist/site
+{%- endif %}
 
 {{ patch("mfe-dockerfile-production-final") }}

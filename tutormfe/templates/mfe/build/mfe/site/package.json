@@ -1,0 +1,35 @@
+{
+  "workspaces": [
+    "packages/*"
+  ],
+  "browserslist": [
+    "extends @edx/browserslist-config"
+  ],
+  "sideEffects": [
+    "*.css",
+    "*.scss"
+  ],
+  "scripts": {
+    "build": "openedx build",
+    "build:packages": "make build-packages",
+    "clean:packages": "make clean-packages",
+    "dev": "PORT=${PORT:-8080} openedx dev",
+    "dev:site": "make dev-site",
+    "dev:packages": "make dev-packages",
+    "clean": "make clean",
+    "serve": "openedx serve"
+  },
+  "dependencies": {
+    "@edx/brand": "npm:@openedx/brand-openedx@latest",
+{%- for app_name, app in iter_frontend_apps() %}
+{%- if app.get("npm_package") %}
+    "{{ app['npm_package'] }}": "{{ app['npm_version'] }}",
+{%- endif %}
+{%- endfor %}
+    "@openedx/frontend-base": "^1.0.0-alpha || 0.0.0-dev"
+  },
+  "devDependencies": {
+    "@edx/browserslist-config": "latest",
+    "turbo": "^2.8.16"
+  }
+}

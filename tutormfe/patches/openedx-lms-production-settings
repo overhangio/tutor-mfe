@@ -23,17 +23,30 @@ MFE_CONFIG = {
     "ACCESS_TOKEN_COOKIE_NAME": "edx-jwt-cookie-header-payload",
 }
 
+FRONTEND_SITE_CONFIG = {
+    "baseUrl": "{{ "https" if ENABLE_HTTPS else "http" }}://{{ MFE_HOST }}",
+    "lmsBaseUrl": "{{ "https" if ENABLE_HTTPS else "http" }}://{{ LMS_HOST }}",
+    "loginUrl": "{{ "https" if ENABLE_HTTPS else "http" }}://{{ LMS_HOST }}/login",
+    "logoutUrl": "{{ "https" if ENABLE_HTTPS else "http" }}://{{ LMS_HOST }}/logout",
+    "externalRoutes": [
+        {"role": "org.openedx.frontend.role.logout", "url": "{{ "https" if ENABLE_HTTPS else "http" }}://{{ LMS_HOST }}/logout"},
+    ],
+    "commonAppConfig": {},
+}
+
 # MFE-specific settings
 
-{% if get_mfe("authn") %}
+{% if get_mfe("authn") or is_frontend_app_enabled("authn") %}
 AUTHN_MICROFRONTEND_URL = "{% if ENABLE_HTTPS %}https://{% else %}http://{% endif %}{{ MFE_HOST }}/authn"
 AUTHN_MICROFRONTEND_DOMAIN  = "{{ MFE_HOST }}/authn"
 MFE_CONFIG["DISABLE_ENTERPRISE_LOGIN"] = True
+FRONTEND_SITE_CONFIG["commonAppConfig"]["DISABLE_ENTERPRISE_LOGIN"] = True
 {% endif %}
 
 {% if get_mfe("account") %}
 ACCOUNT_MICROFRONTEND_URL = "{% if ENABLE_HTTPS %}https://{% else %}http://{% endif %}{{ MFE_HOST }}/account/"
 MFE_CONFIG["ACCOUNT_SETTINGS_URL"] = ACCOUNT_MICROFRONTEND_URL
+FRONTEND_SITE_CONFIG["externalRoutes"].append({"role": "org.openedx.frontend.role.account", "url": "{{ "https" if ENABLE_HTTPS else "http" }}://{{ MFE_HOST }}/account/"})
 {% endif %}
 
 {% if get_mfe("authoring") %}
@@ -56,7 +69,7 @@ DISCUSSIONS_MFE_FEEDBACK_URL = None
 WRITABLE_GRADEBOOK_URL = "{% if ENABLE_HTTPS %}https://{% else %}http://{% endif %}{{ MFE_HOST }}/gradebook"
 {% endif %}
 
-{% if get_mfe("learner-dashboard") %}
+{% if get_mfe("learner-dashboard") or is_frontend_app_enabled("learner-dashboard") %}
 LEARNER_HOME_MICROFRONTEND_URL = "{% if ENABLE_HTTPS %}https://{% else %}http://{% endif %}{{ MFE_HOST }}/learner-dashboard/"
 {% endif %}
 
@@ -72,6 +85,7 @@ ORA_GRADING_MICROFRONTEND_URL = "{% if ENABLE_HTTPS %}https://{% else %}http://{
 {% if get_mfe("profile") %}
 PROFILE_MICROFRONTEND_URL = "{% if ENABLE_HTTPS %}https://{% else %}http://{% endif %}{{ MFE_HOST }}/profile/u/"
 MFE_CONFIG["ACCOUNT_PROFILE_URL"] = "{% if ENABLE_HTTPS %}https://{% else %}http://{% endif %}{{ MFE_HOST }}/profile"
+FRONTEND_SITE_CONFIG["externalRoutes"].append({"role": "org.openedx.frontend.role.profile", "url": "{{ "https" if ENABLE_HTTPS else "http" }}://{{ MFE_HOST }}/profile/"})
 {% endif %}
 
 {% if get_mfe("communications") %}

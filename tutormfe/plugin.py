@@ -14,14 +14,12 @@ from tutor.types import Config, get_typed
 
 from .__about__ import __version__
 from .hooks import (
-    FRONTEND_SITES,
+    FRONTEND_APP_ATTRS_TYPE,
+    FRONTEND_APPS,
+    FRONTEND_SLOTS,
     MFE_APPS,
     MFE_ATTRS_TYPE,
-    FRONTEND_APPS,
-    FRONTEND_APP_ATTRS_TYPE,
     PLUGIN_SLOTS,
-    FRONTEND_SLOTS,
-    FRONTEND_SITE_ATTRS_TYPE,
 )
 
 # Handle version suffix in main mode, just like tutor core
@@ -37,6 +35,10 @@ config = {
         "COMMON_VERSION": "{{ OPENEDX_COMMON_VERSION }}",
         "CADDY_DOCKER_IMAGE": "{{ DOCKER_IMAGE_CADDY }}",
         "HOST_EXTRA_FILES": False,
+        "SITE_PORT": 8080,
+        "SITE_HOME": "org.openedx.frontend.role.dashboard",
+        "SITE_REPOSITORY": "",
+        "SITE_VERSION": "",
     },
 }
 
@@ -91,32 +93,16 @@ CORE_MFE_APPS: dict[str, MFE_ATTRS_TYPE] = {
     },
 }
 
-CORE_FRONTEND_SITES: dict[str, FRONTEND_SITE_ATTRS_TYPE] = {
-    "default": {
-        "repository": "local",
-        "port": 8080,
-        "siteConfig": {
-            "siteId": "tutor-frontend-site",
-            "siteName": "Frontend Template Site",
-            "accessTokenCookieName": "edx-jwt-cookie-header-payload",
-            "redirectRoleId": "org.openedx.frontend.role.dashboard",
-            "frontendBaseVersion": "^1.0.0-alpha",
-            "paragonVersion": "^23",
-            "externalRoutes": [
-                {
-                    "role": "org.openedx.frontend.role.profile",
-                    "url": ":1995/profile/",
-                },
-                {
-                    "role": "org.openedx.frontend.role.account",
-                    "url": ":1997/account/",
-                },
-                {
-                    "role": "org.openedx.frontend.role.logout",
-                    "url": ":8000/logout",
-                },
-            ],
-        },
+CORE_FRONTEND_APPS: dict[str, FRONTEND_APP_ATTRS_TYPE] = {
+    "authn": {
+        "npm_package": "@openedx/frontend-app-authn",
+        "npm_version": "^1.0.0-alpha || 0.0.0-dev",
+        "enabled": True,
+    },
+    "learner-dashboard": {
+        "npm_package": "@openedx/frontend-app-learner-dashboard",
+        "npm_version": "^1.0.0-alpha || 0.0.0-dev",
+        "enabled": True,
     },
 }
 
@@ -129,12 +115,12 @@ def _add_core_mfe_apps(apps: dict[str, MFE_ATTRS_TYPE]) -> dict[str, MFE_ATTRS_T
     return apps
 
 
-@FRONTEND_SITES.add(priority=tutor_hooks.priorities.HIGH)
-def _add_core_frontend_sites(
-    sites: dict[str, FRONTEND_SITE_ATTRS_TYPE],
-) -> dict[str, FRONTEND_SITE_ATTRS_TYPE]:
-    sites.update(CORE_FRONTEND_SITES)
-    return sites
+@FRONTEND_APPS.add(priority=tutor_hooks.priorities.HIGH)
+def _add_core_frontend_apps(
+    apps: dict[str, FRONTEND_APP_ATTRS_TYPE],
+) -> dict[str, FRONTEND_APP_ATTRS_TYPE]:
+    apps.update(CORE_FRONTEND_APPS)
+    return apps
 
 
 @tutor_hooks.lru_cache
@@ -153,30 +139,22 @@ def get_frontend_apps() -> dict[str, FRONTEND_APP_ATTRS_TYPE]:
     return FRONTEND_APPS.apply({})
 
 
-@tutor_hooks.lru_cache
-def get_frontend_sites() -> dict[str, FRONTEND_SITE_ATTRS_TYPE]:
-    """
-    This function is cached for performance.
-    """
-    return FRONTEND_SITES.apply({})
-
-
 class MFEMountData:
     """Stores categorized mounted and unmounted MFEs."""
 
     def __init__(self, mounts: list[str]):
         self.mounted: list[tuple[str, MFE_ATTRS_TYPE, list[str]]] = []
         self.unmounted: list[tuple[str, MFE_ATTRS_TYPE]] = []
-        self._categorize_mfes(mounts)
-
-    def _categorize_mfes(self, mounts: list[str]) -> None:
-        """Populates mounted and unmounted MFE lists based on mount data."""
         for app_name, app in iter_mfes():
             mfe_mounts = list(iter_mounts(mounts, app_name))
             if mfe_mounts:
                 self.mounted.append((app_name, app, mfe_mounts))
             else:
                 self.unmounted.append((app_name, app))
+
+
+def get_site_mounts(mounts: list[str]) -> list[str]:
+    return list(iter_mounts(mounts, SITE_MOUNT_NAME, "site"))
 
 
 @tutor_hooks.lru_cache
@@ -188,10 +166,7 @@ def get_plugin_slots(mfe_name: str) -> list[tuple[str, str]]:
 
 
 @tutor_hooks.lru_cache
-def get_frontend_slots() -> list[tuple[str, str]]:
-    """
-    This function is cached for performance.
-    """
+def get_frontend_slots() -> list[str]:
     return FRONTEND_SLOTS.apply([])
 
 
@@ -205,44 +180,16 @@ def iter_mfes() -> t.Iterable[tuple[str, MFE_ATTRS_TYPE]]:
 
 
 def iter_frontend_apps() -> t.Iterable[tuple[str, FRONTEND_APP_ATTRS_TYPE]]:
+    yield from get_frontend_apps().items()
+
+
+def iter_legacy_paths() -> t.Iterable[str]:
     """
-    Yield:
-
-        (name, dict)
+    Yield MFE names that are not superseded by an enabled frontend app.
     """
-    frontend_apps = get_frontend_apps()
-    for name, attrs in frontend_apps.items():
-        yield (name, attrs)
-
-
-def iter_frontend_sites() -> t.Iterable[tuple[str, FRONTEND_SITE_ATTRS_TYPE]]:
-    """
-    Yield:
-
-        (name, dict)
-    """
-    frontend_sites = get_frontend_sites()
-    for name, attrs in frontend_sites.items():
-        yield (name, attrs)
-
-
-def iter_paths() -> t.Iterable[tuple[str, FRONTEND_APP_ATTRS_TYPE]]:
-    """
-    Yield:
-
-        (name, dict)
-    """
-    mfes = get_mfes()
-    frontend_apps = get_frontend_apps()
-
-    # First yield all MFEs
-    for name, attrs in mfes.items():
-        yield (name, attrs)
-
-    # Then yield frontend apps that are not already MFEs
-    for name, attrs in frontend_apps.items():
-        if name not in mfes:
-            yield (name, attrs)
+    for name, _attrs in iter_mfes():
+        if not is_frontend_app_enabled(name):
+            yield name
 
 
 def iter_plugin_slots(mfe_name: str) -> t.Iterable[tuple[str, str]]:
@@ -254,12 +201,7 @@ def iter_plugin_slots(mfe_name: str) -> t.Iterable[tuple[str, str]]:
     yield from get_plugin_slots(mfe_name)
 
 
-def iter_frontend_slots() -> t.Iterable[tuple[str, str]]:
-    """
-    Yield:
-
-        (slot_name, plugin_config)
-    """
+def iter_frontend_slots() -> t.Iterable[str]:
     yield from get_frontend_slots()
 
 
@@ -267,22 +209,15 @@ def is_mfe_enabled(mfe_name: str) -> bool:
     return mfe_name in get_mfes()
 
 
-def is_frontend_app(app_name: str) -> bool:
+def is_frontend_app_enabled(app_name: str) -> bool:
     """
-    Returns True if the given app_name corresponds to a configured frontend app.
+    Returns True if the frontend app is configured and has enabled=True.
     """
-    return app_name in get_frontend_apps()
+    return bool(get_frontend_app(app_name).get("enabled", False))
 
 
 def get_mfe(mfe_name: str) -> t.Union[MFE_ATTRS_TYPE, t.Any]:
     return get_mfes().get(mfe_name, {})
-
-
-def get_frontend_site(site_name: str) -> t.Union[FRONTEND_SITE_ATTRS_TYPE, t.Any]:
-    """
-    Returns the attributes of a configured frontend site.
-    """
-    return get_frontend_sites().get(site_name, {})
 
 
 def get_frontend_app(app_name: str) -> t.Union[FRONTEND_APP_ATTRS_TYPE, t.Any]:
@@ -297,16 +232,16 @@ tutor_hooks.Filters.ENV_TEMPLATE_VARIABLES.add_items(
     [
         ("get_mfe", get_mfe),
         ("iter_mfes", iter_mfes),
-        ("iter_paths", iter_paths),
+        ("iter_legacy_paths", iter_legacy_paths),
         ("iter_frontend_apps", iter_frontend_apps),
-        ("iter_frontend_sites", iter_frontend_sites),
-        ("get_frontend_site", get_frontend_site),
         ("get_frontend_app", get_frontend_app),
+        ("get_frontend_apps", get_frontend_apps),
         ("iter_plugin_slots", iter_plugin_slots),
         ("iter_frontend_slots", iter_frontend_slots),
         ("is_mfe_enabled", is_mfe_enabled),
-        ("is_frontend_app", is_frontend_app),
+        ("is_frontend_app_enabled", is_frontend_app_enabled),
         ("MFEMountData", MFEMountData),
+        ("get_site_mounts", get_site_mounts),
     ]
 )
 
@@ -352,6 +287,24 @@ def _mounted_mfe_image_management() -> None:
         tutor_hooks.Filters.IMAGES_PUSH.add_item((name, tag))
 
 
+# Build, pull and push mfe-dev image
+@tutor_hooks.Actions.PLUGINS_LOADED.add()
+def _site_image_management() -> None:
+    if get_frontend_apps():
+        name = "mfe-dev"
+        tag = "{{ MFE_DOCKER_IMAGE_DEV_PREFIX }}-" + name + ":{{ MFE_VERSION }}"
+        tutor_hooks.Filters.IMAGES_BUILD.add_item(
+            (
+                name,
+                os.path.join("plugins", "mfe", "build", "mfe"),
+                tag,
+                ("--target=mfe-dev",),
+            )
+        )
+        tutor_hooks.Filters.IMAGES_PULL.add_item((name, tag))
+        tutor_hooks.Filters.IMAGES_PUSH.add_item((name, tag))
+
+
 # init script
 with open(
     os.path.join(
@@ -369,6 +322,7 @@ with open(
     tutor_hooks.Filters.CLI_DO_INIT_TASKS.add_item(("lms", task_file.read()))
 
 REPO_PREFIX = "frontend-app-"
+SITE_MOUNT_NAME = "frontend-template-site"
 
 
 @tutor_hooks.Filters.COMPOSE_MOUNTS.add()
@@ -382,12 +336,24 @@ def _mount_frontend_apps(
     singular 'mfe' service container.
     """
     if path_basename.startswith(REPO_PREFIX):
-        # Assumption:
-        # For each repo named frontend-app-APPNAME, there is an associated
-        # docker-compose service named APPNAME. If this assumption is broken,
-        # then Tutor will try to mount the repo in a service that doesn't exist.
         app_name = path_basename[len(REPO_PREFIX) :]
-        volumes += [(app_name, "/openedx/app")]
+        if is_frontend_app_enabled(app_name):
+            volumes += [("site", f"/openedx/site/packages/frontend-app-{app_name}")]
+        elif is_mfe_enabled(app_name):
+            volumes += [(app_name, "/openedx/app")]
+    return volumes
+
+
+@tutor_hooks.Filters.COMPOSE_MOUNTS.add()
+def _mount_site(
+    volumes: list[tuple[str, str]], path_basename: str
+) -> list[tuple[str, str]]:
+    """
+    If the user mounts a directory named SITE_MOUNT_NAME, make it available
+    in the site dev service container at /openedx/site.
+    """
+    if path_basename == SITE_MOUNT_NAME:
+        volumes += [("site", "/openedx/site")]
     return volumes
 
 
@@ -397,10 +363,25 @@ def _mount_frontend_apps_on_build(
 ) -> list[tuple[str, str]]:
     path_basename = os.path.basename(host_path)
     if path_basename.startswith(REPO_PREFIX):
-        # Bind-mount repo at build-time, both for prod and dev images
         app_name = path_basename[len(REPO_PREFIX) :]
-        mounts.append(("mfe", f"{app_name}-src"))
-        mounts.append((f"{app_name}-dev", f"{app_name}-src"))
+        if is_frontend_app_enabled(app_name):
+            mounts.append(("mfe", f"frontend-app-{app_name}-src"))
+            mounts.append(("mfe-dev", f"frontend-app-{app_name}-src"))
+        elif is_mfe_enabled(app_name):
+            mounts.append(("mfe", f"{app_name}-src"))
+            mounts.append((f"{app_name}-dev", f"{app_name}-src"))
+    return mounts
+
+
+@tutor_hooks.Filters.IMAGES_BUILD_MOUNTS.add()
+def _mount_site_on_build(
+    mounts: list[tuple[str, str]], host_path: str
+) -> list[tuple[str, str]]:
+    path_basename = os.path.basename(host_path)
+    if path_basename == SITE_MOUNT_NAME:
+        # Bind-mount site at build-time, both for prod and dev images
+        mounts.append(("mfe", "site-src"))
+        mounts.append(("mfe-dev", "site-src"))
     return mounts
 
 
@@ -413,6 +394,8 @@ def _print_mfe_public_hosts(
     else:
         for mfe_name, mfe_attrs in iter_mfes():
             hostnames.append("{{ MFE_HOST }}" + f":{mfe_attrs['port']}/{mfe_name}")
+        if get_frontend_apps():
+            hostnames.append("{{ MFE_HOST }}:{{ MFE_SITE_PORT }}")
     return hostnames
 
 
@@ -432,6 +415,9 @@ def _build_3rd_party_dev_mfes_on_launch(
             # - in main
             # - in development for non-core apps
             image_names.append(f"{mfe_name}-dev")
+    if get_frontend_apps():
+        if __version_suffix__ or context_name == "dev":
+            image_names.append("mfe-dev")
     return image_names
 
 

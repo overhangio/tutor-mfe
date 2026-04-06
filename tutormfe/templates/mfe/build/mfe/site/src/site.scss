@@ -1,0 +1,11 @@
+@use '@openedx/frontend-base/shell/app.scss' as shell;
+
+{% if get_frontend_app("authn") %}
+@use '@openedx/frontend-app-authn/app.scss' as authn;
+{% endif %}
+
+{% if get_frontend_app("learner-dashboard") %}
+@use '@openedx/frontend-app-learner-dashboard/app.scss' as learnerDashboard;
+{% endif %}
+
+{{ patch("site-scss") }}
