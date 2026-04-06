@@ -8,4 +8,4 @@
 @use '@openedx/frontend-app-learner-dashboard/app.scss' as learnerDashboard;
 {% endif %}
 
-{{ patch("site-scss") }}
+{{ patch("mfe-site-scss") }}

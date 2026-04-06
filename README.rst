@@ -638,6 +638,207 @@ This works for custom MFEs, as well. For example, if you added your own MFE name
     EOF
     docker buildx create --use --name=singlecpu --config=./buildkitd.toml
 
+Frontend-base site
+------------------
+
+In addition to hosting individual MFEs, this plugin supports `frontend-base <https://github.com/openedx/frontend-base>`__, a unified framework for Open edX frontend apps. In practice, frontend-base is a replacement for ``frontend-build``, ``frontend-platform``, ``frontend-plugin-framework``, ``frontend-component-header``, and ``frontend-component-footer``. It enables apps to be loaded as direct plugins within a single, unified application (the "shell"), rather than as separate, independently deployed micro frontends. Some key advantages:
+
+- For all Tutor users: shared dependencies (React, Paragon, etc.) are installed and built only once, speeding up builds and reducing page load times.
+- For learners: deduped dependencies prevent UX inconsistencies, and navigation between apps no longer triggers full page refreshes.
+- For plugin authors: frontend apps are plugins themselves; the same API can be used to create Tutor plugins, including ones that add entire new routes.
+- For frontend developers: there's a single `mfe-dev` Docker service for all apps, but individual ones (as well as the site itself) can still be mounted and developed independently.
+- For tutor-mfe developers: everything about the frontend-base site is considered user configuration, from package.json to index.html; no monkey-patching required.
+
+When frontend apps are enabled, the plugin builds a frontend-base site that bundles them together into a shell application. The site is served by the same ``mfe`` container alongside legacy MFEs, with Caddy routing requests appropriately.
+
+Frontend apps
+~~~~~~~~~~~~~
+
+Frontend apps are npm packages that plug into the frontend-base site. This plugin ships with two core frontend apps enabled by default:
+
+- ``authn`` (``@openedx/frontend-app-authn``)
+- ``learner-dashboard`` (``@openedx/frontend-app-learner-dashboard``)
+
+If an enabled frontend app matches a legacy MFE, the legacy MFE will be effectively disabled.  If you want to switch to the legacy MFE version of a frontend app, you can disable it as follows:
+
+.. code-block:: python
+
+    @FRONTEND_APPS.add()
+    def _disable_authn(apps):
+        apps["authn"]["enabled"] = False
+        return apps
+
+Enabling or disabling existing apps does not require rebuilding tutor-mfe images: after a `tutor config save`, only a Tutor restart is required.
+
+To add a custom frontend app (which does require rebuilding tutor-mfe images), create a Tutor plugin and use the ``tutormfe.hooks.FRONTEND_APPS`` filter:
+
+.. code-block:: python
+
+    from tutormfe.hooks import FRONTEND_APPS
+
+    from tutor import hooks
+
+    @FRONTEND_APPS.add()
+    def _add_my_app(apps):
+        apps["my-app"] = {
+            "npm_package": "@myorg/frontend-app-my-app",
+            "npm_version": "^1.0.0",
+            "enabled": True,
+            "repository": "https://github.com/myorg/frontend-app-my-app.git", # optional: if present, will be used at build time instead of installing from NPM
+            "branch": "main"  # optional: defaults to the repository's default branch
+        }
+        return apps
+
+    hooks.Filters.ENV_PATCHES.add_items(
+        [
+            (
+                "mfe-site-config-imports",
+                """
+    import { myApp } from '@myorg/frontend-app-my-app';
+    """
+            ),
+            (
+                "mfe-site-config",
+                """
+    addApp(siteConfig, myApp);
+    """
+            ),
+            (
+                "mfe-site-scss",
+                """
+    @use '@myorg/frontend-app-my-app/app.scss' as myApp;
+    """
+            ),
+        ]
+    )
+
+Runtime configuration
+~~~~~~~~~~~~~~~~~~~~~
+
+By default, the frontend-base site fetches its runtime configuration from the LMS at ``/api/frontend_site_config/v1/``. This configuration is populated from the ``FRONTEND_SITE_CONFIG`` dictionary in the LMS settings.
+
+Tutor-mfe automatically populates ``FRONTEND_SITE_CONFIG`` with base URLs, login/logout URLs, external routes, and per-app configuration. To add custom values or override existing ones, use the ``mfe-lms-common-settings``, ``mfe-lms-production-settings``, or ``mfe-lms-development-settings`` patches:
+
+.. code-block:: python
+
+    from tutor import hooks
+
+    hooks.Filters.ENV_PATCHES.add_item(
+        (
+            "mfe-lms-common-settings",
+            """
+    FRONTEND_SITE_CONFIG["supportUrl"] = "https://support.example.com"
+    FRONTEND_SITE_CONFIG["commonAppConfig"]["MY_CUSTOM_SETTING"] = "my-value"
+    """
+        )
+    )
+
+Backward compatibility with MFE_CONFIG
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Note that for maximum backward compatibility, the ``/api/frontend_site_config/v1/`` endpoint automatically converts existing ``MFE_CONFIG`` and ``MFE_CONFIG_OVERRIDES`` configuration (including that pulled from Django's ``site_configuration`` model) to frontend-base's SiteConfig structure, where applicable. However, it does so with a lower precedence than ``FRONTEND_SITE_CONFIG``. This means explicit FRONTEND_SITE_CONFIG entries will always override ``MFE_CONFIG`` ones, including those coming from the database.  If database configuration or backward compatibility are priorities, empty the ``FRONTEND_SITE_CONFIG`` dictionary using the ``mfe-lms-common-settings`` patch:
+
+.. code-block:: python
+
+    from tutor import hooks
+
+    hooks.Filters.ENV_PATCHES.add_item(
+        (
+            "mfe-lms-common-settings",
+            """
+    FRONTEND_SITE_CONFIG = {}
+    """
+        )
+    )
+
+Domain-dependent runtime configuration
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+For domain-dependent runtime configuration without rebuilding the tutor-mfe images, you can use the `extra static files <#hosting-extra-static-files>`_ feature together with a ``mfe-caddyfile`` patch to serve JSON files instead of proxying to the LMS. For example, to serve per-domain config from ``/usr/share/caddy/site-config/``:
+
+.. code-block:: python
+
+    from tutor import hooks
+
+    hooks.Filters.ENV_PATCHES.add_items(
+        [
+            (
+                "mfe-volumes",
+                """
+            - /path/to/site-config:/usr/share/caddy/site-config:ro
+            """
+            ),
+            (
+                "mfe-caddyfile",
+                """
+    handle /api/frontend_site_config/v1/ {
+        root * /usr/share/caddy/site-config
+        rewrite * /{host}.json
+        file_server
+    }
+    """
+            ),
+        ]
+    )
+
+With ``MFE_HOST_EXTRA_FILES`` set to ``true``, this intercepts the runtime config request before it reaches the LMS, and serves a host-specific JSON file (e.g., ``apps.mysite.com.json``) from the mounted volume instead.
+
+Custom runtime configuration URL
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+You can also point ``runtimeConfigJsonUrl`` to a URI of your choosing via the ``mfe-site-config`` patch:
+
+.. code-block:: python
+
+    from tutor import hooks
+
+    hooks.Filters.ENV_PATCHES.add_item(
+        (
+            "mfe-site-config",
+            """
+    siteConfig.runtimeConfigJsonUrl = 'https://cdn.example.com/site-config.json';
+    """
+        )
+    )
+
+Configuration variables
+~~~~~~~~~~~~~~~~~~~~~~~
+
+The following Tutor configuration variables control the frontend-base site:
+
+- ``MFE_SITE_PORT`` (default: ``8080``): the port on which the site is served.
+- ``MFE_SITE_HOME`` (default: ``"org.openedx.frontend.role.dashboard"``): the frontend-base role used as the site's home page.
+- ``MFE_SITE_REPOSITORY`` (default: ``""``): an optional git URL for a custom site repository, to be used instead of the default template.
+- ``MFE_SITE_VERSION`` (default: ``""``): the branch or tag to clone from ``MFE_SITE_REPOSITORY``.
+
+Frontend-base site development
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+You can bind-mount individual frontend app repositories for concurrent development. For example, if you have a local checkout of a frontend-base-compatible ``frontend-app-learner-dashboard``::
+
+    tutor mounts add /path/to/frontend-app-learner-dashboard
+    tutor dev launch
+
+An ``mfe-dev`` hot-loading service will be started with the app's source bind-mounted as an npm workspace package, so changes to it are picked up automatically. The site will be available at ``http://apps.local.openedx.io:8080``.
+
+You can also develop the frontend-base site locally by bind-mounting a ``frontend-site`` directory.  However, contrary to the ``frontend-app-*`` repositories, there is no upstream ``frontend-site`` equivalent. (The Open edX project considers it to be a downstream configuration concern, which is why tutor-mfe implements it internally.) There is, however, a template repository, `frontend-template-site <https://github.com/openedx/frontend-template-site>`__, you can clone locally for this purpose::
+
+    git clone https://github.com/openedx/frontend-template-site.git frontend-site
+
+Then::
+
+    tutor mounts add /path/to/frontend-site
+    tutor dev launch
+
+If you want to develop a core frontend-base app as an independent SPA, it's still possible to do so.  You just have to disable the app before mounting it, which will cause Tutor to treat it as a standalone MFE.  Image rebuilding is not necessary:
+
+.. code-block:: python
+
+    @FRONTEND_APPS.add()
+    def _disable_authn(apps):
+        apps["learner-dashboard"]["enabled"] = False
+        return apps
+
 Deploying Changes to Production
 -------------------------------
 
@@ -918,6 +1119,96 @@ Example: The following patch adds a ``respond`` directive so that visitors reque
 
 File changed: ``tutormfe/patches/caddyfile``
 
+mfe-site-config-imports
+~~~~~~~~~~~~~~~~~~~~~~~
+
+Add static TypeScript/ES6 imports to both the production and development site config files. Use this to import frontend app modules that will be added to the site via the ``mfe-site-config`` patch.
+
+File changed: ``tutormfe/templates/mfe/build/mfe/site/site.config.build.tsx``, ``tutormfe/templates/mfe/build/mfe/site/site.config.dev.tsx``
+
+mfe-site-config-imports-production
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Add static imports only to the production site config file.
+
+File changed: ``tutormfe/templates/mfe/build/mfe/site/site.config.build.tsx``
+
+mfe-site-config-imports-development
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Add static imports only to the development site config file.
+
+File changed: ``tutormfe/templates/mfe/build/mfe/site/site.config.dev.tsx``
+
+mfe-site-config
+~~~~~~~~~~~~~~~
+
+Add arbitrary TypeScript code to both the production and development site config files. Runs after the ``siteConfig`` object is defined, so you can modify it directly (e.g., ``addApp(siteConfig, myApp)``).
+
+File changed: ``tutormfe/templates/mfe/build/mfe/site/site.config.build.tsx``, ``tutormfe/templates/mfe/build/mfe/site/site.config.dev.tsx``
+
+mfe-site-config-production
+~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Add arbitrary TypeScript code only to the production site config file.
+
+File changed: ``tutormfe/templates/mfe/build/mfe/site/site.config.build.tsx``
+
+mfe-site-config-development
+~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Add arbitrary TypeScript code only to the development site config file.
+
+File changed: ``tutormfe/templates/mfe/build/mfe/site/site.config.dev.tsx``
+
+mfe-site-scss
+~~~~~~~~~~~~~
+
+Add SCSS imports to the site stylesheet. Use this to include stylesheets from frontend app packages.
+
+File changed: ``tutormfe/templates/mfe/build/mfe/site/src/site.scss``
+
+mfe-site-slots-imports
+~~~~~~~~~~~~~~~~~~~~~~
+
+Add static imports for use in the site's ``slotsApp``. Use this to import components that will be registered as slot plugins.
+
+File changed: ``tutormfe/templates/mfe/build/mfe/site/src/slotsApp.tsx``
+
+mfe-site-slots
+~~~~~~~~~~~~~~
+
+Add slot plugin registrations to the site's ``slotsApp``. Components imported via ``mfe-site-slots-imports`` can be referenced here.
+
+File changed: ``tutormfe/templates/mfe/build/mfe/site/src/slotsApp.tsx``
+
+mfe-dockerfile-pre-npm-install-site
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Add Dockerfile instructions before the site's ``npm install`` step.
+
+File changed: ``tutormfe/templates/mfe/build/mfe/Dockerfile``
+
+mfe-dockerfile-post-npm-install-site
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Add Dockerfile instructions after the site's ``npm install`` step. Use this to install additional npm packages into the site workspace.
+
+File changed: ``tutormfe/templates/mfe/build/mfe/Dockerfile``
+
+mfe-dockerfile-pre-npm-build-site
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Add Dockerfile instructions before the site's production build step. Use this to set environment variables or run pre-build scripts.
+
+File changed: ``tutormfe/templates/mfe/build/mfe/Dockerfile``
+
+mfe-dockerfile-post-npm-build-site
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Add Dockerfile instructions after the site's production build step.
+
+File changed: ``tutormfe/templates/mfe/build/mfe/Dockerfile``
 
 
 Troubleshooting

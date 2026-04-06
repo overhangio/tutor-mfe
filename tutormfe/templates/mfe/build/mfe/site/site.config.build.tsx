@@ -11,8 +11,8 @@ import { authnApp } from '@openedx/frontend-app-authn';
 import { learnerDashboardApp } from '@openedx/frontend-app-learner-dashboard';
 {% endif %}
 
-{{ patch("site-config-imports") }}
-{{ patch("site-config-imports-production") }}
+{{ patch("mfe-site-config-imports") }}
+{{ patch("mfe-site-config-imports-production") }}
 
 import './src/site.scss';
 
@@ -46,7 +46,7 @@ addApp(siteConfig, authnApp);
 addApp(siteConfig, learnerDashboardApp);
 {% endif %}
 
-{{ patch("site-config") }}
-{{ patch("site-config-production") }}
+{{ patch("mfe-site-config") }}
+{{ patch("mfe-site-config-production") }}
 
 export default siteConfig;

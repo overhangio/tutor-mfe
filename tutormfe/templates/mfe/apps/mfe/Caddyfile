@@ -14,19 +14,11 @@
 
     {{ patch("mfe-caddyfile") | indent(4) }}
 
-    @mfe_config {
+    @runtime_config {
         path /api/mfe_config/*
-    }
-    handle @mfe_config {
-        reverse_proxy lms:8000 {
-            header_up Host {{ LMS_HOST }}
-        }
-    }
-
-    @frontend_site_config {
         path /api/frontend_site_config/*
     }
-    handle @frontend_site_config {
+    handle @runtime_config {
         reverse_proxy lms:8000 {
             header_up Host {{ LMS_HOST }}
         }

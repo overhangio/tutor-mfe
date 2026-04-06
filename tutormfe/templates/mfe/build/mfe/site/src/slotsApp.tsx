@@ -1,7 +1,7 @@
 import { App } from '@openedx/frontend-base';
 import { addSlot } from './utils';
 
-{{- patch("site-slots-imports") }}
+{{- patch("mfe-site-slots-imports") }}
 
 const slotsApp: App = {
   appId: 'slots',
@@ -11,6 +11,6 @@ const slotsApp: App = {
 addSlot(slotsApp, {{ slot_operation }});
 {%- endfor %}
 
-{{- patch("site-slots") }}
+{{- patch("mfe-site-slots") }}
 
 export default slotsApp;

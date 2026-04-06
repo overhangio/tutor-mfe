@@ -322,7 +322,7 @@ with open(
     tutor_hooks.Filters.CLI_DO_INIT_TASKS.add_item(("lms", task_file.read()))
 
 REPO_PREFIX = "frontend-app-"
-SITE_MOUNT_NAME = "frontend-template-site"
+SITE_MOUNT_NAME = "frontend-site"
 
 
 @tutor_hooks.Filters.COMPOSE_MOUNTS.add()
