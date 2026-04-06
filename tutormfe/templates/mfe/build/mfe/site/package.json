@@ -26,7 +26,7 @@
     "{{ app['npm_package'] }}": "{{ app['npm_version'] }}",
 {%- endif %}
 {%- endfor %}
-    "@openedx/frontend-base": "^1.0.0-alpha || 0.0.0-dev"
+    "@openedx/frontend-base": "npm:@arbrandes/frontend-base@1.0.0-alpha.19-fix-relative-url.3"
   },
   "devDependencies": {
     "@edx/browserslist-config": "latest",
