@@ -534,6 +534,87 @@ For instance:
 Refer to the `patch catalog <#template-patch-catalog>`_ below for more details.
 
 
+Configuring External Scripts
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+External scripts are a frontend-platform feature that allows script loaders to be configured via ``env.config.jsx``. A loader is a JavaScript class with a ``constructor({ config })`` and a ``loadScript()`` method. This plugin provides the ``EXTERNAL_SCRIPTS`` hook so that Tutor plugins can register loaders for MFEs without resorting to patches.
+
+The hook works similarly to ``PLUGIN_SLOTS``. Each item is a tuple of ``(mfe_name, loader_class)``, where ``mfe_name`` is either ``"all"`` (to apply to every MFE) or the name of a specific MFE, and ``loader_class`` is the name of a loader class that will be added to the ``externalScripts`` config array. Frontend-platform instantiates the class at runtime and passes the MFE's runtime config to its constructor.
+
+For instance, to inject a third-party ``<script>`` tag across all MFEs, define a loader directly in ``env.config.jsx``:
+
+.. code-block:: python
+
+    from tutormfe.hooks import EXTERNAL_SCRIPTS
+    from tutor import hooks
+
+    hooks.Filters.ENV_PATCHES.add_item(
+        (
+            "mfe-env-config-buildtime-definitions",
+            """
+    class CustomScriptLoader {
+      constructor({ config }) {
+        this.config = config;
+      }
+
+      loadScript() {
+        if (!this.config.CUSTOM_SCRIPT_URL) {
+          return;
+        }
+        const script = document.createElement('script');
+        script.id = 'custom-script';
+        script.src = this.config.CUSTOM_SCRIPT_URL;
+        document.head.appendChild(script);
+      }
+    }
+    """,
+        )
+    )
+
+    EXTERNAL_SCRIPTS.add_items([
+        (
+            "all",
+            "CustomScriptLoader",
+        ),
+    ])
+
+The ``CustomScriptLoader`` class is defined via the ``mfe-env-config-buildtime-definitions`` patch, and the ``EXTERNAL_SCRIPTS`` hook wires it into the configuration. Frontend-platform instantiates the class at runtime and passes the MFE's runtime config to the constructor, so the loader can read any key from ``MFE_CONFIG`` (here, ``CUSTOM_SCRIPT_URL``, which you would set via the ``mfe-lms-common-settings`` patch or equivalent). The built-in ``GoogleAnalyticsLoader`` in ``@openedx/frontend-platform/scripts`` follows the same pattern with ``config.GOOGLE_ANALYTICS_4_ID`` - you can import it with the ``mfe-env-config-buildtime-imports`` patch and use it with ``EXTERNAL_SCRIPTS`` in the same way.
+
+You can also target a specific MFE. For example, to load a custom script only on the learning MFE:
+
+.. code-block:: python
+
+    from tutormfe.hooks import EXTERNAL_SCRIPTS
+    from tutor import hooks
+
+    hooks.Filters.ENV_PATCHES.add_item(
+        (
+            "mfe-dockerfile-post-npm-install",
+            """
+    RUN npm install @myorg/custom-script-loader
+    """,
+        )
+    )
+
+    hooks.Filters.ENV_PATCHES.add_item(
+        (
+            "mfe-env-config-buildtime-imports",
+            """
+    import { CustomScriptLoader } from '@myorg/custom-script-loader';
+    """,
+        )
+    )
+
+    EXTERNAL_SCRIPTS.add_items([
+        (
+            "learning",
+            "CustomScriptLoader",
+        ),
+    ])
+
+Note that if no external scripts are configured, the ``externalScripts`` key is not set in the config at all, so any MFE-level defaults are preserved.
+
+
 Hosting extra static files
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
 
