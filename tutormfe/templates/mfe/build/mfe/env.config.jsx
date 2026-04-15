@@ -15,8 +15,22 @@ function addPlugins(config, slot_name, plugins) {
 
 async function setConfig () {
   let config = {
-    pluginSlots: {}
+    pluginSlots: {},
+    injectedScripts: []
   };
+
+  // Inject scripts here since FPF is not guaranteed to be present in all MFEs
+  {%- for script_name, script_content in iter_injected_scripts("all") %}
+  config.injectedScripts.push({{ script_content }});
+  {%- endfor %}
+
+  {%- for app_name, _ in iter_mfes() %}
+  if (process.env.APP_ID == '{{ app_name }}') {
+    {%- for script_name, script_content in iter_injected_scripts(app_name) %}
+    config.injectedScripts.push({{ script_content }});
+    {%- endfor %}
+  }
+  {%- endfor %}
 
   try {
     /* We can't assume FPF exists, as it's not declared as a dependency in all
