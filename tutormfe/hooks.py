@@ -19,3 +19,5 @@ MFE_APPS: Filter[dict[str, MFE_ATTRS_TYPE], []] = Filter()
 CORE_PLUGINS: Filter[dict[str, CORE_PLUGIN_ATTRS_TYPE], []] = Filter()
 
 PLUGIN_SLOTS: Filter[list[tuple[str, str, str]], []] = Filter()
+
+EXTERNAL_SCRIPTS: Filter[list[tuple[str, str]], []] = Filter()
