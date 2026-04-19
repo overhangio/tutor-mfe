@@ -1,4 +1,10 @@
 # MFE-specific tasks
+#
+# TODO(legacy-mfe-removal): the is_mfe_enabled(...) guards below go away, but
+# the waffle flags themselves may not: many are backend LMS flags that the
+# frontend-base equivalents still rely on. Audit each flag per-MFE as it gets
+# converted; either drop the block, or replace the guard with
+# is_frontend_app_enabled(...) (as already done for learner-dashboard).
 ./manage.py lms waffle_flag --list > /tmp/lms_waffle_flags.txt
 
 {% if is_mfe_enabled("account") %}
@@ -6,7 +12,7 @@
 {% endif %}
 
 
-{% if is_mfe_enabled("learner-dashboard") %}
+{% if is_mfe_enabled("learner-dashboard") or is_frontend_app_enabled("learner-dashboard") %}
 grep learner_home_mfe.enabled /tmp/lms_waffle_flags.txt || ./manage.py lms waffle_flag --create --everyone learner_home_mfe.enabled
 {% else %}
 ./manage.py lms waffle_delete --flags learner_home_mfe.enabled

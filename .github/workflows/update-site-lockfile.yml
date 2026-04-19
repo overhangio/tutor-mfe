@@ -1,0 +1,35 @@
+name: Update site lockfile
+
+on:
+  schedule:
+    - cron: "0 2 * * *"
+  workflow_dispatch:
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install tutor (main branch) and this plugin
+        run: |
+          pip install git+https://github.com/overhangio/tutor.git@main
+          pip install -e .
+      - name: Render tutor templates
+        run: |
+          tutor config save
+      - name: Regenerate @openedx/ scoped entries in site lockfile
+        run: >
+          tutor mfe update-site-lockfile
+          --scope @openedx/
+          --output tutormfe/templates/mfe/build/mfe/site/package-lock.json
+      - name: Open pull request
+        uses: peter-evans/create-pull-request@v6
+        with:
+          branch: auto/update-site-lockfile
+          title: "chore: update @openedx/ entries in site package-lock.json"
+          commit-message: "chore: update @openedx/ entries in site package-lock.json"
+          body: |
+            Automated update of `@openedx/`-scoped entries in the frontend-base site's `package-lock.json`, regenerated via `tutor mfe update-site-lockfile --scope @openedx/`.
