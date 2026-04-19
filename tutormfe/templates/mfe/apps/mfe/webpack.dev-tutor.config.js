@@ -1,3 +1,5 @@
+// TODO(legacy-mfe-removal): this entire file goes away with the per-MFE dev
+// container. frontend-base apps use the shared site dev server instead.
 const { merge } = require('webpack-merge');
 const fs = require('fs');
 
