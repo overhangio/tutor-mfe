@@ -1,0 +1,3 @@
+{% if is_core_plugin_enabled("notifications") %}
+NOTIFICATIONS_DEFAULT_FROM_EMAIL = ENV_TOKENS.get("NOTIFICATIONS_DEFAULT_FROM_EMAIL", ENV_TOKENS["CONTACT_EMAIL"])
+{% endif %}

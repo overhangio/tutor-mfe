@@ -94,3 +94,8 @@ CSRF_TRUSTED_ORIGINS.append("{% if ENABLE_HTTPS %}https://{% else %}http://{% en
 
 {{ patch("mfe-lms-common-settings") }}
 {{ patch("mfe-lms-production-settings") }}
+
+{% if is_core_plugin_enabled("notifications") %}
+MFE_CONFIG["SHOW_EMAIL_CHANNEL"] = {{ NOTIFICATIONS_ENABLE_SHOW_EMAIL_CHANNEL }}
+MFE_CONFIG["SHOW_PUSH_CHANNEL"] = {{ NOTIFICATIONS_ENABLE_SHOW_PUSH_CHANNEL }}
+{% endif %}

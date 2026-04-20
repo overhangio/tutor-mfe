@@ -1,0 +1,2 @@
+- [Feature] Introduce the ``CORE_PLUGINS`` filter, a new extension point for bundled frontend plugin packages that ship with tutor-mfe. Operators can disable any core plugin by popping its name from the filter, symmetrically to how ``MFE_APPS`` works. (by @arbrandes)
+- [Feature] Bundle the notifications tray (``@edx/frontend-plugin-notifications``) as the first core plugin, enabled by default. This replaces the need for a standalone ``tutor-contrib-platform-notifications`` plugin. (by @arbrandes)
