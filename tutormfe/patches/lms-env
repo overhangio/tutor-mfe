@@ -1,3 +1,0 @@
-{% if is_core_plugin_enabled("notifications") %}
-NOTIFICATIONS_DEFAULT_FROM_EMAIL: '{{ NOTIFICATIONS_DEFAULT_FROM_EMAIL }}'
-{% endif %}

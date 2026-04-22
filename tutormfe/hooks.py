@@ -12,11 +12,7 @@ from tutor.core.hooks import Filter
 
 MFE_ATTRS_TYPE = t.Dict[t.Literal["repository", "port", "version"], t.Union["str", int]]
 
-CORE_PLUGIN_ATTRS_TYPE = t.Dict[t.Literal["npm_package", "npm_version"], str]
-
 MFE_APPS: Filter[dict[str, MFE_ATTRS_TYPE], []] = Filter()
-
-CORE_PLUGINS: Filter[dict[str, CORE_PLUGIN_ATTRS_TYPE], []] = Filter()
 
 PLUGIN_SLOTS: Filter[list[tuple[str, str, str]], []] = Filter()
 

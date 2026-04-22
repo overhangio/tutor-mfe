@@ -18,10 +18,6 @@ In addition, this plugin comes with a few MFEs which are enabled by default:
 - `Profile <https://github.com/openedx/frontend-app-profile/>`__
 - `Catalog <https://github.com/openedx/frontend-app-catalog/>`__
 
-In addition, this plugin bundles a number of "core plugins": frontend plugin packages injected into the MFEs above via the plugin slot framework. The following core plugins are enabled by default:
-
-- `Notifications <https://github.com/openedx/frontend-plugin-notifications/>`__ (a notifications tray in the MFE headers)
-
 Instructions for using each of these MFEs are given below.
 
 Installation
@@ -185,30 +181,6 @@ To disable an existing MFE, remove the corresponding entry from the ``MFE_APPS``
         mfes.pop("account")
         mfes.pop("profile")
         return mfes
-
-Core plugins
-~~~~~~~~~~~~
-
-Core plugins are bundled frontend plugin packages that ship with tutor-mfe and are injected into the MFEs via the plugin slot framework. They are enabled by default, but operators can disable any of them by popping the corresponding entry from the ``CORE_PLUGINS`` filter, symmetrically to how ``MFE_APPS`` works.
-
-The following core plugins are currently bundled:
-
-- ``notifications``: the `notifications tray <https://github.com/openedx/frontend-plugin-notifications/>`__, added to the learning and Studio headers. Its behaviour can be tuned with three configuration settings:
-
-  - ``NOTIFICATIONS_DEFAULT_FROM_EMAIL`` (default: inherits from ``CONTACT_EMAIL``): the sender address used by notification emails.
-  - ``NOTIFICATIONS_ENABLE_SHOW_EMAIL_CHANNEL`` (default: ``True``): whether to show the email channel in the notification preferences UI.
-  - ``NOTIFICATIONS_ENABLE_SHOW_PUSH_CHANNEL`` (default: ``False``): whether to show the push channel in the notification preferences UI.
-
-To disable the notifications tray (or any other core plugin), add a Tutor plugin with:
-
-.. code-block:: python
-
-    from tutormfe.hooks import CORE_PLUGINS
-
-    @CORE_PLUGINS.add()
-    def _disable_notifications(plugins):
-        plugins.pop("notifications", None)
-        return plugins
 
 Using custom translations to your MFEs
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
