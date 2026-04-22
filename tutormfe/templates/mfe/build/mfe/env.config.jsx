@@ -33,31 +33,8 @@ async function setConfig () {
      * needs to be inside the `try{}` block.
      */
     const { DIRECT_PLUGIN, PLUGIN_OPERATIONS } = await import('@openedx/frontend-plugin-framework');
-    {%- if is_core_plugin_enabled("notifications") %}
-    const { NotificationsTray } = await import('@edx/frontend-plugin-notifications');
-    {%- endif %}
 
     {{- patch("mfe-env-config-runtime-definitions") }}
-
-    {%- if is_core_plugin_enabled("notifications") %}
-    {%- for slot_name in [
-      "org.openedx.frontend.layout.header_desktop_secondary_menu.v1",
-      "org.openedx.frontend.layout.header_learning_help.v1",
-      "org.openedx.frontend.layout.studio_header_search_button_slot.v1",
-    ] %}
-    addPlugins(config, '{{ slot_name }}', [
-      {
-        op: PLUGIN_OPERATIONS.Insert,
-        widget: {
-          id: 'notification-drawer-widget',
-          priority: 10,
-          type: DIRECT_PLUGIN,
-          RenderWidget: NotificationsTray,
-        },
-      },
-    ]);
-    {%- endfor %}
-    {%- endif %}
 
     {%- for slot_name, plugin_config in iter_plugin_slots("all") %}
     addPlugins(config, '{{ slot_name }}', [{{ plugin_config }}]);
