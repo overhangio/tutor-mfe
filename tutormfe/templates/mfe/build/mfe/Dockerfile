@@ -28,20 +28,15 @@ ENV PATH=/openedx/app/node_modules/.bin:${PATH}
     final production stage at the end of this file. #}
 {% for mfe_name, mfe in iter_mfes() %}
 ####################### {{ mfe_name }} MFE
-######## {{ mfe_name }} (git)
-FROM base AS {{ mfe_name }}-git
-{#- Invalidate the build cache if a change is detected upstream #}
-ADD --keep-git-dir=true {{ mfe["repository"] }}#{{ mfe.get("version", MFE_COMMON_VERSION) }} .
-
 ######## {{ mfe_name }} (src)
-# Empty layer with just the repo at the root, for build-time bind-mounts
+# Empty layer with just the repo at the root, for build-time bind-mounts.
+# Cache is invalidated when the upstream commit SHA changes.
 FROM scratch AS {{ mfe_name }}-src
-COPY --from={{ mfe_name }}-git /openedx/app /
+ADD --keep-git-dir=true {{ mfe["repository"] }}#{{ mfe.get("version", MFE_COMMON_VERSION) }} .
 
 ######## {{ mfe_name }} (common)
 FROM base AS {{ mfe_name }}-common
-COPY --from={{ mfe_name }}-src /package.json /openedx/app/package.json
-COPY --from={{ mfe_name }}-src /package-lock.json /openedx/app/package-lock.json
+COPY --from={{ mfe_name }}-src /package.json /package-lock.json /openedx/app/
 ARG NPM_REGISTRY={{ NPM_REGISTRY }}
 {{ patch("mfe-dockerfile-pre-npm-install") }}
 {{ patch("mfe-dockerfile-pre-npm-install-{}".format(mfe_name)) }}
@@ -87,9 +82,8 @@ RUN npm run build
 {% endfor %}
 
 {%- for app_name, app in iter_frontend_apps() %}
-######## frontend-app-{{ app_name }} (repo)
-FROM base AS frontend-app-{{ app_name }}-repo
-WORKDIR /openedx/site/packages/frontend-app-{{ app_name }}
+######## frontend-app-{{ app_name }} (src)
+FROM scratch AS frontend-app-{{ app_name }}-src
 {%- if app.get("source") %}
 {%- if app["source"].startswith("file://") %}
 COPY {{ app["source"].removeprefix("file://") }} .
@@ -97,28 +91,18 @@ COPY {{ app["source"].removeprefix("file://") }} .
 ADD --keep-git-dir=true {{ app["source"] }} .
 {%- endif %}
 {%- endif %}
-
-######## frontend-app-{{ app_name }} (src)
-FROM scratch AS frontend-app-{{ app_name }}-src
-COPY --from=frontend-app-{{ app_name }}-repo /openedx/site/packages/frontend-app-{{ app_name }} /
 {% endfor %}
 
 # No need to build the frontend site if there are no frontend apps.
 {%- if get_frontend_apps() %}
 ####################### site
-######## site (repo)
-FROM base AS site-repo
-WORKDIR /openedx/site
-
+######## site (src)
+FROM scratch AS site-src
 {%- if MFE_SITE_REPOSITORY %}
 ADD --keep-git-dir=true {{ MFE_SITE_REPOSITORY }}{{ "#" + MFE_SITE_VERSION if MFE_SITE_VERSION }} .
 {%- else %}
 COPY site/ .
 {%- endif %}
-
-######## site (src)
-FROM scratch AS site-src
-COPY --from=site-repo /openedx/site /
 
 ######## site (common)
 FROM base AS site-common
@@ -134,7 +118,7 @@ COPY --from=site-src /package.json /package-lock.json ./
 
 ARG NPM_REGISTRY={{ NPM_REGISTRY }}
 {{ patch("mfe-dockerfile-pre-npm-install-site") }}
-RUN --mount=type=cache,target=/root/.npm-sites,sharing=shared npm install --no-audit --no-fund --registry=$NPM_REGISTRY
+RUN --mount=type=cache,target=/root/.npm,sharing=shared npm install --no-audit --no-fund --registry=$NPM_REGISTRY
 {{ patch("mfe-dockerfile-post-npm-install-site") }}
 
 # Copy the full source; done after npm install so that source changes don't invalidate the install cache
@@ -156,21 +140,17 @@ RUN npm run build
 {{ patch("mfe-dockerfile-post-npm-build-site") }}
 
 ######## site (lockfile)
-# Dedicated stage that regenerates the site's package-lock.json. Invoked via
-# `tutor mfe update-site-lockfile`. Uses a plain node image (no build tools)
-# since `npm update --package-lock-only` doesn't compile anything, and only
-# copies the workspace package.json files needed to resolve the lockfile.
+# Dedicated stage for updating the site's package-lock. Invoked by
+# `tutor mfe update-site-lockfile`.
 FROM $NODE_IMAGE AS site-lockfile-builder
 WORKDIR /openedx/site
-{%- for app_name, app in iter_frontend_apps() %}
-COPY --from=frontend-app-{{ app_name }}-src / /openedx/site/packages/frontend-app-{{ app_name }}
+{%- for app_name, app in iter_frontend_apps() if app.get("source") %}
+COPY --from=frontend-app-{{ app_name }}-src /package.json packages/frontend-app-{{ app_name }}/
 {%- endfor %}
 COPY --from=site-src /package.json /package-lock.json ./
 ARG NPM_REGISTRY={{ NPM_REGISTRY }}
 ARG NPM_UPDATE_PACKAGES=""
-RUN --mount=type=cache,target=/root/.npm-sites,sharing=shared \
-    npm update --no-audit --no-fund --package-lock-only \
-        --registry=$NPM_REGISTRY $NPM_UPDATE_PACKAGES
+RUN npm update --no-audit --no-fund --package-lock-only --registry=$NPM_REGISTRY $NPM_UPDATE_PACKAGES
 
 FROM scratch AS site-lockfile
 COPY --from=site-lockfile-builder /openedx/site/package-lock.json /
