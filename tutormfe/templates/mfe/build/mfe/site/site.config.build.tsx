@@ -18,6 +18,15 @@ import { instructorDashboardApp } from '@openedx/frontend-app-instructor-dashboa
 import { notificationsApp } from '@openedx/frontend-app-notifications';
 {% endif %}
 
+{% if get_frontend_compat_slots() %}
+import {
+  createLegacyPluginApp,
+  defaultSlotMap,
+  defaultWidgetMap,
+} from '@openedx/frontend-base-compat';
+import envConfig, { slotCompatMap, widgetCompatMap } from './src/env.config.compat.jsx';
+{% endif %}
+
 {{ patch("mfe-site-config-imports") }}
 {{ patch("mfe-site-config-imports-production") }}
 
@@ -60,6 +69,15 @@ addApp(siteConfig, instructorDashboardApp);
 
 {% if get_frontend_app("notifications") %}
 addApp(siteConfig, notificationsApp);
+{% endif %}
+
+{% if get_frontend_compat_slots() %}
+addApp(siteConfig, createLegacyPluginApp({
+  appId: 'io.edly.frontend.app.compat',
+  envConfig,
+  slotMap: { ...defaultSlotMap, ...slotCompatMap },
+  widgetMap: { ...defaultWidgetMap, ...widgetCompatMap },
+}));
 {% endif %}
 
 {{ patch("mfe-site-config") }}

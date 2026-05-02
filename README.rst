@@ -1010,6 +1010,64 @@ Then, in your Tutor plugin, install the package and register it via the site con
 
 This approach keeps your components, styles, and slot operations in a proper package with its own dependencies, tests, and build pipeline, rather than inlining everything through template patches.
 
+Compat shim for FPF-built plugins
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Some Tutor plugins ship slot contributions written against the legacy ``frontend-plugin-framework`` API, and many plugin packages still import from ``@edx/frontend-platform``. To make those work on a frontend-base site without requiring each plugin to be ported first, tutor-mfe renders a compatibility template (``env.config.compat.jsx``) and wires it into the site as a shim App via `@openedx/frontend-base-compat <https://github.com/openedx/frontend-base-compat>`__. The shim translates legacy slot contributions into frontend-base slot operations, and ``site/package.json`` aliases both ``@openedx/frontend-plugin-framework`` and ``@edx/frontend-platform`` as direct dependencies pointing at the shim package, so any FPF- or frontend-platform-built dependency installed transitively also resolves to the shim's drop-in stubs and neither real package is installed.
+
+The shim does not translate ``PLUGIN_SLOTS`` contributions automatically: site operators or plugin authors choose which contributions to route through it, since not every legacy contribution survives the translation cleanly. The legacy per-MFE ``env.config.jsx`` continues to consume ``PLUGIN_SLOTS`` unchanged, so standalone legacy MFEs render the contribution exactly as before whether or not it is opted in to the shim.
+
+The coarsest opt-in is by plugin name: ``FRONTEND_COMPAT_PLUGINS`` takes a Tutor plugin name and folds every ``PLUGIN_SLOTS`` contribution registered in that plugin's hook context into the compat shim, regardless of which legacy MFE each contribution targeted. This is useful when wrapping a third-party plugin you don't control (a meta-plugin can opt the whole thing in without touching the upstream code), or when you'd rather not enumerate every slot in your own plugin:
+
+.. code-block:: python
+
+    from tutormfe.hooks import FRONTEND_COMPAT_PLUGINS
+
+    FRONTEND_COMPAT_PLUGINS.add_item("some-legacy-plugin")
+
+The tradeoff is bluntness: every slot that plugin contributes goes through the shim, including any whose translation isn't covered by the default maps, so failures surface at bundle time rather than as a clear "this slot isn't supported yet" signal.
+
+For finer control, ``FRONTEND_COMPAT_SLOTS`` opts in one ``(slot_name, plugin_config)`` pair at a time. Use this when you want explicit per-slot acknowledgement, when only some of a plugin's contributions translate cleanly, or when you want to ship the same contribution to legacy MFEs and the compat shim from a single source:
+
+.. code-block:: python
+
+    from tutormfe.hooks import PLUGIN_SLOTS, FRONTEND_COMPAT_SLOTS
+
+    MY_SLOT = (
+        "course_outline_sidebar.v1",
+        """
+        {
+          op: PLUGIN_OPERATIONS.Insert,
+          widget: {
+            id: 'my-widget',
+            type: DIRECT_PLUGIN,
+            RenderWidget: MyComponent,
+          }
+        }
+        """,
+    )
+
+    PLUGIN_SLOTS.add_item(("learning", *MY_SLOT))
+    FRONTEND_COMPAT_SLOTS.add_item(MY_SLOT)
+
+``FRONTEND_COMPAT_SLOTS`` drops the ``mfe_name`` field that ``PLUGIN_SLOTS`` carries, since the compat shim renders a single bundle for the whole site and doesn't disambiguate by MFE. Once a plugin ships a native ``FRONTEND_SLOTS`` (or app-package) contribution for the same slot, drop the ``FRONTEND_COMPAT_SLOTS`` entry to avoid rendering the widget twice. Identical (slot_name, plugin_config) pairs reaching the shim through both filters are deduplicated, so opting a plugin in by name and then re-opting one of its slots individually is a safe no-op.
+
+All compat wiring is gated on at least one ``(slot_name, plugin_config)`` pair actually resolving through these filters: vanilla sites, and sites whose opt-ins resolve to no contributions (e.g., a named plugin that ships no ``PLUGIN_SLOTS``), skip the shim wiring entirely and pay no overhead.
+
+``FRONTEND_SLOT_COMPAT_MAPS`` and ``FRONTEND_WIDGET_COMPAT_MAPS`` layer ``(legacy_id, mapping)`` deltas on top of the shim's built-in ``defaultSlotMap`` / ``defaultWidgetMap``. Use them when a plugin's ``PLUGIN_SLOTS`` contribution targets a legacy slot id that the shim doesn't yet cover, or to override a curated mapping site-locally. ``mapping`` is a JSON-serializable dict matching the shim's ``SlotMappingEntry`` / ``WidgetMappingEntry`` shape (see the shim's ADR for the full schema):
+
+.. code-block:: python
+
+    from tutormfe.hooks import FRONTEND_SLOT_COMPAT_MAPS
+
+    FRONTEND_SLOT_COMPAT_MAPS.add_items([
+        ("org.openedx.frontend.aspects.course_outline_sidebar.v1", {
+            "targetSlotId": "org.openedx.frontend.slot.aspects.outlineSidebar.v1",
+        }),
+    ])
+
+Identical contributions for the same legacy id are deduplicated silently. Divergent contributions emit a ``tutor config save`` warning and last-wins, so a transient conflict during a plugin upgrade still produces a working bundle.
+
 Frontend-base site development
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 

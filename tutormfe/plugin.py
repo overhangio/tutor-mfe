@@ -18,7 +18,11 @@ from .hooks import (
     EXTERNAL_SCRIPTS,
     FRONTEND_APP_ATTRS_TYPE,
     FRONTEND_APPS,
+    FRONTEND_COMPAT_PLUGINS,
+    FRONTEND_COMPAT_SLOTS,
+    FRONTEND_SLOT_COMPAT_MAPS,
     FRONTEND_SLOTS,
+    FRONTEND_WIDGET_COMPAT_MAPS,
     MFE_APPS,
     MFE_ATTRS_TYPE,
     PLUGIN_SLOTS,
@@ -211,6 +215,91 @@ def get_frontend_slots() -> list[str]:
     return FRONTEND_SLOTS.apply([])
 
 
+# TODO(fpf-removal): get_frontend_compat_slots and iter_frontend_compat_slots
+# exist to render env.config.compat.jsx, which serves frontend-base sites
+# running the frontend-base compatibility shim (@openedx/frontend-base-compat).
+# When FPF deprecation completes and no plugin contributes via
+# FRONTEND_COMPAT_SLOTS or FRONTEND_COMPAT_PLUGINS, these helpers and the
+# compat template can be removed.
+@tutor_hooks.lru_cache
+def get_frontend_compat_slots() -> list[tuple[str, str]]:
+    """
+    Yield (slot_name, plugin_config) pairs.
+
+    Sourced from two filters:
+
+    - FRONTEND_COMPAT_PLUGINS: bulk opt-ins by plugin name.  Every PLUGIN_SLOTS
+      contribution registered in that plugin's hook context is folded in,
+      regardless of which legacy MFE it targeted.
+    - FRONTEND_COMPAT_SLOTS: per-slot opt-ins.  The plugin author lists registers
+      each slot they want rendered through the shim.
+
+    Dedup collapses identical (slot_name, plugin_config) pairs across both
+    sources, so opting a plugin in by name and then re-opting one of its slots
+    individually is a safe no-op.
+    """
+    seen: set[tuple[str, str]] = set()
+    flattened: list[tuple[str, str]] = []
+
+    def _record(slot_name: str, plugin_config: str) -> None:
+        key = (slot_name, plugin_config)
+        if key in seen:
+            return
+        seen.add(key)
+        flattened.append(key)
+
+    for plugin_name in FRONTEND_COMPAT_PLUGINS.iterate():
+        context = tutor_hooks.Contexts.app(plugin_name).name
+        for _mfe_name, slot_name, plugin_config in PLUGIN_SLOTS.iterate_from_context(
+            context
+        ):
+            _record(slot_name, plugin_config)
+
+    for slot_name, plugin_config in FRONTEND_COMPAT_SLOTS.iterate():
+        _record(slot_name, plugin_config)
+
+    return flattened
+
+
+@tutor_hooks.lru_cache
+def get_frontend_slot_compat_map() -> dict[str, dict[str, t.Any]]:
+    return _merge_frontend_compat_maps(FRONTEND_SLOT_COMPAT_MAPS.iterate(), kind="slot")
+
+
+@tutor_hooks.lru_cache
+def get_frontend_widget_compat_map() -> dict[str, dict[str, t.Any]]:
+    return _merge_frontend_compat_maps(
+        FRONTEND_WIDGET_COMPAT_MAPS.iterate(), kind="widget"
+    )
+
+
+def _merge_frontend_compat_maps(
+    extensions: t.Iterable[tuple[str, dict[str, t.Any]]],
+    kind: str,
+) -> dict[str, dict[str, t.Any]]:
+    """
+    Identical contributions dedup silently. Divergent ones warn and
+    last-wins so a transient conflict during a plugin upgrade still
+    produces a working bundle.
+    """
+    merged: dict[str, dict[str, t.Any]] = {}
+    for legacy_id, mapping in extensions:
+        existing = merged.get(legacy_id)
+        if existing is None:
+            merged[legacy_id] = mapping
+            continue
+        if existing == mapping:
+            continue
+        fmt.echo_alert(
+            f"Conflicting compat {kind}-map extensions for {legacy_id!r}: "
+            f"{existing!r} overridden by {mapping!r}. "
+            "Last contribution wins; consider removing one of the plugins "
+            "or aligning their compat-map contributions."
+        )
+        merged[legacy_id] = mapping
+    return merged
+
+
 # TODO(legacy-mfe-removal)
 def iter_mfes() -> t.Iterable[tuple[str, MFE_ATTRS_TYPE]]:
     """
@@ -242,6 +331,10 @@ def iter_plugin_slots(mfe_name: str) -> t.Iterable[tuple[str, str]]:
         (slot_name, plugin_config)
     """
     yield from get_plugin_slots(mfe_name)
+
+
+def iter_frontend_compat_slots() -> t.Iterable[tuple[str, str]]:
+    yield from get_frontend_compat_slots()
 
 
 def iter_external_scripts(mfe_name: str) -> t.Iterable[str]:
@@ -293,7 +386,11 @@ tutor_hooks.Filters.ENV_TEMPLATE_VARIABLES.add_items(
         ("get_frontend_app", get_frontend_app),
         ("get_frontend_apps", get_frontend_apps),
         ("iter_plugin_slots", iter_plugin_slots),
+        ("iter_frontend_compat_slots", iter_frontend_compat_slots),
         ("iter_external_scripts", iter_external_scripts),
+        ("get_frontend_compat_slots", get_frontend_compat_slots),
+        ("get_frontend_slot_compat_map", get_frontend_slot_compat_map),
+        ("get_frontend_widget_compat_map", get_frontend_widget_compat_map),
         ("iter_frontend_slots", iter_frontend_slots),
         ("is_mfe_enabled", is_mfe_enabled),
         ("is_frontend_app_enabled", is_frontend_app_enabled),
