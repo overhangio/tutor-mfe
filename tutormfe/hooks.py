@@ -27,7 +27,9 @@ FRONTEND_SLOTS: Filter[list[str], []] = Filter()
 # itself.
 FRONTEND_COMPAT_PLUGINS: Filter[list[str], []] = Filter()
 
-FRONTEND_COMPAT_SLOTS: Filter[list[tuple[str, str]], []] = Filter()
+FRONTEND_COMPAT_SLOTS: Filter[list[tuple[str, str, str]], []] = Filter()
+
+FRONTEND_ROUTE_COMPAT_MAPS: Filter[list[tuple[str, list[str]]], []] = Filter()
 
 FRONTEND_SLOT_COMPAT_MAPS: Filter[list[tuple[str, dict[str, t.Any]]], []] = Filter()
 

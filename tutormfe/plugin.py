@@ -1,10 +1,12 @@
 from __future__ import annotations
 
 import os
+import re
 import typing as t
 from glob import glob
 
 import importlib_resources
+from tutor import env as tutor_env
 from tutor import fmt
 from tutor import hooks as tutor_hooks
 from tutor.__about__ import __version_suffix__
@@ -20,6 +22,7 @@ from .hooks import (
     FRONTEND_APPS,
     FRONTEND_COMPAT_PLUGINS,
     FRONTEND_COMPAT_SLOTS,
+    FRONTEND_ROUTE_COMPAT_MAPS,
     FRONTEND_SLOT_COMPAT_MAPS,
     FRONTEND_SLOTS,
     FRONTEND_WIDGET_COMPAT_MAPS,
@@ -215,50 +218,80 @@ def get_frontend_slots() -> list[str]:
     return FRONTEND_SLOTS.apply([])
 
 
-# TODO(fpf-removal): get_frontend_compat_slots and iter_frontend_compat_slots
-# exist to render env.config.compat.jsx, which serves frontend-base sites
-# running the frontend-base compatibility shim (@openedx/frontend-base-compat).
-# When FPF deprecation completes and no plugin contributes via
-# FRONTEND_COMPAT_SLOTS or FRONTEND_COMPAT_PLUGINS, these helpers and the
-# compat template can be removed.
+# TODO(fpf-removal): get_frontend_compat_slots, get_frontend_compat_mfes,
+# and their iter_* aliases exist to render the per-MFE env.config.<mfe>.jsx
+# files, which serve frontend-base sites running the frontend-base
+# compatibility shim (@openedx/frontend-base-compat). When FPF deprecation
+# completes and no plugin contributes via FRONTEND_COMPAT_SLOTS or
+# FRONTEND_COMPAT_PLUGINS, these helpers and the compat template can be
+# removed.
 @tutor_hooks.lru_cache
-def get_frontend_compat_slots() -> list[tuple[str, str]]:
+def get_frontend_compat_slots(mfe_name: str) -> list[tuple[str, str]]:
     """
-    Yield (slot_name, plugin_config) pairs.
+    Return the (slot_name, plugin_config) pairs to render through the compat
+    shim for the given MFE.  The wildcard "all" is itself a valid mfe_name
+    here: it returns just the wildcard entries, which land in
+    env.config.all.jsx and get mounted without an mfeId so they fire
+    globally.
 
     Sourced from two filters:
 
     - FRONTEND_COMPAT_PLUGINS: bulk opt-ins by plugin name.  Every PLUGIN_SLOTS
-      contribution registered in that plugin's hook context is folded in,
-      regardless of which legacy MFE it targeted.
-    - FRONTEND_COMPAT_SLOTS: per-slot opt-ins.  The plugin author lists registers
-      each slot they want rendered through the shim.
-
-    Dedup collapses identical (slot_name, plugin_config) pairs across both
-    sources, so opting a plugin in by name and then re-opting one of its slots
-    individually is a safe no-op.
+      contribution registered in that plugin's hook context is folded in.
+    - FRONTEND_COMPAT_SLOTS: per-slot opt-ins.  The plugin author registers
+      each (mfe_name, slot_name, plugin_config) triple they want rendered
+      through the shim.
     """
-    seen: set[tuple[str, str]] = set()
-    flattened: list[tuple[str, str]] = []
-
-    def _record(slot_name: str, plugin_config: str) -> None:
-        key = (slot_name, plugin_config)
-        if key in seen:
-            return
-        seen.add(key)
-        flattened.append(key)
+    slots: list[tuple[str, str]] = []
 
     for plugin_name in FRONTEND_COMPAT_PLUGINS.iterate():
         context = tutor_hooks.Contexts.app(plugin_name).name
-        for _mfe_name, slot_name, plugin_config in PLUGIN_SLOTS.iterate_from_context(
+        for plugin_mfe, slot_name, plugin_config in PLUGIN_SLOTS.iterate_from_context(
             context
         ):
-            _record(slot_name, plugin_config)
+            if plugin_mfe == mfe_name:
+                slots.append((slot_name, plugin_config))
 
-    for slot_name, plugin_config in FRONTEND_COMPAT_SLOTS.iterate():
-        _record(slot_name, plugin_config)
+    for compat_mfe, slot_name, plugin_config in FRONTEND_COMPAT_SLOTS.iterate():
+        if compat_mfe == mfe_name:
+            slots.append((slot_name, plugin_config))
 
-    return flattened
+    return slots
+
+
+@tutor_hooks.lru_cache
+def get_frontend_compat_mfes() -> list[str]:
+    """
+    Return the sorted list of MFEs that should get a compat file: "all" stays
+    as a distinct entry here; the site mounts it without an mfeId so its
+    contributions fire globally.
+    """
+    mfes: set[str] = set()
+
+    for plugin_name in FRONTEND_COMPAT_PLUGINS.iterate():
+        context = tutor_hooks.Contexts.app(plugin_name).name
+        for plugin_mfe, _slot_name, _plugin_config in PLUGIN_SLOTS.iterate_from_context(
+            context
+        ):
+            mfes.add(plugin_mfe)
+
+    for compat_mfe, _slot_name, _plugin_config in FRONTEND_COMPAT_SLOTS.iterate():
+        mfes.add(compat_mfe)
+
+    return sorted(mfes)
+
+
+def camelize_mfe_name(mfe_name: str) -> str:
+    """
+    Convert a kebab/snake-case MFE name into a lowerCamelCase identifier
+    suitable as a prefix on JS export names (e.g. `<camel>EnvConfig`).
+    Examples: 'learner-dashboard' -> 'learnerDashboard',
+    'ora_grading' -> 'oraGrading', 'lms' -> 'lms'.
+    """
+    parts = [p for p in re.split(r"[-_]+", mfe_name) if p]
+    if not parts:
+        return mfe_name
+    return parts[0] + "".join(p[:1].upper() + p[1:] for p in parts[1:])
 
 
 @tutor_hooks.lru_cache
@@ -273,17 +306,24 @@ def get_frontend_widget_compat_map() -> dict[str, dict[str, t.Any]]:
     )
 
 
+@tutor_hooks.lru_cache
+def get_frontend_route_compat_map() -> dict[str, list[str]]:
+    return _merge_frontend_compat_maps(
+        FRONTEND_ROUTE_COMPAT_MAPS.iterate(), kind="route"
+    )
+
+
 def _merge_frontend_compat_maps(
-    extensions: t.Iterable[tuple[str, dict[str, t.Any]]],
+    maps: t.Iterable[tuple[str, t.Any]],
     kind: str,
-) -> dict[str, dict[str, t.Any]]:
+) -> dict[str, t.Any]:
     """
     Identical contributions dedup silently. Divergent ones warn and
     last-wins so a transient conflict during a plugin upgrade still
     produces a working bundle.
     """
-    merged: dict[str, dict[str, t.Any]] = {}
-    for legacy_id, mapping in extensions:
+    merged: dict[str, t.Any] = {}
+    for legacy_id, mapping in maps:
         existing = merged.get(legacy_id)
         if existing is None:
             merged[legacy_id] = mapping
@@ -333,8 +373,20 @@ def iter_plugin_slots(mfe_name: str) -> t.Iterable[tuple[str, str]]:
     yield from get_plugin_slots(mfe_name)
 
 
-def iter_frontend_compat_slots() -> t.Iterable[tuple[str, str]]:
-    yield from get_frontend_compat_slots()
+def iter_frontend_compat_slots(mfe_name: str) -> t.Iterable[tuple[str, str]]:
+    """
+    Yield:
+
+        (slot_name, plugin_config)
+    """
+    yield from get_frontend_compat_slots(mfe_name)
+
+
+def iter_frontend_compat_mfes() -> t.Iterable[str]:
+    """
+    Yield each MFE name that has at least one compat-shim contribution.
+    """
+    yield from get_frontend_compat_mfes()
 
 
 def iter_external_scripts(mfe_name: str) -> t.Iterable[str]:
@@ -387,10 +439,14 @@ tutor_hooks.Filters.ENV_TEMPLATE_VARIABLES.add_items(
         ("get_frontend_apps", get_frontend_apps),
         ("iter_plugin_slots", iter_plugin_slots),
         ("iter_frontend_compat_slots", iter_frontend_compat_slots),
+        ("iter_frontend_compat_mfes", iter_frontend_compat_mfes),
         ("iter_external_scripts", iter_external_scripts),
         ("get_frontend_compat_slots", get_frontend_compat_slots),
+        ("get_frontend_compat_mfes", get_frontend_compat_mfes),
         ("get_frontend_slot_compat_map", get_frontend_slot_compat_map),
         ("get_frontend_widget_compat_map", get_frontend_widget_compat_map),
+        ("get_frontend_route_compat_map", get_frontend_route_compat_map),
+        ("camelize_mfe_name", camelize_mfe_name),
         ("iter_frontend_slots", iter_frontend_slots),
         ("is_mfe_enabled", is_mfe_enabled),
         ("is_frontend_app_enabled", is_frontend_app_enabled),
@@ -651,3 +707,30 @@ def _check_mfe_host(config: Config) -> None:
             "This configuration is not typically recommended and may lead "
             "to unexpected behavior."
         )
+
+
+# TODO(fpf-removal): goes away with env.config.compat.jsx itself.
+@tutor_hooks.Actions.ENV_SAVED.add()
+def _render_per_mfe_compat_files(root: str, config: Config) -> None:
+    """
+    Render one env.config.<mfe>.jsx into the site source tree per MFE that has
+    at least one opted-in compat slot, and reap any stale files left behind
+    when a plugin gets disabled.  Tutor's normal template-tree rendering can't
+    fan one source file out into N rendered files, so we render it once per
+    MFE with current_mfe set as a Jinja global.
+    """
+    mfes = get_frontend_compat_mfes()
+    out_dir = os.path.join(root, "plugins", "mfe", "build", "mfe", "site", "src")
+    if mfes:
+        renderer = tutor_env.Renderer(config)
+        for mfe_name in mfes:
+            renderer.environment.globals["current_mfe"] = mfe_name
+            rendered = renderer.render_template("mfe/partials/env.config.compat.jsx")
+            tutor_env.write_to(
+                rendered,
+                os.path.join(out_dir, f"env.config.{mfe_name}.jsx"),
+            )
+    valid = {f"env.config.{mfe_name}.jsx" for mfe_name in mfes}
+    for path in glob(os.path.join(out_dir, "env.config.*.jsx")):
+        if os.path.basename(path) not in valid:
+            os.remove(path)

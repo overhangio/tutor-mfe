@@ -33,14 +33,14 @@
 {%- for app_name, app in iter_frontend_apps() if app.get("npm_package") %}
     "{{ app['npm_package'] }}": "{{ app['npm_version'] }}",
 {%- endfor %}
-{%- if get_frontend_compat_slots() %}
+{%- if get_frontend_compat_mfes() %}
     "@openedx/frontend-base-compat": "^1.0.0-alpha || 0.0.0-dev",
     "@edx/frontend-platform": "npm:@openedx/frontend-base-compat@^1.0.0-alpha || 0.0.0-dev",
     "@openedx/frontend-plugin-framework": "npm:@openedx/frontend-base-compat@^1.0.0-alpha || 0.0.0-dev",
 {%- endif %}
     "@openedx/frontend-base": "^1.0.0-alpha || 0.0.0-dev"
   },
-{%- if get_frontend_compat_slots() %}
+{%- if get_frontend_compat_mfes() %}
   "overrides": {
     "@edx/frontend-platform": "npm:@openedx/frontend-base-compat@^1.0.0-alpha || 0.0.0-dev",
     "@openedx/frontend-plugin-framework": "npm:@openedx/frontend-base-compat@^1.0.0-alpha || 0.0.0-dev"
