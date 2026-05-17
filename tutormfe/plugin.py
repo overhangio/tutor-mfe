@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import os
+import re
 import typing as t
 from glob import glob
 
@@ -341,3 +342,29 @@ def _check_mfe_host(config: Config) -> None:
             "This configuration is not typically recommended and may lead "
             "to unexpected behavior."
         )
+
+
+@tutor_hooks.Actions.CONFIG_LOADED.add()
+def _run_jobs_in_mounted_mfes(config: Config) -> None:
+
+    mounts = get_typed(config, "MOUNTS", list, [])
+    mfe_mount_data = MFEMountData(mounts)
+
+    if not mfe_mount_data.mounted:
+        return None
+
+    mfe_npm_install_file = os.path.join(
+        str(
+            importlib_resources.files("tutormfe")
+            / "templates"
+            / "mfe"
+            / "tasks"
+            / "mfe"
+            / "npm-install.sh"
+        )
+    )
+
+    for mfe, _, _ in mfe_mount_data.mounted:
+        with tutor_hooks.Contexts.app("mfe").enter():
+            with open(mfe_npm_install_file, encoding="utf-8") as fi:
+                tutor_hooks.Filters.CLI_DO_INIT_TASKS.add_item((mfe, fi.read()))

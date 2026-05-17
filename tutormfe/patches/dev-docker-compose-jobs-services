@@ -1,0 +1,13 @@
+# These jobs are required to run the npm install script when mounting MFEs
+{%- set mfe_data = MFEMountData(MOUNTS) %}
+
+{%- for app_name, app, mounts in mfe_data.mounted %}
+{{ app_name }}-job:
+    image: "{{ MFE_DOCKER_IMAGE_DEV_PREFIX }}-{{ app_name }}-dev:{{ MFE_VERSION }}"
+    volumes:
+        {%- for mount in mounts %}
+        - {{ mount }}
+        {%- endfor %}
+    environment:
+        - "NODE_ENV=development"
+{%- endfor %}
