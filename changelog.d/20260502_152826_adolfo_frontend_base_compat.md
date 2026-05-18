@@ -1,0 +1,1 @@
+- [Feature] Wire FPF-built plugins into the frontend-base site via [@openedx/frontend-base-compat](https://github.com/openedx/frontend-base-compat). (by @arbrandes)

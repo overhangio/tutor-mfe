@@ -1,0 +1,53 @@
+{
+  "workspaces": [
+    "packages/*"
+  ],
+  "browserslist": [
+    "extends @edx/browserslist-config"
+  ],
+  "sideEffects": [
+    "*.css",
+    "*.scss"
+  ],
+  "scripts": {
+    "build": "openedx build",
+    "build:packages": "make build-packages",
+    "clean:packages": "make clean-packages",
+    "dev": "PORT=${PORT:-8080} openedx dev",
+    "dev:site": "make dev-site",
+    "dev:packages": "make dev-packages",
+    "clean": "make clean",
+    "serve": "openedx serve",
+    "translations:pull": "openedx translations:pull"
+  },
+  "atlasTranslations": {
+    "dependencies": [
+{%- for app_name, app in iter_frontend_apps() if app.get("npm_package") %}
+      "{{ app['npm_package'] }}",
+{%- endfor %}
+      "@openedx/frontend-base"
+    ]
+  },
+  "dependencies": {
+    "@edx/brand": "npm:@openedx/brand-openedx@^1.3.0 || 0.0.0-dev",
+{%- for app_name, app in iter_frontend_apps() if app.get("npm_package") %}
+    "{{ app['npm_package'] }}": "{{ app['npm_version'] }}",
+{%- endfor %}
+{%- if get_frontend_compat_mfes() %}
+    "@openedx/frontend-base-compat": "^1.0.0-alpha || 0.0.0-dev",
+    "@edx/frontend-platform": "npm:@openedx/frontend-base-compat@^1.0.0-alpha || 0.0.0-dev",
+    "@openedx/frontend-plugin-framework": "npm:@openedx/frontend-base-compat@^1.0.0-alpha || 0.0.0-dev",
+{%- endif %}
+    "@openedx/frontend-base": "^1.0.0-alpha || 0.0.0-dev"
+  },
+{%- if get_frontend_compat_mfes() %}
+  "overrides": {
+    "@edx/frontend-platform": "npm:@openedx/frontend-base-compat@^1.0.0-alpha || 0.0.0-dev",
+    "@openedx/frontend-plugin-framework": "npm:@openedx/frontend-base-compat@^1.0.0-alpha || 0.0.0-dev"
+  },
+{%- endif %}
+  "devDependencies": {
+    "@edx/browserslist-config": "latest",
+    "turbo": "^2.8.16"
+  }
+}

@@ -1,4 +1,8 @@
+{#- TODO(legacy-mfe-removal): drop mfe_data, the mfe_data.mounted loop below,
+    and the mfe_data.unmounted / legacy port-mapping block further down. Only
+    the mfe-dev site block survives. #}
 {%- set mfe_data = MFEMountData(MOUNTS) %}
+{%- set site_mounts = get_site_mounts(MOUNTS) %}
 
 {%- for app_name, app, mounts in mfe_data.mounted %}
 {{ app_name }}: # Work on this MFE for development
@@ -19,8 +23,25 @@
         - "PORT={{ app['port'] }}"
 {%- endfor %}
 
+{%- if site_mounts %}
+mfe-dev: # Work on the frontend site for development
+    image: "{{ MFE_DOCKER_IMAGE_DEV_PREFIX }}-mfe-dev:{{ MFE_VERSION }}"
+    ports:
+        - "{{ MFE_SITE_PORT }}:{{ MFE_SITE_PORT }}"
+    stdin_open: true
+    tty: true
+    volumes:
+        {%- for mount in site_mounts %}
+        - {{ mount }}
+        {%- endfor %}
+    restart: unless-stopped
+    depends_on:
+        - lms
+    environment:
+        - "PORT={{ MFE_SITE_PORT }}"
+{%- endif %}
 
-{% if mfe_data.unmounted|length > 0 or MFE_HOST_EXTRA_FILES %}
+{% if mfe_data.unmounted|length > 0 or not site_mounts or MFE_HOST_EXTRA_FILES %}
 mfe:
    ports:
 {%- if MFE_HOST_EXTRA_FILES %}
@@ -29,4 +50,7 @@ mfe:
        {%- for app_name, app in mfe_data.unmounted %}
        - {{ app["port"] }}:8002 # {{ app_name }}
        {%- endfor %}
+       {%- if not site_mounts and get_frontend_apps() %}
+       - {{ MFE_SITE_PORT }}:8002 # site
+       {%- endif %}
 {% endif %}
