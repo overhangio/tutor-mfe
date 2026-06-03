@@ -28,6 +28,7 @@ config = {
         "COMMON_VERSION": "{{ OPENEDX_COMMON_VERSION }}",
         "CADDY_DOCKER_IMAGE": "{{ DOCKER_IMAGE_CADDY }}",
         "HOST_EXTRA_FILES": False,
+        "REMOVE_WEBPACK_BUILD_CACHE": False,
     },
 }
 

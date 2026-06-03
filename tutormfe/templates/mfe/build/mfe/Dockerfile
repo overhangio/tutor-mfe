@@ -63,6 +63,7 @@ ENV PUBLIC_PATH='/{{ app_name }}/'
 ENV MFE_CONFIG_API_URL=/api/mfe_config/v1
 ARG ENABLE_NEW_RELIC=false
 COPY env.config.jsx /openedx/app
+COPY webpack.prod-tutor.config.js /openedx/app
 {{ patch("mfe-dockerfile-pre-npm-build") }}
 {{ patch("mfe-dockerfile-pre-npm-build-{}".format(app_name)) }}
 
@@ -77,7 +78,7 @@ CMD ["/bin/bash", "-c", "npm run start --- --config ./webpack.dev-tutor.config.j
 ######## {{ app_name }} (production)
 FROM {{ app_name }}-common AS {{ app_name }}-prod
 ENV NODE_ENV=production
-RUN npm run build
+RUN --mount=type=cache,target=/openedx/app/.cache,sharing=shared npm run build -- --config ./webpack.prod-tutor.config.js
 {{ patch("mfe-dockerfile-post-npm-build") }}
 {{ patch("mfe-dockerfile-post-npm-build-{}".format(app_name)) }}
 {% endfor %}

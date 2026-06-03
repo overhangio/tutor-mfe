@@ -763,6 +763,13 @@ Add any configurations at the end of the development webpack config file in Java
 
 File changed: ``tutormfe/templates/mfe/apps/mfe/webpack.dev-tutor.config.js``
 
+mfe-webpack-prod-config
+~~~~~~~~~~~~~~~~~~~~~~~
+
+Add any configurations at the end of the production webpack config file in Javascript format.
+
+File changed: ``tutormfe/templates/mfe/build/mfe/webpack.prod-tutor.config.js``
+
 mfe-dockerfile-base
 ~~~~~~~~~~~~~~~~~~~
 

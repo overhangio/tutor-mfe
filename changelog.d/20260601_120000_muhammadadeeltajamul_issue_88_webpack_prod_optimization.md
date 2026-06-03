@@ -1,0 +1,1 @@
+- [Improvement] Optimized MFE production webpack builds (by @muhammadadeeltajamul)
