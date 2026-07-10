@@ -118,22 +118,22 @@ CORE_MFE_APPS: dict[str, MFE_ATTRS_TYPE] = {
 CORE_FRONTEND_APPS: dict[str, FRONTEND_APP_ATTRS_TYPE] = {
     "authn": {
         "npm_package": "@openedx/frontend-app-authn",
-        "npm_version": "^1.0.0-alpha || 0.0.0-dev",
+        "npm_version": "^1.0.0 || 0.0.0-dev",
         "enabled": False,
     },
     "learner-dashboard": {
         "npm_package": "@openedx/frontend-app-learner-dashboard",
-        "npm_version": "^1.0.0-alpha || 0.0.0-dev",
+        "npm_version": "^1.0.0 || 0.0.0-dev",
         "enabled": False,
     },
     "instructor-dashboard": {
         "npm_package": "@openedx/frontend-app-instructor-dashboard",
-        "npm_version": "^1.0.0-alpha || 0.0.0-dev",
+        "npm_version": "^1.0.0 || 0.0.0-dev",
         "enabled": True,
     },
     "notifications": {
         "npm_package": "@openedx/frontend-app-notifications",
-        "npm_version": "^3.0.0-alpha || 0.0.0-dev",
+        "npm_version": "^3.0.0 || 0.0.0-dev",
         "enabled": True,
     },
 }
