@@ -9,10 +9,10 @@ jobs:
   update:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
         with:
           ref: main
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-python@v6
         with:
           python-version: "3.12"
       - name: Install tutor (main branch) and this plugin
@@ -28,7 +28,7 @@ jobs:
           --scope @openedx/
           --output tutormfe/templates/mfe/build/mfe/site/package-lock.json
       - name: Open pull request
-        uses: peter-evans/create-pull-request@v6
+        uses: peter-evans/create-pull-request@v8
         with:
           branch: auto/update-site-lockfile
           title: "chore: update @openedx/ entries in site package-lock.json"
