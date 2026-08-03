@@ -78,7 +78,10 @@ CMD ["/bin/bash", "-c", "npm run start --- --config ./webpack.dev-tutor.config.j
 ######## {{ app_name }} (production)
 FROM {{ app_name }}-common AS {{ app_name }}-prod
 ENV NODE_ENV=production
-RUN --mount=type=cache,target=/openedx/app/.cache,sharing=shared npm run build -- --config ./webpack.prod-tutor.config.js
+{#- Every MFE needs its own cache mount id: the id defaults to the target path, so
+    a single mount would make all MFEs share one webpack cache namespace, which is
+    slower than not caching at all. #}
+RUN --mount=type=cache,target=/openedx/app/.cache,id={{ app_name }}-webpack,sharing=locked npm run build -- --config ./webpack.prod-tutor.config.js
 {{ patch("mfe-dockerfile-post-npm-build") }}
 {{ patch("mfe-dockerfile-post-npm-build-{}".format(app_name)) }}
 {% endfor %}

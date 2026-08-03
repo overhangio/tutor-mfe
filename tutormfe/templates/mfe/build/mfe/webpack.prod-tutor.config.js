@@ -8,10 +8,13 @@ const baseProdConfig = (
 );
 
 {% if not MFE_REMOVE_WEBPACK_BUILD_CACHE %}
-// This speeds up subsequent builds when Docker layer cache is reused.
+// This speeds up subsequent builds when the BuildKit cache mount is reused.
+// `name` scopes the cache per MFE: frontend-build sets no cache name, so every
+// MFE would otherwise write to the same "default-production" namespace.
 baseProdConfig.cache = {
   type: 'filesystem',
   cacheDirectory: path.resolve(__dirname, '.cache'),
+  name: `${process.env.APP_ID || 'app'}-production`,
 };
 {% endif %}
 
