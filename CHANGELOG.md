@@ -19,6 +19,13 @@ instructions, because git commits are used to generate release notes:
 
 <!-- scriv-insert-here -->
 
+<a id='changelog-21.0.1'></a>
+## v21.0.1 (2026-08-04)
+
+- [Chore] Remove unnecessary hatch definition for version. (by @Faraz32123)
+
+- [Improvement] Optimized MFE production webpack builds (by @muhammadadeeltajamul)
+
 <a id='changelog-21.0.0'></a>
 ## v21.0.0 (2026-01-16)
 
