@@ -1,0 +1,13 @@
+{
+  "extends": "@openedx/frontend-base/tools/tsconfig.json",
+  "compilerOptions": {
+    "rootDir": ".",
+    "outDir": "dist",
+  },
+  "include": [
+    "src/**/*",
+    "app.d.ts",
+    "eslint.config.js",
+    "site.config.*.tsx",
+  ],
+}

@@ -14,27 +14,41 @@
 
     {{ patch("mfe-caddyfile") | indent(4) }}
 
-    reverse_proxy /api/mfe_config/v1* lms:8000 {
-        # We need to specify the host header, otherwise it will be rejected with 400
-        # from the lms.
-        header_up Host {{ LMS_HOST }}
+    @runtime_config {
+        path /api/mfe_config/*
+        path /api/frontend_site_config/*
+    }
+    handle @runtime_config {
+        reverse_proxy lms:8000 {
+            header_up Host {{ LMS_HOST }}
+        }
     }
 
+    {# TODO(legacy-mfe-removal): drop the is_mfe_enabled("authoring") block below. #}
     {% if is_mfe_enabled("authoring") %}
     # redirect /course-authoring to /authoring, for backward compatibility
-    @authoring path_regexp authoring /course-authoring/(.*)
-    redir @authoring /authoring/{re.authoring.1} permanent
+    @course-authoring path_regexp course_authoring /course-authoring/(.*)
+    redir @course-authoring /authoring/{re.course_authoring.1} permanent
     {% endif %}
 
-    {% for app_name, app in iter_mfes() %}
-    @mfe_{{ app_name }} {
-        path /{{ app_name }} /{{ app_name }}/*
+    {# TODO(legacy-mfe-removal): drop the iter_legacy_paths loop below. #}
+    {% for legacy_path in iter_legacy_paths() %}
+    @mfe_{{ legacy_path }} {
+        path /{{ legacy_path }} /{{ legacy_path }}/*
     }
-    handle @mfe_{{ app_name }} {
-        uri strip_prefix /{{ app_name }}
-        root * /openedx/dist/{{ app_name }}
+    handle @mfe_{{ legacy_path }} {
+        uri strip_prefix /{{ legacy_path }}
+        root * /openedx/dist/{{ legacy_path }}
         try_files /{path} /index.html
         file_server
     }
     {% endfor %}
+
+    {% if get_frontend_apps() %}
+    handle {
+        root * /openedx/dist/site
+        try_files /{path} /index.html
+        file_server
+    }
+    {% endif %}
 }
