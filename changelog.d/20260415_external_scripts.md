@@ -1,1 +1,0 @@
-- [Feature] Add `EXTERNAL_SCRIPTS` hook for configuring MFE external scripts via `env.config.jsx`. (by @arbrandes)

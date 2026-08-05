@@ -1,1 +1,0 @@
-- [Improvement] Bump frontend-base, frontend-base-compat, and the core frontend apps (`authn`, `learner-dashboard`, `instructor-dashboard`, `notifications`) from alpha to their stable `1.0.0`/`3.0.0` releases. (by @arbrandes)

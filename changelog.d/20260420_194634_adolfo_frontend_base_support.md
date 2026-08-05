@@ -1,1 +1,0 @@
-- [Feature] Add support for [frontend-base](https://github.com/openedx/frontend-base), a unified framework that bundles frontend apps into a single shell application. Introduces a new `FRONTEND_APPS` hook and ships four core apps (`authn`, `learner-dashboard`, `instructor-dashboard`, `notifications`), with the latter two enabled by default. (by @arbrandes and @holaontiveros)
