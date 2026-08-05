@@ -62,6 +62,7 @@ ENV PUBLIC_PATH='/{{ mfe_name }}/'
 ENV MFE_CONFIG_API_URL=/api/mfe_config/v1
 ARG ENABLE_NEW_RELIC=false
 COPY env.config.jsx /openedx/app
+COPY webpack.prod-tutor.config.js /openedx/app
 {{ patch("mfe-dockerfile-pre-npm-build") }}
 {{ patch("mfe-dockerfile-pre-npm-build-{}".format(mfe_name)) }}
 
@@ -76,7 +77,10 @@ CMD ["/bin/bash", "-c", "npm run start --- --config ./webpack.dev-tutor.config.j
 ######## {{ mfe_name }} (production)
 FROM {{ mfe_name }}-common AS {{ mfe_name }}-prod
 ENV NODE_ENV=production
-RUN npm run build
+{#- Every MFE needs its own cache mount id: the id defaults to the target path, so
+    a single mount would make all MFEs share one webpack cache namespace, which is
+    slower than not caching at all. #}
+RUN --mount=type=cache,target=/openedx/app/.cache,id={{ app_name }}-webpack,sharing=locked npm run build -- --config ./webpack.prod-tutor.config.js
 {{ patch("mfe-dockerfile-post-npm-build") }}
 {{ patch("mfe-dockerfile-post-npm-build-{}".format(mfe_name)) }}
 {% endfor %}

@@ -49,6 +49,7 @@ config = {
         "SITE_PORT": 8080,
         "SITE_REPOSITORY": "",
         "SITE_VERSION": "",
+        "REMOVE_WEBPACK_BUILD_CACHE": False,
     },
 }
 
