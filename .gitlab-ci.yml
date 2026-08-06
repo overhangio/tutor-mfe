@@ -1,6 +1,10 @@
 variables:
     TUTOR_PLUGIN: mfe
     TUTOR_IMAGES: mfe account-dev admin-console-dev authn-dev authoring-dev communications-dev discussions-dev gradebook-dev learner-dashboard-dev learning-dev ora-grading-dev profile-dev
+    # Just the "mfe" image: it is the only one above that tutor-indigo renames. The dev
+    # images are named after MFE_DOCKER_IMAGE_DEV_PREFIX, which indigo leaves alone, so
+    # listing them here would push indigo-themed content over their unthemed tags.
+    TUTOR_INDIGO_IMAGES: mfe
     TUTOR_PYPI_PACKAGE: tutor-mfe
     GITHUB_REPO: overhangio/tutor-mfe
 
