@@ -530,80 +530,74 @@ The hook works similarly to ``PLUGIN_SLOTS``. Each item is a tuple of ``(target,
 
 ``loader_class`` is the name of a loader class. The framework instantiates it at runtime and passes the app's runtime config to its constructor.
 
-For instance, to inject a third-party ``<script>`` tag across all MFEs, define a loader directly in ``env.config.jsx``:
+Legacy MFEs and the site are built separately, so a loader class has to be defined in whichever pipeline uses it: ``mfe-env-config-buildtime-definitions`` for ``env.config.jsx``, and ``mfe-site-custom-app-definitions`` for ``customApp.tsx``. A plugin that covers both patches the same definition into each and registers it once against ``"all"``.
+
+Note that a definition shared by the two pipelines has to be plain JavaScript that also survives a type checker: ``env.config.jsx`` only ever goes through Babel, but ``customApp.tsx`` is compiled by ``tsc`` in strict mode.
+
+For instance, to inject a third-party ``<script>`` tag everywhere:
 
 .. code-block:: python
 
     from tutormfe.hooks import EXTERNAL_SCRIPTS
     from tutor import hooks
 
-    hooks.Filters.ENV_PATCHES.add_item(
-        (
-            "mfe-env-config-buildtime-definitions",
-            """
+    CUSTOM_SCRIPT_LOADER = """
     class CustomScriptLoader {
+      scriptUrl = '';
+
       constructor({ config }) {
-        this.config = config;
+        this.scriptUrl = config.CUSTOM_SCRIPT_URL;
       }
 
       loadScript() {
-        if (!this.config.CUSTOM_SCRIPT_URL) {
+        if (!this.scriptUrl) {
           return;
         }
         const script = document.createElement('script');
         script.id = 'custom-script';
-        script.src = this.config.CUSTOM_SCRIPT_URL;
+        script.src = this.scriptUrl;
         document.head.appendChild(script);
       }
     }
-    """,
-        )
-    )
+    """
 
-    EXTERNAL_SCRIPTS.add_items([
-        (
-            "all",
-            "CustomScriptLoader",
-        ),
+    hooks.Filters.ENV_PATCHES.add_items([
+        ("mfe-env-config-buildtime-definitions", CUSTOM_SCRIPT_LOADER),
+        ("mfe-site-custom-app-definitions", CUSTOM_SCRIPT_LOADER),
     ])
 
-The ``CustomScriptLoader`` class is defined via the ``mfe-env-config-buildtime-definitions`` patch, and the ``EXTERNAL_SCRIPTS`` hook wires it into the configuration. Frontend-platform instantiates the class at runtime and passes the MFE's runtime config to the constructor, so the loader can read any key from ``MFE_CONFIG`` (here, ``CUSTOM_SCRIPT_URL``, which you would set via the ``mfe-lms-common-settings`` patch or equivalent). The built-in ``GoogleAnalyticsLoader`` in ``@openedx/frontend-platform/scripts`` follows the same pattern with ``config.GOOGLE_ANALYTICS_4_ID`` - you can import it with the ``mfe-env-config-buildtime-imports`` patch and use it with ``EXTERNAL_SCRIPTS`` in the same way.
+    EXTERNAL_SCRIPTS.add_item(("all", "CustomScriptLoader"))
 
-You can also target a specific MFE. For example, to load a custom script only on the learning MFE:
+The ``CustomScriptLoader`` class is defined via the patches, and the ``EXTERNAL_SCRIPTS`` hook wires it into the configuration. The framework instantiates the class at boot and passes the app's configuration to the constructor, so the loader can read any config key - here, ``CUSTOM_SCRIPT_URL``. Both pipelines get that configuration from the LMS, so the same ``mfe-lms-common-settings`` patch (or its production and development variants) can supply it: set ``MFE_CONFIG["CUSTOM_SCRIPT_URL"]`` for the legacy MFEs and ``FRONTEND_SITE_CONFIG["commonAppConfig"]["CUSTOM_SCRIPT_URL"]`` for the site.
+
+Loaders don't have to be inlined. If one ships as an NPM package, install it and import it instead of defining it. Each pipeline needs its own install and import patch: ``mfe-dockerfile-post-npm-install`` and ``mfe-env-config-buildtime-imports`` for legacy MFEs, ``mfe-dockerfile-post-npm-install-site`` and ``mfe-site-custom-app-imports`` for the site.
 
 .. code-block:: python
 
     from tutormfe.hooks import EXTERNAL_SCRIPTS
     from tutor import hooks
 
-    hooks.Filters.ENV_PATCHES.add_item(
-        (
-            "mfe-dockerfile-post-npm-install",
-            """
+    NPM_INSTALL = """
     RUN npm install @myorg/custom-script-loader
-    """,
-        )
-    )
-
-    hooks.Filters.ENV_PATCHES.add_item(
-        (
-            "mfe-env-config-buildtime-imports",
-            """
+    """
+    IMPORT_LOADER = """
     import { CustomScriptLoader } from '@myorg/custom-script-loader';
-    """,
-        )
-    )
+    """
 
-    EXTERNAL_SCRIPTS.add_items([
-        (
-            "learning",
-            "CustomScriptLoader",
-        ),
+    hooks.Filters.ENV_PATCHES.add_items([
+        ("mfe-dockerfile-post-npm-install", NPM_INSTALL),
+        ("mfe-dockerfile-post-npm-install-site", NPM_INSTALL),
+        ("mfe-env-config-buildtime-imports", IMPORT_LOADER),
+        ("mfe-site-custom-app-imports", IMPORT_LOADER),
     ])
 
-Note that if no external scripts are configured, the ``externalScripts`` key is not set in the MFE config at all, so any MFE-level defaults are preserved.
+    EXTERNAL_SCRIPTS.add_item(("all", "CustomScriptLoader"))
 
-To register a loader on the frontend-base site, use the ``mfe-site-custom-app-definitions`` and ``mfe-site-custom-app-imports`` patches in place of their ``mfe-env-config-buildtime-*`` equivalents, and target ``"site"`` (or ``"all"``) in ``EXTERNAL_SCRIPTS``. The loader's ``constructor({ config })`` receives the ``customApp`` runtime configuration, which you can populate via the site config (for example, through ``commonAppConfig``) or the ``runtimeConfigJsonUrl`` endpoint.
+To restrict a loader to a single MFE, target it by name instead of ``"all"`` - for example ``("learning", "CustomScriptLoader")`` - and install the package with ``mfe-dockerfile-post-npm-install-learning`` so the other builds are left untouched.
+
+For a complete working plugin, see `tutor-contrib-google-analytics <https://github.com/openedx/openedx-tutor-plugins/tree/main/plugins/tutor-contrib-google-analytics>`_, which inlines a single loader definition into both pipelines and registers it against ``"all"``.
+
+Note that if no external scripts are configured, the ``externalScripts`` key is not set in the MFE config at all, so any MFE-level defaults are preserved.
 
 
 Hosting extra static files
