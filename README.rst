@@ -914,30 +914,38 @@ Using Frontend Slots
 
 The ``FRONTEND_SLOTS`` filter is the frontend-base equivalent of ``PLUGIN_SLOTS``. Instead of targeting individual MFEs by name, it registers slot operations globally in the site's ``customApp``, where they apply to all frontend apps served by the site.
 
-Each item added to the filter is a string containing a TypeScript ``SlotOperation`` object literal. For example, to replace the default footer with a custom one:
+Each item added to the filter is a string containing a TypeScript ``SlotOperation`` object literal. Because these literals end up in ``customApp.tsx``, which is type-checked, the ``op`` field must be one of the ``WidgetOperationTypes`` or ``LayoutOperationTypes`` constants, imported via the ``mfe-site-custom-app-imports`` patch. For example, to replace the default footer with a custom one:
 
 .. code-block:: python
 
+    from tutor import hooks
     from tutormfe.hooks import FRONTEND_SLOTS
+
+    hooks.Filters.ENV_PATCHES.add_item(
+        (
+            "mfe-site-custom-app-imports",
+            """
+    import { WidgetOperationTypes } from '@openedx/frontend-base';
+    """,
+        )
+    )
 
     FRONTEND_SLOTS.add_items([
         """
         {
           slotId: 'org.openedx.frontend.slot.footer.main.v1',
-          op: 'widgetReplace',
+          op: WidgetOperationTypes.REPLACE,
           id: 'customFooter',
-          relatedId: 'defaultContent',
+          relatedId: 'org.openedx.frontend.widget.footer.main.v1',
           element: (
             <h1>This is the footer.</h1>
           ),
         }""",
     ])
 
-Unlike ``PLUGIN_SLOTS``, there's no MFE name parameter - slot operations are applied site-wide. The ``slotId`` field identifies which slot to target, and each operation uses the ``SlotOperation`` format defined by `@openedx/frontend-base <https://github.com/openedx/frontend-base/>`_. Widget operations include ``widgetAppend``, ``widgetPrepend``, ``widgetInsertBefore``, ``widgetInsertAfter``, ``widgetReplace``, ``widgetRemove``, and ``widgetOptions``. Layout operations include ``layoutReplace`` and ``layoutOptions``.
+Unlike ``PLUGIN_SLOTS``, there's no MFE name parameter - slot operations are applied site-wide. The ``slotId`` field identifies which slot to target, and each operation uses the ``SlotOperation`` format defined by `@openedx/frontend-base <https://github.com/openedx/frontend-base/>`_. Widget operations are ``WidgetOperationTypes.APPEND``, ``PREPEND``, ``INSERT_BEFORE``, ``INSERT_AFTER``, ``REPLACE``, ``REMOVE``, and ``OPTIONS``. Layout operations are ``LayoutOperationTypes.REPLACE`` and ``OPTIONS``.
 
 You can also use the ``mfe-site-custom-app-final`` and ``mfe-site-custom-app-imports`` patches to add arbitrary code directly to ``customApp.tsx``, bypassing the filter entirely.
-
-Note that the examples above use string literals like ``'widgetRemove'`` rather than the ``WidgetOperationTypes`` constants shown in the app package section below. Using the constants would require adding an import via ``mfe-site-custom-app-imports``, which isn't worth the trouble here - the string values are equivalent.
 
 ``FRONTEND_SLOTS`` is best suited for simple slot operations or as an easier migration path from ``PLUGIN_SLOTS``. For more complex frontend plugins, you should create an npm app package instead (see below).
 
