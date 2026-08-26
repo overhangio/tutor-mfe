@@ -1,0 +1,1 @@
+- [Deprecation] Stop setting the `ENABLE_MFE_CONFIG_API` toggle, which no longer exists upstream. (by @arbrandes)
