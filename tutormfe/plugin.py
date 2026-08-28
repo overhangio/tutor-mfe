@@ -73,6 +73,7 @@ CORE_MFE_APPS: dict[str, MFE_ATTRS_TYPE] = {
     "authn": {
         "repository": "https://github.com/openedx/frontend-app-authn.git",
         "port": 1999,
+        "version": "legacy-mfe",
     },
     "authoring": {
         "repository": "https://github.com/openedx/frontend-app-authoring.git",
@@ -97,6 +98,7 @@ CORE_MFE_APPS: dict[str, MFE_ATTRS_TYPE] = {
     "learner-dashboard": {
         "repository": "https://github.com/openedx/frontend-app-learner-dashboard.git",
         "port": 1996,
+        "version": "legacy-mfe",
     },
     "learning": {
         "repository": "https://github.com/openedx/frontend-app-learning.git",
@@ -113,6 +115,7 @@ CORE_MFE_APPS: dict[str, MFE_ATTRS_TYPE] = {
     "catalog": {
         "repository": "https://github.com/openedx/frontend-app-catalog.git",
         "port": 1998,
+        "version": "legacy-mfe",
     },
 }
 
