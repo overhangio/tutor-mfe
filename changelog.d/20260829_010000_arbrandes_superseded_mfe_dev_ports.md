@@ -1,0 +1,1 @@
+- [Bugfix] Stop legacy MFEs superseded by an enabled frontend app from binding their development ports, which also kept a mounted repo from being served twice. (by @arbrandes)
