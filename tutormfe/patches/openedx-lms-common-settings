@@ -7,7 +7,7 @@ MFE_CONFIG_API_CACHE_TIMEOUT = 1
 {% if get_mfe("authn") or is_frontend_app_enabled("authn") %}
 FEATURES['ENABLE_AUTHN_MICROFRONTEND'] = True
 {% endif %}
-{% if get_mfe("catalog") %}
+{% if get_mfe("catalog") or is_frontend_app_enabled("catalog") %}
 ENABLE_CATALOG_MICROFRONTEND = True
 {% endif %}
 {% if get_mfe("communications") %}

@@ -134,9 +134,9 @@ Catalog
 ~~~~~~~~
 
 .. image:: https://raw.githubusercontent.com/overhangio/tutor-mfe/release/media/catalog.png
-    :alt: Catalog MFE screenshot
+    :alt: Catalog screenshot
 
-The Catalog MFE replaces the former Home, Course About and Course catalog pages, which is the main part of the LMS where students start interacting with courses.
+The Catalog replaces the former Home, Course About and Course catalog pages, which is the main part of the LMS where students start interacting with courses. It is available at ``http(s)://{{ MFE_HOST }}/catalog``.
 
 Instructor Dashboard
 ~~~~~~~~~~~~~~~~~~~~
@@ -747,26 +747,27 @@ When frontend apps are enabled, the plugin builds a frontend-base site that bund
 Frontend apps
 ~~~~~~~~~~~~~
 
-Frontend apps are npm packages that plug into the frontend-base site. This plugin ships with four core frontend apps:
+Frontend apps are npm packages that plug into the frontend-base site. This plugin ships with five core frontend apps, all enabled by default:
 
-- ``authn`` (``@openedx/frontend-app-authn``): disabled by default
-- ``learner-dashboard`` (``@openedx/frontend-app-learner-dashboard``): disabled by default
-- ``instructor-dashboard`` (``@openedx/frontend-app-instructor-dashboard``): enabled by default
-- ``notifications`` (``@openedx/frontend-app-notifications``): enabled by default
+- ``catalog`` (``@openedx/frontend-app-catalog``)
+- ``authn`` (``@openedx/frontend-app-authn``)
+- ``learner-dashboard`` (``@openedx/frontend-app-learner-dashboard``)
+- ``instructor-dashboard`` (``@openedx/frontend-app-instructor-dashboard``)
+- ``notifications`` (``@openedx/frontend-app-notifications``)
 
-To enable apps, use the ``tutormfe.hooks.FRONTEND_APPS`` filter:
+To disable apps, use the ``tutormfe.hooks.FRONTEND_APPS`` filter:
 
 .. code-block:: python
 
     from tutormfe.hooks import FRONTEND_APPS
 
     @FRONTEND_APPS.add()
-    def _enable_core_apps(apps):
-        apps["authn"]["enabled"] = True
-        apps["learner-dashboard"]["enabled"] = True
+    def _disable_core_apps(apps):
+        apps["authn"]["enabled"] = False
+        apps["learner-dashboard"]["enabled"] = False
         return apps
 
-Note that if an enabled frontend app matches a legacy MFE, the legacy MFE will be effectively disabled.  This is the case with both Authn and Learner Dashboard if the example above is followed.
+Note that if an enabled frontend app matches a legacy MFE, the legacy MFE will be effectively disabled.  This is the case for every core frontend app, unless it is disabled as in the example above.
 
 Enabling or disabling existing apps does not require rebuilding tutor-mfe images: after a `tutor config save`, only a Tutor restart is required.
 
@@ -816,7 +817,7 @@ Runtime configuration
 
 By default, the frontend-base site fetches its runtime configuration from the LMS at ``/api/frontend_site_config/v1/``. This configuration is populated from the ``FRONTEND_SITE_CONFIG`` dictionary in the LMS settings.
 
-Tutor-mfe automatically populates ``FRONTEND_SITE_CONFIG`` with base URLs, login/logout URLs, external routes, and per-app configuration. To add custom values or override existing ones, use the ``mfe-lms-common-settings``, ``mfe-lms-production-settings``, or ``mfe-lms-development-settings`` patches:
+Tutor-mfe automatically populates ``FRONTEND_SITE_CONFIG`` with base URLs, login/logout URLs, external routes, and common app configuration. To add custom values or override existing ones, use the ``mfe-lms-common-settings``, ``mfe-lms-production-settings``, or ``mfe-lms-development-settings`` patches:
 
 .. code-block:: python
 

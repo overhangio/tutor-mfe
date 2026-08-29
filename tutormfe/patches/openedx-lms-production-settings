@@ -32,7 +32,9 @@ FRONTEND_SITE_CONFIG = {
     "externalRoutes": [
         {"role": "org.openedx.frontend.role.logout", "url": "{{ "https" if ENABLE_HTTPS else "http" }}://{{ LMS_HOST }}/logout"},
     ],
-    "commonAppConfig": {},
+    "commonAppConfig": {
+        "INFO_EMAIL": "{{ CONTACT_EMAIL }}",
+    },
 }
 
 # MFE-specific settings
@@ -82,6 +84,7 @@ INSTRUCTOR_MICROFRONTEND_URL = "{% if ENABLE_HTTPS %}https://{% else %}http://{%
 {% if get_mfe("learning") %}
 LEARNING_MICROFRONTEND_URL = "{% if ENABLE_HTTPS %}https://{% else %}http://{% endif %}{{ MFE_HOST }}/learning"
 MFE_CONFIG["LEARNING_BASE_URL"] = "{{ "https" if ENABLE_HTTPS else "http" }}://{{ MFE_HOST }}/learning"
+FRONTEND_SITE_CONFIG["commonAppConfig"]["LEARNING_BASE_URL"] = "{{ "https" if ENABLE_HTTPS else "http" }}://{{ MFE_HOST }}/learning"
 {% endif %}
 
 {% if get_mfe("ora-grading") %}
@@ -104,7 +107,7 @@ ADMIN_CONSOLE_MICROFRONTEND_URL = "{% if ENABLE_HTTPS %}https://{% else %}http:/
 MFE_CONFIG["ADMIN_CONSOLE_URL"] = ADMIN_CONSOLE_MICROFRONTEND_URL
 {% endif %}
 
-{% if get_mfe("catalog") %}
+{% if get_mfe("catalog") or is_frontend_app_enabled("catalog") %}
 CATALOG_MICROFRONTEND_URL = "{% if ENABLE_HTTPS %}https://{% else %}http://{% endif %}{{ MFE_HOST }}/catalog"
 {% endif %}
 

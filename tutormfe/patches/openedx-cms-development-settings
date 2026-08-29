@@ -6,7 +6,9 @@ LOGIN_REDIRECT_WHITELIST.append("{{ MFE_HOST }}:{{ get_mfe('authoring')["port"] 
 CSRF_TRUSTED_ORIGINS.append("http://{{ MFE_HOST }}:{{ get_mfe('authoring')["port"] }}")
 {% endif %}
 
-{% if get_mfe("catalog") %}
+{% if is_frontend_app_enabled("catalog") %}
+CATALOG_MICROFRONTEND_URL = "http://{{ MFE_HOST }}:{{ MFE_SITE_PORT }}/catalog"
+{% elif get_mfe("catalog") %}
 CATALOG_MICROFRONTEND_URL = "http://{{ MFE_HOST }}:{{ get_mfe("catalog")["port"] }}/catalog"
 {% endif %}
 

@@ -18,6 +18,10 @@ import { instructorDashboardApp } from '@openedx/frontend-app-instructor-dashboa
 import { notificationsApp } from '@openedx/frontend-app-notifications';
 {% endif %}
 
+{% if get_frontend_app("catalog") %}
+import { catalogApp } from '@openedx/frontend-app-catalog';
+{% endif %}
+
 {% if get_frontend_compat_mfes() %}
 import {
   createLegacyPluginApp,
@@ -77,6 +81,10 @@ addApp(siteConfig, instructorDashboardApp);
 
 {% if get_frontend_app("notifications") %}
 addApp(siteConfig, notificationsApp);
+{% endif %}
+
+{% if get_frontend_app("catalog") %}
+addApp(siteConfig, catalogApp);
 {% endif %}
 
 {%- for mfe in iter_frontend_compat_mfes() %}

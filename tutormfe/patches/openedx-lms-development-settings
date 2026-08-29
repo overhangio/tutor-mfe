@@ -32,7 +32,9 @@ FRONTEND_SITE_CONFIG = {
     "externalRoutes": [
         {"role": "org.openedx.frontend.role.logout", "url": "http://{{ LMS_HOST }}:8000/logout"},
     ],
-    "commonAppConfig": {},
+    "commonAppConfig": {
+        "INFO_EMAIL": "{{ CONTACT_EMAIL }}",
+    },
 }
 
 # MFE-specific settings
@@ -87,6 +89,7 @@ INSTRUCTOR_MICROFRONTEND_URL = "http://{{ MFE_HOST }}:{{ MFE_SITE_PORT }}/instru
 {% if get_mfe("learning") %}
 LEARNING_MICROFRONTEND_URL = "http://{{ MFE_HOST }}:{{ get_mfe("learning")["port"] }}/learning"
 MFE_CONFIG["LEARNING_BASE_URL"] = "http://{{ MFE_HOST }}:{{ get_mfe("learning")["port"] }}/learning"
+FRONTEND_SITE_CONFIG["commonAppConfig"]["LEARNING_BASE_URL"] = "http://{{ MFE_HOST }}:{{ get_mfe("learning")["port"] }}/learning"
 {% endif %}
 
 {% if get_mfe("ora-grading") %}
@@ -109,7 +112,9 @@ ADMIN_CONSOLE_MICROFRONTEND_URL = "http://{{ MFE_HOST }}:{{ get_mfe("admin-conso
 MFE_CONFIG["ADMIN_CONSOLE_URL"] = ADMIN_CONSOLE_MICROFRONTEND_URL
 {% endif %}
 
-{% if get_mfe("catalog") %}
+{% if is_frontend_app_enabled("catalog") %}
+CATALOG_MICROFRONTEND_URL = "http://{{ MFE_HOST }}:{{ MFE_SITE_PORT }}/catalog"
+{% elif get_mfe("catalog") %}
 CATALOG_MICROFRONTEND_URL = "http://{{ MFE_HOST }}:{{ get_mfe("catalog")["port"] }}/catalog"
 {% endif %}
 

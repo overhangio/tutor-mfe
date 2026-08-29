@@ -1,0 +1,4 @@
+- 💥[Feature] Ship the Catalog as a frontend app (`@openedx/frontend-app-catalog`), enabled by default. (by @arbrandes)
+- 💥[Feature] Enable the Authn and Learner Dashboard frontend apps by default. (by @arbrandes)
+- 💥[Feature] Build the frontend-base site against `@openedx/frontend-base` 2.0. (by @arbrandes)
+- [Bugfix] Set `ENABLE_CATALOG_MICROFRONTEND` in the CMS as well, so that Studio's course "about" links point at the catalog instead of the LMS. (by @arbrandes)
