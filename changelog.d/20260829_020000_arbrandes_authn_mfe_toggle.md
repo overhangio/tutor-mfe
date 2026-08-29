@@ -1,0 +1,1 @@
+- [Bugfix] Set `ENABLE_AUTHN_MICROFRONTEND` as a top-level Django setting instead of a `FEATURES` key, so the LMS once again redirects `/login` and `/register` to the Authn MFE. (by @arbrandes)
