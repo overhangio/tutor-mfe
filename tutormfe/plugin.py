@@ -194,6 +194,8 @@ class MFEMountData:
     def _categorize_mfes(self, mounts: list[str]) -> None:
         """Populates mounted and unmounted MFE lists based on mount data."""
         for app_name, app in iter_mfes():
+            if is_frontend_app_enabled(app_name):
+                continue
             mfe_mounts = list(iter_mounts(mounts, app_name))
             if mfe_mounts:
                 self.mounted.append((app_name, app, mfe_mounts))
