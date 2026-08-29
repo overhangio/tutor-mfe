@@ -3,7 +3,7 @@
 COURSE_AUTHORING_MICROFRONTEND_URL = "{% if ENABLE_HTTPS %}https://{% else %}http://{% endif %}{{ MFE_HOST }}/authoring"
 {% endif %}
 
-{% if get_mfe("catalog") %}
+{% if get_mfe("catalog") or is_frontend_app_enabled("catalog") %}
 CATALOG_MICROFRONTEND_URL = "{% if ENABLE_HTTPS %}https://{% else %}http://{% endif %}{{ MFE_HOST }}/catalog"
 {% endif %}
 

@@ -1,0 +1,4 @@
+# MFE-specific settings
+{% if get_mfe("catalog") or is_frontend_app_enabled("catalog") %}
+ENABLE_CATALOG_MICROFRONTEND = True
+{% endif %}
