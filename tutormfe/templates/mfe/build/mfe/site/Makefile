@@ -1,4 +1,4 @@
-TURBO = TURBO_TELEMETRY_DISABLED=1 turbo --dangerously-disable-package-manager-check
+TURBO = TURBO_TELEMETRY_DISABLED=1 turbo
 
 .PHONY: bin-link build-packages clean-packages clean dev-packages
 

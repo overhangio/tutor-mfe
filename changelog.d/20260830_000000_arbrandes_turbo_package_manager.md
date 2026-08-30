@@ -1,0 +1,1 @@
+- [Bugfix] Declare `packageManager` in the site's `package.json` so that `build:packages` keeps working on turbo 2.10.1 and later. (by @arbrandes)
