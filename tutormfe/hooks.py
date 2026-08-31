@@ -38,7 +38,9 @@ FRONTEND_WIDGET_COMPAT_MAPS: Filter[list[tuple[str, dict[str, t.Any]]], []] = Fi
 # TODO(legacy-mfe-removal): MFE_ATTRS_TYPE, MFE_APPS, and PLUGIN_SLOTS all go
 # away with the legacy MFE cleanup. See the central TODO block in plugin.py for
 # the full list.
-MFE_ATTRS_TYPE = t.Dict[t.Literal["repository", "port", "version"], t.Union["str", int]]
+MFE_ATTRS_TYPE = t.Dict[
+    t.Literal["repository", "port", "version", "alternate_master"], t.Union["str", int]
+]
 
 MFE_APPS: Filter[dict[str, MFE_ATTRS_TYPE], []] = Filter()
 

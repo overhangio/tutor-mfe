@@ -170,6 +170,7 @@ Other MFE developers can take advantage of this plugin to deploy their own MFEs.
             "repository": "https://github.com/myorg/mymfe.git",
             "port": 2001,
             "version": "me/my-custom-branch-or-tag", # optional, will default to the Open edX current tag.
+            "alternate_master": "legacy-mfe", # optional, only applies when MFE_COMMON_VERSION is "master".
         }
         return mfes
 

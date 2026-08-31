@@ -73,7 +73,7 @@ CORE_MFE_APPS: dict[str, MFE_ATTRS_TYPE] = {
     "authn": {
         "repository": "https://github.com/openedx/frontend-app-authn.git",
         "port": 1999,
-        "version": "legacy-mfe",
+        "alternate_master": "legacy-mfe",
     },
     "authoring": {
         "repository": "https://github.com/openedx/frontend-app-authoring.git",
@@ -98,7 +98,7 @@ CORE_MFE_APPS: dict[str, MFE_ATTRS_TYPE] = {
     "learner-dashboard": {
         "repository": "https://github.com/openedx/frontend-app-learner-dashboard.git",
         "port": 1996,
-        "version": "legacy-mfe",
+        "alternate_master": "legacy-mfe",
     },
     "learning": {
         "repository": "https://github.com/openedx/frontend-app-learning.git",
@@ -115,7 +115,7 @@ CORE_MFE_APPS: dict[str, MFE_ATTRS_TYPE] = {
     "catalog": {
         "repository": "https://github.com/openedx/frontend-app-catalog.git",
         "port": 1998,
-        "version": "legacy-mfe",
+        "alternate_master": "legacy-mfe",
     },
 }
 
@@ -430,6 +430,22 @@ def get_mfe(mfe_name: str) -> t.Union[MFE_ATTRS_TYPE, t.Any]:
     return get_mfes().get(mfe_name, {})
 
 
+# TODO(legacy-mfe-removal)
+def get_mfe_version(mfe: MFE_ATTRS_TYPE, common_version: str) -> t.Any:
+    """
+    Return the git revision an MFE should be built from.
+
+    An explicit "version" always wins. "alternate_master" only applies when
+    building against master: it names the branch to build from in place of
+    master, while release builds keep following the common version.
+    """
+    if "version" in mfe:
+        return mfe["version"]
+    if common_version == "master":
+        return mfe.get("alternate_master", common_version)
+    return common_version
+
+
 def get_frontend_app(app_name: str) -> t.Union[FRONTEND_APP_ATTRS_TYPE, t.Any]:
     """
     Returns the attributes of a configured frontend app.
@@ -440,9 +456,10 @@ def get_frontend_app(app_name: str) -> t.Union[FRONTEND_APP_ATTRS_TYPE, t.Any]:
 # Make the mfe functions available within templates
 tutor_hooks.Filters.ENV_TEMPLATE_VARIABLES.add_items(
     [
-        # TODO(legacy-mfe-removal): get_mfe, iter_mfes, iter_legacy_paths,
-        # iter_plugin_slots, is_mfe_enabled, MFEMountData
+        # TODO(legacy-mfe-removal): get_mfe, get_mfe_version, iter_mfes,
+        # iter_legacy_paths, iter_plugin_slots, is_mfe_enabled, MFEMountData
         ("get_mfe", get_mfe),
+        ("get_mfe_version", get_mfe_version),
         ("iter_mfes", iter_mfes),
         ("iter_legacy_paths", iter_legacy_paths),
         ("iter_frontend_apps", iter_frontend_apps),
