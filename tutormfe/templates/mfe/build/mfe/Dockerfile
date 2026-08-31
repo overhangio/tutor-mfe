@@ -32,7 +32,7 @@ ENV PATH=/openedx/app/node_modules/.bin:${PATH}
 # Empty layer with just the repo at the root, for build-time bind-mounts.
 # Cache is invalidated when the upstream commit SHA changes.
 FROM scratch AS {{ mfe_name }}-src
-ADD --keep-git-dir=true {{ mfe["repository"] }}#{{ mfe.get("version", MFE_COMMON_VERSION) }} .
+ADD --keep-git-dir=true {{ mfe["repository"] }}#{{ get_mfe_version(mfe, MFE_COMMON_VERSION) }} .
 
 ######## {{ mfe_name }} (common)
 FROM base AS {{ mfe_name }}-common

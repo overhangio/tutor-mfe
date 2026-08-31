@@ -1,1 +1,1 @@
-- [Bugfix] Build the Authn, Learner Dashboard and Catalog micro-frontends from their `legacy-mfe` branches, which is where they live now that each repository's `master` is a frontend-base App Repository. (by @arbrandes)
+- [Bugfix] Build the Authn, Learner Dashboard and Catalog micro-frontends from their `legacy-mfe` branches when `MFE_COMMON_VERSION` is `master`. (by @arbrandes)
