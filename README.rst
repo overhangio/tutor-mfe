@@ -1092,6 +1092,8 @@ You can bind-mount individual frontend app repositories for concurrent developme
 
 An ``mfe-dev`` hot-loading service will be started with the app's source bind-mounted as an npm workspace package, so changes to it are picked up automatically. The site will be available at ``http://apps.local.openedx.io:8080``.
 
+The container relies on the site's own workspace install, so the repository's local ``node_modules`` directory is hidden by a Docker volume instead of being used. It is left untouched on the host, and thus remains available to your editor, linter and test runner.
+
 You can also develop the frontend-base site locally by bind-mounting a ``frontend-site`` directory.  However, contrary to the ``frontend-app-*`` repositories, there is no upstream ``frontend-site`` equivalent. (The Open edX project considers it to be a downstream configuration concern, which is why tutor-mfe implements it internally.) There is, however, a template repository, `frontend-template-site <https://github.com/openedx/frontend-template-site>`__, you can clone locally for this purpose::
 
     git clone https://github.com/openedx/frontend-template-site.git frontend-site
