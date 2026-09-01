@@ -207,6 +207,23 @@ def get_site_mounts(mounts: list[str]) -> list[str]:
     return list(iter_mounts(mounts, SITE_MOUNT_NAME))
 
 
+def get_site_node_modules_volumes(mounts: list[str]) -> list[str]:
+    """
+    Return the container paths that need an anonymous node_modules volume in
+    the site development service.
+    """
+    volumes: list[str] = []
+    for mount in get_site_mounts(mounts):
+        # Mounts are "HOST_PATH:CONTAINER_PATH" strings, and host paths may
+        # themselves contain a colon (e.g. a Windows drive letter).
+        container_path = mount.rpartition(":")[2].rstrip("/")
+        if container_path == SITE_CONTAINER_PATH or container_path.startswith(
+            f"{SITE_PACKAGES_CONTAINER_PATH}/"
+        ):
+            volumes.append(f"{container_path}/node_modules")
+    return volumes
+
+
 # TODO(legacy-mfe-removal): get_plugin_slots / iter_plugin_slots
 @tutor_hooks.lru_cache
 def get_plugin_slots(mfe_name: str) -> list[tuple[str, str]]:
@@ -480,6 +497,7 @@ tutor_hooks.Filters.ENV_TEMPLATE_VARIABLES.add_items(
         ("is_frontend_app_enabled", is_frontend_app_enabled),
         ("MFEMountData", MFEMountData),
         ("get_site_mounts", get_site_mounts),
+        ("get_site_node_modules_volumes", get_site_node_modules_volumes),
     ]
 )
 
@@ -562,6 +580,8 @@ with open(
 
 REPO_PREFIX = "frontend-app-"
 SITE_MOUNT_NAME = "frontend-site"
+SITE_CONTAINER_PATH = "/openedx/site"
+SITE_PACKAGES_CONTAINER_PATH = f"{SITE_CONTAINER_PATH}/packages"
 
 
 @tutor_hooks.Filters.COMPOSE_MOUNTS.add()
@@ -580,7 +600,7 @@ def _mount_frontend_apps(
         # frontend-site service, while legacy MFEs each have their own
         # dedicated service named after the app.
         if is_frontend_app_enabled(app_name):
-            container_path = f"/openedx/site/packages/frontend-app-{app_name}"
+            container_path = f"{SITE_PACKAGES_CONTAINER_PATH}/{REPO_PREFIX}{app_name}"
             volumes += [(SITE_MOUNT_NAME, container_path)]
         # TODO(legacy-mfe-removal): drop the elif branch
         elif is_mfe_enabled(app_name):
@@ -597,7 +617,7 @@ def _mount_site(
     in the site dev service container at /openedx/site.
     """
     if path_basename == SITE_MOUNT_NAME:
-        volumes += [(SITE_MOUNT_NAME, "/openedx/site")]
+        volumes += [(SITE_MOUNT_NAME, SITE_CONTAINER_PATH)]
     return volumes
 
 

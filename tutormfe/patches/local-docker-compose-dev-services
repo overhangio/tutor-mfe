@@ -34,6 +34,9 @@ mfe-dev: # Work on the frontend site for development
         {%- for mount in site_mounts %}
         - {{ mount }}
         {%- endfor %}
+        {%- for volume in get_site_node_modules_volumes(MOUNTS) %}
+        - {{ volume }}
+        {%- endfor %}
     restart: unless-stopped
     depends_on:
         - lms
