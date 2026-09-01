@@ -112,9 +112,9 @@ COPY site/ .
 FROM base AS site-common
 WORKDIR /openedx/site
 
-# Copy frontend app packages into the workspace.
+# Copy frontend app packages into the workspace, minus any node_modules.
 {%- for app_name, app in iter_frontend_apps() %}
-COPY --from=frontend-app-{{ app_name }}-src / /openedx/site/packages/frontend-app-{{ app_name }}
+COPY --exclude=**/node_modules --from=frontend-app-{{ app_name }}-src / /openedx/site/packages/frontend-app-{{ app_name }}
 {%- endfor %}
 
 # Copy only package.json and package-lock.json first so that npm install is cached independently of source changes
@@ -126,7 +126,8 @@ RUN --mount=type=cache,target=/root/.npm,sharing=shared npm install --no-audit -
 {{ patch("mfe-dockerfile-post-npm-install-site") }}
 
 # Copy the full source; done after npm install so that source changes don't invalidate the install cache
-COPY --from=site-src / .
+# As above, minus any node_modules, which would land on top of the install we just made.
+COPY --exclude=**/node_modules --from=site-src / .
 
 RUN make ATLAS_OPTIONS="--repository={{ ATLAS_REPOSITORY }} --revision={{ ATLAS_REVISION }} {{ ATLAS_OPTIONS }}" pull_translations
 
