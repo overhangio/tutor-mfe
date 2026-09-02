@@ -1,0 +1,1 @@
+- [Bugfix] Set `ENABLE_NEW_BULK_EMAIL_EXPERIENCE` as a top-level Django setting instead of a `FEATURES` key, so the instructor dashboard once again links to the Communications MFE. (by @arbrandes)
