@@ -1,6 +1,6 @@
 # syntax=docker/dockerfile:1
 # https://hub.docker.com/_/node/tags
-ARG NODE_IMAGE=docker.io/node:24.14.1-bookworm-slim
+ARG NODE_IMAGE={{ MFE_NODE_IMAGE }}
 FROM $NODE_IMAGE AS base
 
 RUN apt update \

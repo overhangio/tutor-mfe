@@ -909,6 +909,12 @@ The following Tutor configuration variables control the frontend-base site:
 - ``MFE_SITE_REPOSITORY`` (default: ``""``): an optional git URL for a custom site repository, to be used instead of the default template.
 - ``MFE_SITE_VERSION`` (default: ``""``): the branch or tag to clone from ``MFE_SITE_REPOSITORY``.
 
+The Node.js base image used to build every MFE image is also configurable:
+
+- ``MFE_NODE_IMAGE`` (default: ``docker.io/node:24.14.1-bookworm-slim``): the image the build stages start ``FROM``. Override it to pin a different Node.js release or Debian version, for instance when a base distribution reaches end of life before this plugin is updated::
+
+    tutor config save --set MFE_NODE_IMAGE=docker.io/node:24-bookworm-slim
+
 Using Frontend Slots
 ~~~~~~~~~~~~~~~~~~~~
 
