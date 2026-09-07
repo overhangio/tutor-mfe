@@ -19,6 +19,13 @@ instructions, because git commits are used to generate release notes:
 
 <!-- scriv-insert-here -->
 
+<a id='changelog-22.1.0'></a>
+## v22.1.0 (2026-09-07)
+
+- [Bugfix] Build the MFE images on Debian 12 (`node:24.14.1-bookworm-slim`). Debian 11 "bullseye" left LTS on 31 August 2026 and its security packages are being removed from the mirrors, so the `apt install` in the base stage started failing with 404 errors. Bookworm is supported until mid-2028.
+
+- [Feature] Add the `MFE_NODE_IMAGE` setting to choose the Node.js base image for the MFE builds, so operators can move to a different Node.js or Debian release without forking the Dockerfile.
+
 <a id='changelog-22.0.0'></a>
 ## v22.0.0 (2026-08-05)
 
