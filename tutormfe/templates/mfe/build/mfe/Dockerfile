@@ -1,6 +1,6 @@
 # syntax=docker/dockerfile:1
 # https://hub.docker.com/_/node/tags
-ARG NODE_IMAGE=docker.io/node:24.14.1-bullseye-slim
+ARG NODE_IMAGE=docker.io/node:24.14.1-bookworm-slim
 FROM $NODE_IMAGE AS base
 
 RUN apt update \
