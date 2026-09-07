@@ -1,0 +1,1 @@
+- [Feature] Add the `MFE_NODE_IMAGE` setting to choose the Node.js base image for the MFE builds, so operators can move to a different Node.js or Debian release without forking the Dockerfile.

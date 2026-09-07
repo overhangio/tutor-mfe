@@ -42,6 +42,7 @@ config = {
         "VERSION": __version__,
         "DOCKER_IMAGE": "{{ DOCKER_REGISTRY }}overhangio/openedx-mfe:{{ MFE_VERSION }}",
         "DOCKER_IMAGE_DEV_PREFIX": "{{ DOCKER_REGISTRY }}overhangio/openedx",
+        "NODE_IMAGE": "docker.io/node:24.14.1-bookworm-slim",
         "HOST": "apps.{{ LMS_HOST }}",
         "COMMON_VERSION": "{{ OPENEDX_COMMON_VERSION }}",
         "CADDY_DOCKER_IMAGE": "{{ DOCKER_IMAGE_CADDY }}",
