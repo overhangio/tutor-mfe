@@ -17,3 +17,9 @@ CORS_ORIGIN_WHITELIST.append("http://{{ MFE_HOST }}:{{ get_mfe("admin-console")[
 LOGIN_REDIRECT_WHITELIST.append("{{ MFE_HOST }}:{{ get_mfe("admin-console")["port"] }}")
 CSRF_TRUSTED_ORIGINS.append("http://{{ MFE_HOST }}:{{ get_mfe("admin-console")["port"] }}")
 {% endif %}
+
+{% if get_frontend_apps() %}
+CORS_ORIGIN_WHITELIST.append("http://{{ MFE_HOST }}:{{ MFE_SITE_PORT }}")
+LOGIN_REDIRECT_WHITELIST.append("{{ MFE_HOST }}:{{ MFE_SITE_PORT }}")
+CSRF_TRUSTED_ORIGINS.append("http://{{ MFE_HOST }}:{{ MFE_SITE_PORT }}")
+{% endif %}

@@ -2,6 +2,10 @@ import { EnvironmentTypes, SiteConfig, footerApp, headerApp, shellApp } from '@o
 import customApp from './src/customApp';
 import { addApp, addExternalRoute } from './src/utils';
 
+{% if get_frontend_app("admin-console") %}
+import { adminConsoleApp } from '@openedx/frontend-app-admin-console';
+{% endif %}
+
 {% if get_frontend_app("authn") %}
 import { authnApp } from '@openedx/frontend-app-authn';
 {% endif %}
@@ -66,6 +70,10 @@ const siteConfig: SiteConfig = {
   runtimeConfigJsonUrl: '/api/frontend_site_config/v1/',
   accessTokenCookieName: 'edx-jwt-cookie-header-payload',
 };
+
+{% if get_frontend_app("admin-console") %}
+addApp(siteConfig, adminConsoleApp);
+{% endif %}
 
 {% if get_frontend_app("authn") %}
 addApp(siteConfig, authnApp);
