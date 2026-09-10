@@ -19,7 +19,14 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
       - name: Install dependencies
+        env:
+          TARGET_BRANCH: ${{ github.base_ref || github.ref_name }}
         run: |
+          # On main this plugin requires the upcoming Tutor major version, which has
+          # no PyPI release yet: install Tutor from its main branch first.
+          if [ "$TARGET_BRANCH" = "main" ]; then
+            pip install "tutor[dev] @ git+https://github.com/overhangio/tutor@main"
+          fi
           pip install .[dev]
       - name: Test lint, types, and format
         run: make test
