@@ -1,6 +1,6 @@
 # syntax=docker/dockerfile:1
 # https://hub.docker.com/_/node/tags
-FROM docker.io/node:20.18.0-bullseye-slim AS base
+FROM docker.io/node:20.18.0-bookworm-slim AS base
 
 RUN apt update \
   && apt install -y git \
@@ -8,8 +8,8 @@ RUN apt update \
     gcc libgl1 libxi6 make \
     # required for gifsicle, mozjpeg, and optipng (on arm)
     autoconf libtool pkg-config zlib1g-dev \
-    # required for node-sass (on arm)
-    python g++ \
+    # required for node-gyp when native modules are compiled from source (on arm)
+    python3 python-is-python3 g++ \
     # required for image-webpack-loader (on arm)
     libpng-dev \
     # required for building node-canvas (on arm, for authoring)
