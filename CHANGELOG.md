@@ -19,6 +19,11 @@ instructions, because git commits are used to generate release notes:
 
 <!-- scriv-insert-here -->
 
+<a id='changelog-19.0.1'></a>
+## v19.0.1 (2026-09-11)
+
+- [Bugfix] Build the MFE images on Debian 12 (`node:20.18.0-bookworm-slim`). Debian 11 "bullseye" reached end-of-life on 31 August 2026 and its security repository is no longer served, so the `apt` step in the Dockerfile base stage fails with 404 and "Release file expired" errors. Backport of the fix shipped in v22.1.0. (by @Abdul-Muqadim-Arbisoft)
+
 <a id='changelog-19.0.0'></a>
 ## v19.0.0 (2024-10-30)
 
