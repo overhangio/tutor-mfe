@@ -70,6 +70,7 @@ CORE_MFE_APPS: dict[str, MFE_ATTRS_TYPE] = {
     "admin-console": {
         "repository": "https://github.com/openedx/frontend-app-admin-console.git",
         "port": 2025,
+        "alternate_master": "legacy-mfe",
     },
     "authn": {
         "repository": "https://github.com/openedx/frontend-app-authn.git",

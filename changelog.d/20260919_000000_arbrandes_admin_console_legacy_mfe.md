@@ -1,0 +1,1 @@
+- [Bugfix] Build the Admin Console micro-frontend from its `legacy-mfe` branch when `MFE_COMMON_VERSION` is `master`. (by @arbrandes)
