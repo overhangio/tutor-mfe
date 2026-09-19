@@ -1,0 +1,1 @@
+- 💥[Feature] Ship the Admin Console as a frontend app (`@openedx/frontend-app-admin-console`), enabled by default. (by @arbrandes)
