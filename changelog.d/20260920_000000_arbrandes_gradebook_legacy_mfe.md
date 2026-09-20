@@ -1,0 +1,1 @@
+- 💥[Feature] Ship the Gradebook as a frontend app (`@openedx/frontend-app-gradebook`), enabled by default; the legacy MFE now builds from the `legacy-mfe` branch. (by @arbrandes)

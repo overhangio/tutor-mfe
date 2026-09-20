@@ -69,7 +69,7 @@ MFE_CONFIG["DISCUSSIONS_MFE_BASE_URL"] = DISCUSSIONS_MICROFRONTEND_URL
 DISCUSSIONS_MFE_FEEDBACK_URL = None
 {% endif %}
 
-{% if get_mfe("gradebook") %}
+{% if get_mfe("gradebook") or is_frontend_app_enabled("gradebook") %}
 WRITABLE_GRADEBOOK_URL = "{% if ENABLE_HTTPS %}https://{% else %}http://{% endif %}{{ MFE_HOST }}/gradebook"
 {% endif %}
 

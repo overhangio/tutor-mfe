@@ -96,6 +96,7 @@ CORE_MFE_APPS: dict[str, MFE_ATTRS_TYPE] = {
     "gradebook": {
         "repository": "https://github.com/openedx/frontend-app-gradebook.git",
         "port": 1994,
+        "alternate_master": "legacy-mfe",
     },
     "learner-dashboard": {
         "repository": "https://github.com/openedx/frontend-app-learner-dashboard.git",
@@ -150,6 +151,11 @@ CORE_FRONTEND_APPS: dict[str, FRONTEND_APP_ATTRS_TYPE] = {
     "catalog": {
         "npm_package": "@openedx/frontend-app-catalog",
         "npm_version": "^1.0.0-alpha || 0.0.0-dev",
+        "enabled": True,
+    },
+    "gradebook": {
+        "npm_package": "@openedx/frontend-app-gradebook",
+        "npm_version": "^2.0.0-alpha || 0.0.0-dev",
         "enabled": True,
     },
 }

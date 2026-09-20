@@ -26,6 +26,10 @@ import { notificationsApp } from '@openedx/frontend-app-notifications';
 import { catalogApp } from '@openedx/frontend-app-catalog';
 {% endif %}
 
+{% if get_frontend_app("gradebook") %}
+import { gradebookApp } from '@openedx/frontend-app-gradebook';
+{% endif %}
+
 {% if get_frontend_compat_mfes() %}
 import {
   createLegacyPluginApp,
@@ -93,6 +97,10 @@ addApp(siteConfig, notificationsApp);
 
 {% if get_frontend_app("catalog") %}
 addApp(siteConfig, catalogApp);
+{% endif %}
+
+{% if get_frontend_app("gradebook") %}
+addApp(siteConfig, gradebookApp);
 {% endif %}
 
 {%- for mfe in iter_frontend_compat_mfes() %}
