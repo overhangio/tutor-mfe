@@ -1,0 +1,1 @@
+- [Bugfix] Update the Gradebook and Admin Console frontend apps in the site lockfile, fixing an MFE image build failure on unresolvable translation imports. (by @arbrandes)
