@@ -46,10 +46,12 @@ MFE_CONFIG["DISABLE_ENTERPRISE_LOGIN"] = True
 FRONTEND_SITE_CONFIG["commonAppConfig"]["DISABLE_ENTERPRISE_LOGIN"] = True
 {% endif %}
 
-{% if get_mfe("account") %}
+{% if get_mfe("account") or is_frontend_app_enabled("account") %}
 ACCOUNT_MICROFRONTEND_URL = "{% if ENABLE_HTTPS %}https://{% else %}http://{% endif %}{{ MFE_HOST }}/account/"
 MFE_CONFIG["ACCOUNT_SETTINGS_URL"] = ACCOUNT_MICROFRONTEND_URL
+{% if not is_frontend_app_enabled("account") %}
 FRONTEND_SITE_CONFIG["externalRoutes"].append({"role": "org.openedx.frontend.role.account", "url": "{{ "https" if ENABLE_HTTPS else "http" }}://{{ MFE_HOST }}/account/"})
+{% endif %}
 {% endif %}
 
 {% if get_mfe("authoring") %}

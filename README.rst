@@ -748,8 +748,9 @@ When frontend apps are enabled, the plugin builds a frontend-base site that bund
 Frontend apps
 ~~~~~~~~~~~~~
 
-Frontend apps are npm packages that plug into the frontend-base site. This plugin ships with seven core frontend apps, all enabled by default:
+Frontend apps are npm packages that plug into the frontend-base site. This plugin ships with eight core frontend apps, all enabled by default:
 
+- ``account`` (``@openedx/frontend-app-account``)
 - ``admin-console`` (``@openedx/frontend-app-admin-console``)
 - ``catalog`` (``@openedx/frontend-app-catalog``)
 - ``authn`` (``@openedx/frontend-app-authn``)
