@@ -93,10 +93,12 @@ FRONTEND_SITE_CONFIG["commonAppConfig"]["LEARNING_BASE_URL"] = "{{ "https" if EN
 ORA_GRADING_MICROFRONTEND_URL = "{% if ENABLE_HTTPS %}https://{% else %}http://{% endif %}{{ MFE_HOST }}/ora-grading"
 {% endif %}
 
-{% if get_mfe("profile") %}
+{% if get_mfe("profile") or is_frontend_app_enabled("profile") %}
 PROFILE_MICROFRONTEND_URL = "{% if ENABLE_HTTPS %}https://{% else %}http://{% endif %}{{ MFE_HOST }}/profile/u/"
 MFE_CONFIG["ACCOUNT_PROFILE_URL"] = "{% if ENABLE_HTTPS %}https://{% else %}http://{% endif %}{{ MFE_HOST }}/profile"
+{% if not is_frontend_app_enabled("profile") %}
 FRONTEND_SITE_CONFIG["externalRoutes"].append({"role": "org.openedx.frontend.role.profile", "url": "{{ "https" if ENABLE_HTTPS else "http" }}://{{ MFE_HOST }}/profile/"})
+{% endif %}
 {% endif %}
 
 {% if get_mfe("communications") %}

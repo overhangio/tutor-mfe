@@ -101,7 +101,10 @@ FRONTEND_SITE_CONFIG["commonAppConfig"]["LEARNING_BASE_URL"] = "http://{{ MFE_HO
 ORA_GRADING_MICROFRONTEND_URL = "http://{{ MFE_HOST }}:{{ get_mfe("ora-grading")["port"] }}/ora-grading"
 {% endif %}
 
-{% if get_mfe("profile") %}
+{% if is_frontend_app_enabled("profile") %}
+PROFILE_MICROFRONTEND_URL = "http://{{ MFE_HOST }}:{{ MFE_SITE_PORT }}/profile/u/"
+MFE_CONFIG["ACCOUNT_PROFILE_URL"] = "http://{{ MFE_HOST }}:{{ MFE_SITE_PORT }}/profile"
+{% elif get_mfe("profile") %}
 PROFILE_MICROFRONTEND_URL = "http://{{ MFE_HOST }}:{{ get_mfe("profile")["port"] }}/profile/u/"
 MFE_CONFIG["ACCOUNT_PROFILE_URL"] = "http://{{ MFE_HOST }}:{{ get_mfe("profile")["port"] }}/profile"
 FRONTEND_SITE_CONFIG["externalRoutes"].append({"role": "org.openedx.frontend.role.profile", "url": "http://{{ MFE_HOST }}:{{ get_mfe("profile")["port"] }}/profile/"})
