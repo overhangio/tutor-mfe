@@ -7,7 +7,7 @@
 # is_frontend_app_enabled(...) (as already done for learner-dashboard).
 ./manage.py lms waffle_flag --list > /tmp/lms_waffle_flags.txt
 
-{% if is_mfe_enabled("account") %}
+{% if is_mfe_enabled("account") or is_frontend_app_enabled("account") %}
 ./manage.py lms populate_retirement_states
 {% endif %}
 
