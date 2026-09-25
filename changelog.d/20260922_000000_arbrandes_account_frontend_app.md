@@ -1,0 +1,1 @@
+- 💥[Feature] Ship the Account app as a frontend app (`@openedx/frontend-app-account`), enabled by default; the legacy MFE now builds from the `legacy-mfe` branch. (by @arbrandes)

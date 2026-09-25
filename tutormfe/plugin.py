@@ -84,6 +84,7 @@ CORE_MFE_APPS: dict[str, MFE_ATTRS_TYPE] = {
     "account": {
         "repository": "https://github.com/openedx/frontend-app-account.git",
         "port": 1997,
+        "alternate_master": "legacy-mfe",
     },
     "communications": {
         "repository": "https://github.com/openedx/frontend-app-communications.git",
@@ -114,6 +115,7 @@ CORE_MFE_APPS: dict[str, MFE_ATTRS_TYPE] = {
     "profile": {
         "repository": "https://github.com/openedx/frontend-app-profile.git",
         "port": 1995,
+        "alternate_master": "legacy-mfe",
     },
     "catalog": {
         "repository": "https://github.com/openedx/frontend-app-catalog.git",
@@ -156,6 +158,16 @@ CORE_FRONTEND_APPS: dict[str, FRONTEND_APP_ATTRS_TYPE] = {
     "gradebook": {
         "npm_package": "@openedx/frontend-app-gradebook",
         "npm_version": "^2.0.0-alpha || 0.0.0-dev",
+        "enabled": True,
+    },
+    "account": {
+        "npm_package": "@openedx/frontend-app-account",
+        "npm_version": "^1.0.0-alpha || 0.0.0-dev",
+        "enabled": True,
+    },
+    "profile": {
+        "npm_package": "@openedx/frontend-app-profile",
+        "npm_version": "^1.0.0-alpha || 0.0.0-dev",
         "enabled": True,
     },
 }
