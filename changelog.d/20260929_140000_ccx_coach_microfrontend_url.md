@@ -1,0 +1,1 @@
+- [Feature] Set `CCX_COACH_MICROFRONTEND_URL` when the Instructor Dashboard frontend app is enabled, so the LMS links CCX coaches to the `/ccx-coach` routes of the Instructor Dashboard app instead of the legacy CCX coach dashboard. (by @brianjbuck-wgu)

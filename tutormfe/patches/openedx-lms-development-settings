@@ -89,6 +89,7 @@ LEARNER_HOME_MICROFRONTEND_URL = "http://{{ MFE_HOST }}:{{ get_mfe("learner-dash
 
 {% if is_frontend_app_enabled("instructor-dashboard") %}
 INSTRUCTOR_MICROFRONTEND_URL = "http://{{ MFE_HOST }}:{{ MFE_SITE_PORT }}/instructor-dashboard"
+CCX_COACH_MICROFRONTEND_URL = "http://{{ MFE_HOST }}:{{ MFE_SITE_PORT }}/ccx-coach"
 {% endif %}
 
 {% if get_mfe("learning") %}
