@@ -1,0 +1,1 @@
+- 💥[Feature] Ship the Profile app as a frontend app (`@openedx/frontend-app-profile`), enabled by default; the legacy MFE now builds from the `legacy-mfe` branch. (by @arbrandes)
