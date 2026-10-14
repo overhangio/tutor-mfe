@@ -11,7 +11,10 @@
         - "{{ app["port"] }}:{{ app["port"] }}"
     stdin_open: true
     tty: true
+    # Install the node_modules of the bind-mounted repository before starting the dev server
+    command: ["/bin/bash", "-c", "bash /openedx/npm-install.sh && npm run start --- --config ./webpack.dev-tutor.config.js"]
     volumes:
+        - ../plugins/mfe/apps/mfe/npm-install.sh:/openedx/npm-install.sh:ro
         - ../plugins/mfe/apps/mfe/webpack.dev-tutor.config.js:/openedx/app/webpack.dev-tutor.config.js:ro
         {%- for mount in mounts %}
         - {{ mount }}
