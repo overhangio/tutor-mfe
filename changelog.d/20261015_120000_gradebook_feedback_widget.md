@@ -1,0 +1,1 @@
+- [Improvement] Disable the Gradebook feedback widget by default (`DISPLAY_FEEDBACK_WIDGET=false`), which loaded a third-party script from usabilla.com on every page. To enable it again, set `ENV DISPLAY_FEEDBACK_WIDGET=true` in the `mfe-dockerfile-pre-npm-build-gradebook` patch. (by @Faraz32123)
