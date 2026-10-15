@@ -731,14 +731,18 @@ tutor_hooks.Filters.ENV_TEMPLATE_TARGETS.add_items(
 # Load patches from files
 for path in glob(str(importlib_resources.files("tutormfe") / "patches" / "*")):
     with open(path, encoding="utf-8") as patch_file:
-        # Here we force tutor-mfe lms patches to be loaded first, thus ensuring when
-        # operators override MFE_CONFIG and/or MFE_CONFIG_OVERRIDES, their patches
-        # will be loaded after this plugin's
+        # Here we force some tutor-mfe patches to be loaded first, thus ensuring when
+        # operators override MFE_CONFIG and/or MFE_CONFIG_OVERRIDES, or the Gradebook
+        # build settings, their patches will be loaded after this plugin's
         patch_name = os.path.basename(path)
         priority = (
             priorities.HIGH
             if patch_name
-            in ["openedx-lms-production-settings", "openedx-lms-development-settings"]
+            in [
+                "openedx-lms-production-settings",
+                "openedx-lms-development-settings",
+                "mfe-dockerfile-pre-npm-build-gradebook",
+            ]
             else priorities.DEFAULT
         )
         tutor_hooks.Filters.ENV_PATCHES.add_item(
