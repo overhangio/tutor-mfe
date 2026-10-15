@@ -61,12 +61,6 @@ ENV PUBLIC_PATH='/{{ mfe_name }}/'
 # So we point to a relative url that will be a proxy for the LMS.
 ENV MFE_CONFIG_API_URL=/api/mfe_config/v1
 ARG ENABLE_NEW_RELIC=false
-{%- if mfe_name == "gradebook" %}
-# The feedback widget loads a third-party script (usabilla.com) on every page: disable it
-# by default. To enable it, set "ENV DISPLAY_FEEDBACK_WIDGET=true" in the
-# "mfe-dockerfile-pre-npm-build-gradebook" patch.
-ENV DISPLAY_FEEDBACK_WIDGET=false
-{%- endif %}
 COPY env.config.jsx /openedx/app
 COPY webpack.prod-tutor.config.js /openedx/app
 {{ patch("mfe-dockerfile-pre-npm-build") }}

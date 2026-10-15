@@ -1,0 +1,4 @@
+# The feedback widget loads a third-party script (usabilla.com) on every page: disable it
+# by default. To enable it, set "ENV DISPLAY_FEEDBACK_WIDGET=true" in your own
+# "mfe-dockerfile-pre-npm-build-gradebook" patch.
+ENV DISPLAY_FEEDBACK_WIDGET=false
