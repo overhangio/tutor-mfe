@@ -717,6 +717,8 @@ You can also bind-mount your own fork of an MFE. For example::
 
 With this change, the "profile-dev" image will be automatically re-built during ``launch``. Your host repository will then be bind-mounted at runtime in the "profile" container. This means that changes you make to the host repository will be automatically picked up and hot-reloaded by your development server.
 
+If the host repository of a bind-mounted MFE does not have a ``node_modules`` folder, or if it was installed from a different ``package-lock.json``, the MFE container will run ``npm clean-install`` before starting the development server. The first start might thus take a few minutes. You can follow the installation with ``tutor dev logs -f <mfe-name>``, e.g. ``tutor dev logs -f profile``.
+
 This works for custom MFEs, as well. For example, if you added your own MFE named frontend-app-myapp, then you can bind-mount it like so::
 
     tutor mounts add /path/to/frontend-app-myapp
