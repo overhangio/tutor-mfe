@@ -11,14 +11,15 @@
         - "{{ app["port"] }}:{{ app["port"] }}"
     stdin_open: true
     tty: true
-    # Install the node_modules of the bind-mounted repository before starting the dev server
-    command: ["/bin/bash", "-c", "bash /openedx/npm-install.sh && npm run start --- --config ./webpack.dev-tutor.config.js"]
+    # Reconcile the node_modules volume with the lockfile before starting the dev server
+    command: ["/bin/bash", "-c", "npm install --no-audit --no-fund --registry={{ NPM_REGISTRY }} && npm run start --- --config ./webpack.dev-tutor.config.js"]
     volumes:
-        - ../plugins/mfe/apps/mfe/npm-install.sh:/openedx/npm-install.sh:ro
         - ../plugins/mfe/apps/mfe/webpack.dev-tutor.config.js:/openedx/app/webpack.dev-tutor.config.js:ro
         {%- for mount in mounts %}
         - {{ mount }}
         {%- endfor %}
+        # Hide the host's node_modules, if any, behind a volume populated from the image
+        - /openedx/app/node_modules
     restart: unless-stopped
     depends_on:
         - lms
