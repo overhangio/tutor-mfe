@@ -47,7 +47,8 @@ ENV PACT_SKIP_BINARY_INSTALL=true
 RUN --mount=type=cache,target=/root/.npm,sharing=shared npm clean-install --no-audit --no-fund --registry=$NPM_REGISTRY
 {{ patch("mfe-dockerfile-post-npm-install") }}
 {{ patch("mfe-dockerfile-post-npm-install-{}".format(mfe_name)) }}
-COPY --from={{ mfe_name }}-src / /openedx/app
+# Copy the full source, minus any node_modules, which would land on top of the install we just made.
+COPY --exclude=**/node_modules --from={{ mfe_name }}-src / /openedx/app
 
 RUN make OPENEDX_ATLAS_PULL=true ATLAS_OPTIONS="--repository={{ ATLAS_REPOSITORY }} --revision={{ ATLAS_REVISION }} {{ ATLAS_OPTIONS }}" pull_translations
 
