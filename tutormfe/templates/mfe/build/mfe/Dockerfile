@@ -20,6 +20,11 @@ RUN mkdir -p /openedx/app /openedx/env
 WORKDIR /openedx/app
 ENV PATH=/openedx/app/node_modules/.bin:${PATH}
 
+# Keep the npm version that shipped with Node.js 24.11.0: later npm versions reject
+# the lockfiles of some Ulmo MFEs (e.g. frontend-app-communications) in `npm ci`.
+ARG NPM_REGISTRY={{ NPM_REGISTRY }}
+RUN npm install --global --registry=$NPM_REGISTRY npm@11.6.1
+
 {{ patch("mfe-dockerfile-base") }}
 
 {% for app_name, app in iter_mfes() %}
