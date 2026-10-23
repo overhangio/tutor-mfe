@@ -917,7 +917,7 @@ The following Tutor configuration variables control the frontend-base site:
 
 The Node.js base image used to build every MFE image is also configurable:
 
-- ``MFE_NODE_IMAGE`` (default: ``docker.io/node:24.14.1-bookworm-slim``): the image the build stages start ``FROM``. Override it to pin a different Node.js release or Debian version, for instance when a base distribution reaches end of life before this plugin is updated::
+- ``MFE_NODE_IMAGE`` (default: ``docker.io/node:24.22.1-bookworm-slim``): the image the build stages start ``FROM``. Override it to pin a different Node.js release or Debian version, for instance when a base distribution reaches end of life before this plugin is updated::
 
     tutor config save --set MFE_NODE_IMAGE=docker.io/node:24-bookworm-slim
 
