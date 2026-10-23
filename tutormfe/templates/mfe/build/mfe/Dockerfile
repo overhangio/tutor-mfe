@@ -1,6 +1,6 @@
 # syntax=docker/dockerfile:1
 # https://hub.docker.com/_/node/tags
-FROM docker.io/node:24.11.0-bookworm-slim AS base
+FROM docker.io/node:24.22.1-bookworm-slim AS base
 
 RUN apt update \
   && apt install -y git \
