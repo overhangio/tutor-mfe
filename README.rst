@@ -782,7 +782,7 @@ To add a custom frontend app (which does require rebuilding), the Tutor plugin w
     def _add_my_app(apps):
         apps["my-app"] = {
             "npm_package": "@myorg/frontend-app-my-app",
-            "npm_version": "^1.0.0",
+            "npm_version": "1.0.x",
             "enabled": True,
         }
         return apps
