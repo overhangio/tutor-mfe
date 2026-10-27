@@ -19,6 +19,15 @@ instructions, because git commits are used to generate release notes:
 
 <!-- scriv-insert-here -->
 
+<a id='changelog-22.1.1'></a>
+## v22.1.1 (2026-10-27)
+
+- [Improvement] Disable the Gradebook feedback widget by default, which loaded a third-party script from usabilla.com on every page. tutor-mfe now sets `ENV DISPLAY_FEEDBACK_WIDGET=false` in its own `mfe-dockerfile-pre-npm-build-gradebook` patch, loaded with high priority. To enable the widget again, add `ENV DISPLAY_FEEDBACK_WIDGET=true` to the same patch in your own plugin. (by @Faraz32123)
+
+- [Security] Upgrade Node.js to v24.22.1 in the MFE image to stop trusting the compromised eMudhra/emSign CA certificates. See https://github.com/overhangio/tutor/issues/1515. (by @ahmed-arb)
+
+- [Improvement] Pin the core frontend apps and frontend-base to `n.m.x` semver ranges instead of caret ranges, so that new minor releases don't get picked up without review. (by @arbrandes)
+
 <a id='changelog-22.1.0'></a>
 ## v22.1.0 (2026-09-07)
 
