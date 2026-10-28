@@ -19,6 +19,11 @@ instructions, because git commits are used to generate release notes:
 
 <!-- scriv-insert-here -->
 
+<a id='changelog-20.1.2'></a>
+## v20.1.2 (2026-10-28)
+
+- [Security] Upgrade Node.js to v22.23.4 in the MFE image to stop trusting the compromised eMudhra/emSign CA certificates. See https://github.com/overhangio/tutor/issues/1515. (by @ahmed-arb)
+
 <a id='changelog-20.1.1'></a>
 ## v20.1.1 (2026-09-11)
 
