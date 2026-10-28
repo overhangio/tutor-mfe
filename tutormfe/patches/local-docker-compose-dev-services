@@ -11,8 +11,6 @@
         - "{{ app["port"] }}:{{ app["port"] }}"
     stdin_open: true
     tty: true
-    # Reconcile the node_modules volume with the lockfile before starting the dev server
-    command: ["/bin/bash", "-c", "npm install --no-audit --no-fund --registry={{ NPM_REGISTRY }} && npm run start --- --config ./webpack.dev-tutor.config.js"]
     volumes:
         - ../plugins/mfe/apps/mfe/webpack.dev-tutor.config.js:/openedx/app/webpack.dev-tutor.config.js:ro
         {%- for mount in mounts %}

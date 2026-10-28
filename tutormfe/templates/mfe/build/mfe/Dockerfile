@@ -70,7 +70,9 @@ COPY webpack.prod-tutor.config.js /openedx/app
 ######## {{ mfe_name }} (dev)
 FROM {{ mfe_name }}-common AS {{ mfe_name }}-dev
 ENV NODE_ENV=development
-CMD ["/bin/bash", "-c", "npm run start --- --config ./webpack.dev-tutor.config.js"]
+# Reconcile node_modules with the lockfile before starting the dev server. --no-save
+# prevents npm from rewriting the package-lock.json of a bind-mounted repository.
+CMD ["/bin/bash", "-c", "npm install --no-audit --no-fund --no-save --registry={{ NPM_REGISTRY }} && npm run start --- --config ./webpack.dev-tutor.config.js"]
 {% endfor %}
 
 # Production images are last to accelerate dev image building
