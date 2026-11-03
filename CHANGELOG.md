@@ -19,6 +19,15 @@ instructions, because git commits are used to generate release notes:
 
 <!-- scriv-insert-here -->
 
+<a id='changelog-22.1.2'></a>
+## v22.1.2 (2026-11-03)
+
+- [Bugfix] Fix `fedx-scripts: not found` errors in bind-mounted legacy MFEs whose host repository has no `node_modules`. The dev container now hides the host's `node_modules` behind a Docker volume populated from the image, and runs `npm install` before starting the dev server. (by @Danyal-Faheem)
+
+- [Bugfix] Stop deleting the `node_modules` directory of bind-mounted frontend app repositories during development. (by @arbrandes)
+
+- [Bugfix] Build the MFE images from `release/verawood.2`, as set by Tutor v22.0.4. The Authoring MFE now searches the separate Studio library index introduced in Verawood.2: with older images, library search in Studio returns no results once Tutor v22.0.4 has reindexed the Studio content. (by @Abdul-Muqadim-Arbisoft)
+
 <a id='changelog-22.1.1'></a>
 ## v22.1.1 (2026-10-27)
 
