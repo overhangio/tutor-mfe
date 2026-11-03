@@ -19,6 +19,24 @@ instructions, because git commits are used to generate release notes:
 
 <!-- scriv-insert-here -->
 
+<a id='changelog-22.1.2'></a>
+## v22.1.2 (2026-11-03)
+
+- [Bugfix] Fix `fedx-scripts: not found` errors in bind-mounted legacy MFEs whose host repository has no `node_modules`. The dev container now hides the host's `node_modules` behind a Docker volume populated from the image, and runs `npm install` before starting the dev server. (by @Danyal-Faheem)
+
+- [Bugfix] Stop deleting the `node_modules` directory of bind-mounted frontend app repositories during development. (by @arbrandes)
+
+- [Bugfix] Build the MFE images from `release/verawood.2`, as set by Tutor v22.0.4. The Authoring MFE now searches the separate Studio library index introduced in Verawood.2: with older images, library search in Studio returns no results once Tutor v22.0.4 has reindexed the Studio content. (by @Abdul-Muqadim-Arbisoft)
+
+<a id='changelog-22.1.1'></a>
+## v22.1.1 (2026-10-27)
+
+- [Improvement] Disable the Gradebook feedback widget by default, which loaded a third-party script from usabilla.com on every page. tutor-mfe now sets `ENV DISPLAY_FEEDBACK_WIDGET=false` in its own `mfe-dockerfile-pre-npm-build-gradebook` patch, loaded with high priority. To enable the widget again, add `ENV DISPLAY_FEEDBACK_WIDGET=true` to the same patch in your own plugin. (by @Faraz32123)
+
+- [Security] Upgrade Node.js to v24.22.1 in the MFE image to stop trusting the compromised eMudhra/emSign CA certificates. See https://github.com/overhangio/tutor/issues/1515. (by @ahmed-arb)
+
+- [Improvement] Pin the core frontend apps and frontend-base to `n.m.x` semver ranges instead of caret ranges, so that new minor releases don't get picked up without review. (by @arbrandes)
+
 <a id='changelog-22.1.0'></a>
 ## v22.1.0 (2026-09-07)
 
