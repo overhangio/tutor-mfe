@@ -1,0 +1,1 @@
+- [Bugfix] Use a `ClusterIP` instead of `NodePort` service type for the MFE Kubernetes service, consistent with the other Tutor services.
