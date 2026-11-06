@@ -247,6 +247,8 @@ To change the MFEs logos from the default to your own logos, override the corres
 
 If patches are the same in development and production, they can be replaced by a single ``mfe-lms-common-settings`` patch.
 
+``FAVICON_URL`` applies to the legacy MFEs. The frontend-base site uses the ``favicon.ico`` file of its ``@edx/brand`` package instead, which its build serves at ``/favicon.ico``: to change it, install your own brand package in the site with the ``mfe-dockerfile-post-npm-install-site`` patch.
+
 .. _mfe-docker-post-npm-install:
 
 To install custom components for the MFEs, such as the `header <https://github.com/openedx/frontend-component-header>`_ and `footer <https://github.com/openedx/frontend-component-footer>`_, override the components by adding a patch to ``mfe-dockerfile-post-npm-install`` in your plugin:
@@ -1457,6 +1459,13 @@ mfe-site-custom-app-final
 Add arbitrary code to the site's ``customApp``, such as slot plugin or external script registrations. Components and loader classes imported or defined via ``mfe-site-custom-app-imports`` or ``mfe-site-custom-app-definitions`` can be referenced here.
 
 File changed: ``tutormfe/templates/mfe/build/mfe/site/src/customApp.tsx``
+
+mfe-site-index-html-head
+~~~~~~~~~~~~~~~~~~~~~~~~
+
+Add tags to the ``<head>`` of the site's ``index.html``, such as ``<link>`` and ``<meta>`` tags for icons, a web app manifest or link previews. These tags are part of the HTML served to browsers and crawlers, before any JavaScript runs, so link previews and favicon checkers can read them.
+
+File changed: ``tutormfe/templates/mfe/build/mfe/site/public/index.html``
 
 mfe-dockerfile-pre-npm-install-site
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

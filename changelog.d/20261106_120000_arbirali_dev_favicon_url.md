@@ -1,0 +1,1 @@
+- [Bugfix] Fix the favicon of legacy MFEs in development: `FAVICON_URL` now includes the LMS development port (`http://<LMS_HOST>:8000/favicon.ico`), like the other LMS URLs in `MFE_CONFIG`. (by @arbirali)

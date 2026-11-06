@@ -1,0 +1,1 @@
+- [Bugfix] Give the frontend-base site a favicon: its `index.html` now links `/favicon.ico`, which the site build emits from the `@edx/brand` package, so a custom brand package also sets the site favicon. (by @arbirali)
