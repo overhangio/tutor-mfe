@@ -60,6 +60,8 @@ const widgetMap = { ...defaultWidgetMap, ...{{ get_frontend_widget_compat_map() 
 import '@openedx/frontend-base/shell/style';
 import '@edx/brand/core.min.css';
 import '@edx/brand/light.min.css';
+// Emitted as /favicon.ico (see frontend-base's file-loader rule), linked from public/index.html.
+import '@edx/brand/favicon.ico';
 
 const siteConfig: SiteConfig = {
   siteId: 'tutor-site',

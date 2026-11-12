@@ -5,7 +5,7 @@ MFE_CONFIG = {
     "CSRF_TOKEN_API_PATH": "/csrf/api/v1/token",
     "CREDENTIALS_BASE_URL": "",
     "DISCOVERY_API_BASE_URL": "{% if DISCOVERY_HOST is defined %}http://{{ DISCOVERY_HOST }}:8381{% endif %}",
-    "FAVICON_URL": "http://{{ LMS_HOST }}/favicon.ico",
+    "FAVICON_URL": "http://{{ LMS_HOST }}:8000/favicon.ico",
     "INFO_EMAIL": "{{ CONTACT_EMAIL }}",
     "LANGUAGE_PREFERENCE_COOKIE_NAME": "openedx-language-preference",
     "LMS_BASE_URL": "http://{{ LMS_HOST }}:8000",
