@@ -1,0 +1,1 @@
+- [Feature] Add the `mfe-site-index-html-head` patch, to add `<link>` and `<meta>` tags to the `<head>` of the frontend-base site's `index.html`. Unlike tags added at runtime, they are visible to crawlers, link previews and favicon checkers. (by @arbirali)
