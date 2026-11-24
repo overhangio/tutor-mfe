@@ -1,0 +1,1 @@
+- [Bugfix] Fix the Admin Console error page "Back" button, which had no destination: it now points to the course authoring home page. (by @ahmed-arb)

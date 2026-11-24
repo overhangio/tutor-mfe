@@ -61,6 +61,10 @@ FRONTEND_SITE_CONFIG["externalRoutes"].append({"role": "org.openedx.frontend.rol
 {% if get_mfe("authoring") %}
 COURSE_AUTHORING_MICROFRONTEND_URL = "http://{{ MFE_HOST }}:{{ get_mfe("authoring")["port"] }}/authoring"
 MFE_CONFIG["COURSE_AUTHORING_MICROFRONTEND_URL"] = COURSE_AUTHORING_MICROFRONTEND_URL
+{#- TODO(authoring-frontend-app): when Authoring ships as a frontend app, gate
+    this route on `is_frontend_app_enabled("authoring")` the way account and
+    profile are, so the app's own courseAuthoring route is used instead. #}
+FRONTEND_SITE_CONFIG["externalRoutes"].append({"role": "org.openedx.frontend.role.courseAuthoring", "url": "http://{{ MFE_HOST }}:{{ get_mfe("authoring")["port"] }}/authoring/home"})
 MFE_CONFIG["ENABLE_ASSETS_PAGE"] = "true"
 MFE_CONFIG["ENABLE_HOME_PAGE_COURSE_API_V2"] = "true"
 MFE_CONFIG["ENABLE_PROGRESS_GRAPH_SETTINGS"] = "true"
