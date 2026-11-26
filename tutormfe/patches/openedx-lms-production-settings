@@ -73,6 +73,10 @@ MFE_CONFIG["MEILISEARCH_ENABLED"] = "true"
 DISCUSSIONS_MICROFRONTEND_URL = "{% if ENABLE_HTTPS %}https://{% else %}http://{% endif %}{{ MFE_HOST }}/discussions"
 MFE_CONFIG["DISCUSSIONS_MFE_BASE_URL"] = DISCUSSIONS_MICROFRONTEND_URL
 DISCUSSIONS_MFE_FEEDBACK_URL = None
+{#- TODO(discussions-frontend-app): when Discussions ships as a frontend app,
+    gate this route on `is_frontend_app_enabled("discussions")` the way account
+    and profile are, so the app's own discussions route is used instead. #}
+FRONTEND_SITE_CONFIG["externalRoutes"].append({"role": "org.openedx.frontend.role.discussions", "url": "{{ "https" if ENABLE_HTTPS else "http" }}://{{ MFE_HOST }}/discussions"})
 {% endif %}
 
 {% if get_mfe("gradebook") or is_frontend_app_enabled("gradebook") %}
@@ -88,7 +92,7 @@ INSTRUCTOR_MICROFRONTEND_URL = "{% if ENABLE_HTTPS %}https://{% else %}http://{%
 CCX_COACH_MICROFRONTEND_URL = "{% if ENABLE_HTTPS %}https://{% else %}http://{% endif %}{{ MFE_HOST }}/ccx-coach"
 {% endif %}
 
-{% if get_mfe("learning") %}
+{% if get_mfe("learning") or is_frontend_app_enabled("learning") %}
 LEARNING_MICROFRONTEND_URL = "{% if ENABLE_HTTPS %}https://{% else %}http://{% endif %}{{ MFE_HOST }}/learning"
 MFE_CONFIG["LEARNING_BASE_URL"] = "{{ "https" if ENABLE_HTTPS else "http" }}://{{ MFE_HOST }}/learning"
 FRONTEND_SITE_CONFIG["commonAppConfig"]["LEARNING_BASE_URL"] = "{{ "https" if ENABLE_HTTPS else "http" }}://{{ MFE_HOST }}/learning"

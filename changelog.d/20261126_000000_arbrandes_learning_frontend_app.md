@@ -1,0 +1,1 @@
+- 💥[Feature] Ship the Learning app as a frontend app (`@openedx/frontend-app-learning`), enabled by default; the legacy MFE now builds from the `legacy-mfe` branch. The site also gets the Discussions MFE as an external route, for Learning's discussion links. (by @arbrandes)

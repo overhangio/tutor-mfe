@@ -38,6 +38,10 @@ import { accountApp } from '@openedx/frontend-app-account';
 import { profileApp } from '@openedx/frontend-app-profile';
 {% endif %}
 
+{% if get_frontend_app("learning") %}
+import { learningApp } from '@openedx/frontend-app-learning';
+{% endif %}
+
 {% if get_frontend_compat_mfes() %}
 import {
   createLegacyPluginApp,
@@ -119,6 +123,10 @@ addApp(siteConfig, accountApp);
 
 {% if get_frontend_app("profile") %}
 addApp(siteConfig, profileApp);
+{% endif %}
+
+{% if get_frontend_app("learning") %}
+addApp(siteConfig, learningApp);
 {% endif %}
 
 {%- for mfe in iter_frontend_compat_mfes() %}
