@@ -107,6 +107,7 @@ CORE_MFE_APPS: dict[str, MFE_ATTRS_TYPE] = {
     "learning": {
         "repository": "https://github.com/openedx/frontend-app-learning.git",
         "port": 2000,
+        "alternate_master": "legacy-mfe",
     },
     "ora-grading": {
         "repository": "https://github.com/openedx/frontend-app-ora-grading.git",
@@ -168,6 +169,11 @@ CORE_FRONTEND_APPS: dict[str, FRONTEND_APP_ATTRS_TYPE] = {
     "profile": {
         "npm_package": "@openedx/frontend-app-profile",
         "npm_version": "^2.0.0-alpha || 0.0.0-dev",
+        "enabled": True,
+    },
+    "learning": {
+        "npm_package": "@openedx/frontend-app-learning",
+        "npm_version": "^1.0.0-alpha || 0.0.0-dev",
         "enabled": True,
     },
 }

@@ -77,6 +77,10 @@ MFE_CONFIG["MEILISEARCH_ENABLED"] = "true"
 DISCUSSIONS_MICROFRONTEND_URL = "http://{{ MFE_HOST }}:{{ get_mfe("discussions")["port"] }}/discussions"
 MFE_CONFIG["DISCUSSIONS_MFE_BASE_URL"] = DISCUSSIONS_MICROFRONTEND_URL
 DISCUSSIONS_MFE_FEEDBACK_URL = None
+{#- TODO(discussions-frontend-app): when Discussions ships as a frontend app,
+    gate this route on `is_frontend_app_enabled("discussions")` the way account
+    and profile are, so the app's own discussions route is used instead. #}
+FRONTEND_SITE_CONFIG["externalRoutes"].append({"role": "org.openedx.frontend.role.discussions", "url": "http://{{ MFE_HOST }}:{{ get_mfe("discussions")["port"] }}/discussions"})
 {% endif %}
 
 {% if is_frontend_app_enabled("gradebook") %}
@@ -96,7 +100,11 @@ INSTRUCTOR_MICROFRONTEND_URL = "http://{{ MFE_HOST }}:{{ MFE_SITE_PORT }}/instru
 CCX_COACH_MICROFRONTEND_URL = "http://{{ MFE_HOST }}:{{ MFE_SITE_PORT }}/ccx-coach"
 {% endif %}
 
-{% if get_mfe("learning") %}
+{% if is_frontend_app_enabled("learning") %}
+LEARNING_MICROFRONTEND_URL = "http://{{ MFE_HOST }}:{{ MFE_SITE_PORT }}/learning"
+MFE_CONFIG["LEARNING_BASE_URL"] = "http://{{ MFE_HOST }}:{{ MFE_SITE_PORT }}/learning"
+FRONTEND_SITE_CONFIG["commonAppConfig"]["LEARNING_BASE_URL"] = "http://{{ MFE_HOST }}:{{ MFE_SITE_PORT }}/learning"
+{% elif get_mfe("learning") %}
 LEARNING_MICROFRONTEND_URL = "http://{{ MFE_HOST }}:{{ get_mfe("learning")["port"] }}/learning"
 MFE_CONFIG["LEARNING_BASE_URL"] = "http://{{ MFE_HOST }}:{{ get_mfe("learning")["port"] }}/learning"
 FRONTEND_SITE_CONFIG["commonAppConfig"]["LEARNING_BASE_URL"] = "http://{{ MFE_HOST }}:{{ get_mfe("learning")["port"] }}/learning"
